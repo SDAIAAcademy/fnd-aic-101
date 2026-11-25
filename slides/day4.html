@@ -1,158 +1,349 @@
 <section class="slide title" id="title" data-auto="title">
-  <aside class="notes">REPLACE: welcome; introduce yourself; one question to the room that calibrates the pace; the rhythm of the day</aside>
+  <aside class="notes"><p>Welcome to the last teaching day. Calibrating question: "Whose fixed pipeline in Lab 3.4 scored above 0.8?" Nobody's should have. Today: three model families compared honestly, what happens when the data change, error gaps between groups, the model card, and the capstone brief.</p></aside>
 </section>
 
-<section class="slide" id="agenda" data-auto="agenda"></section>
+<section class="slide" id="agenda" data-auto="agenda">
+  <aside class="notes"><p>Read the four titles. Session 4 ends with the capstone starter running on everyone's machine; protect its 35 minutes.</p></aside>
+</section>
+
+<section class="slide" id="review-day3" data-lo="LO3" data-label="Day 3 review">
+  <div class="kicker">Day 3 review</div>
+  <h2>Which split matches use?</h2>
+  <div class="quiz" data-type="single" data-lo="LO3">
+    <p class="lead">A wound-care screen will score next year's visits. The analyst has three years of dated visits, many clients with several. Which split gives an honest test score?</p>
+    <div class="opts">
+      <div class="opt" data-ok>Train on the first two years, test on the third</div>
+      <div class="opt" data-why="Puts later visits in training and earlier ones in test, and splits clients across both">A random 70/30 split of all visits</div>
+      <div class="opt" data-why="Uses the future to predict the past, the reverse of use">Train on the last two years, test on the first</div>
+      <div class="opt" data-why="Grouping by client helps, but a random draw of clients still mixes the years">A random split of clients, all years mixed</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The screen will meet visits from after its training period, so the test rows must come from after it too.</div>
+  </div>
+  <aside class="notes"><p>Answer: train on the past, test on the latest year. The last option is the best of the wrong ones: it fixes the duplicate leak but not the temporal one.</p></aside>
+</section>
 
 <!-- Session 1 -->
 
-<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
-
-<section class="slide" id="s1-idea">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide section" id="s1" data-auto="section" data-session="1">
+  <aside class="notes"><p>Session 1 compares three families of models on one honest workflow. The debrief of Lab 3.4 first.</p></aside>
 </section>
 
-<section class="slide" id="s1-steps">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="debrief-3-4" data-lo="LO3">
+  <div class="kicker">Lab 3.4 debrief</div>
+  <h2>The analyst's 0.936 became an honest 0.732</h2>
+  <table class="t small">
+    <tr><th>Leak</th><th>Evidence in the reference run</th></tr>
+    <tr><td>Target: <code>physio_referral</code></td><td>AUC alone 0.880; updated during the six months after the visit</td></tr>
+    <tr><td>Duplicate: the random split</td><td>573 repeated rows; 236 of 1,605 test rows also in training</td></tr>
+    <tr><td>Temporal: <code>client_falls_total</code>, the split</td><td>10.7% of rows count later visits; 30.2% of training rows from 2025</td></tr>
+  </table>
+  <div class="caption">Lab 3.4 reference run. The best clinical feature alone, walk_seconds, scored 0.687.</div>
+  <aside class="notes"><p>Ask who signs off the fixed pipeline: not the analyst who fixed it. The quality and data protection officer reviews it and the clinical director accepts the new score. The honest number is the useful one: it says what the screen will do.</p></aside>
+</section>
+
+<section class="slide" id="families" data-lo="LO4">
+  <div class="kicker">Three families</div>
+  <h2>Each family draws the boundary between flag and pass differently</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Linear model</h4><p class="small mb0">A weighted sum of the inputs; the boundary is a straight line, or a flat plane. Each weight can be read.</p></div>
+    <div class="card c-amber"><h4>Decision tree</h4><p class="small mb0">Yes-or-no questions on one input at a time; the boundary is a staircase of boxes.</p></div>
+    <div class="card c-purple"><h4>Small neural network</h4><p class="small mb0">Several weighted sums, each bent, then summed again; the boundary can curve.</p></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout note mt"><b>All fitted the same way.</b> The line and the network by gradient steps on a loss, as on Day 1; the tree by choosing one split at a time.</div>
+  <aside class="notes"><p>Draw the three boundaries on one scatter of walk time against prior falls. More flexibility is not more truth: on tabular screens with a few thousand rows, a linear model is often as good as the others and far easier to check.</p></aside>
+</section>
+
+<section class="slide" id="seeds" data-lo="LO4">
+  <div class="kicker">Reproducibility</div>
+  <h2>A fixed seed makes a run repeatable, not certain</h2>
+  <ul class="bullets">
+    <li>A network starts from random weights; a tree breaks ties at random: the <b>seed</b> fixes those draws</li>
+    <li>Same seed, same data, same library versions: the same numbers, every time</li>
+    <li>Another seed gives a slightly different model: that change is part of the result's uncertainty</li>
+    <li>Two models closer than the seed-to-seed change are <b>tied</b></li>
+  </ul>
+  <div class="callout warn mt"><b>What goes wrong.</b> A notebook that only works when its cells are run in one hidden order. Restart and run all before reporting.</div>
+  <aside class="notes"><p>The repository pins library versions in a lock file for the same reason. The defence on capstone day re-runs the notebook from a fresh start: this is why.</p></aside>
+</section>
+
+<section class="slide" id="check-s1" data-lo="LO4">
+  <div class="kicker">Checkpoint</div>
+  <h2>What do you report?</h2>
+  <div class="quiz" data-type="single" data-lo="LO4">
+    <p class="lead">On a wound-care screen, a small network scores a validation AUC of 0.873 with seed 1 and 0.866 with seed 2; a logistic regression scores 0.869. Which choice is best supported?</p>
+    <div class="opts">
+      <div class="opt" data-why="Reports the luckier seed as if it were the model">The network, quoting its seed 1 score of 0.873</div>
+      <div class="opt" data-why="Averages away the evidence that the two are tied, then still picks a winner">The network, because its mean is 0.0005 higher</div>
+      <div class="opt" data-ok>The logistic regression, because they are tied</div>
+      <div class="opt" data-why="Opening the test set to break a tie turns it into a second validation set">Whichever scores higher on the test set</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The gap between the models is smaller than the network's own change across seeds; when tied, the simpler model is easier to explain and check.</div>
+  </div>
+  <aside class="notes"><p>Answer: the logistic regression. The network's mean is 0.8695 against 0.869: no difference worth a word.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-4-1" data-auto="lab" data-lab="4.1">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI-off for the first attempt. Common errors: a different preprocessing for each model, and scoring every model on test. Ask everyone to restart and run all before step 5. Starts from the supplied assessments; nothing from Day 3 is needed.</p></aside>
 </section>
 
 <!-- Session 2 -->
 
-<section class="slide section" id="s2" data-auto="section" data-session="2"></section>
-
-<section class="slide" id="s2-idea">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide section" id="s2" data-auto="section" data-session="2">
+  <aside class="notes"><p>Session 2: the screen is in use, and the data change.</p></aside>
 </section>
 
-<section class="slide" id="s2-steps">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="debrief-4-1" data-lo="LO4">
+  <div class="kicker">Lab 4.1 debrief</div>
+  <h2>The network tied with the logistic regression</h2>
+  <table class="t small">
+    <tr><th>Validation AUC, seed 101</th><th class="num">AUC</th></tr>
+    <tr><td>Baseline</td><td class="num">0.500</td></tr>
+    <tr class="hl"><td>Logistic regression</td><td class="num">0.744</td></tr>
+    <tr><td>Decision tree, depth 4</td><td class="num">0.685</td></tr>
+    <tr><td>Small neural network, 16 units</td><td class="num">0.743</td></tr>
+  </table>
+  <div class="caption">Seed 7 gave the network 0.743 again. Chosen: the logistic regression; test AUC, opened once: 0.731.</div>
+  <aside class="notes"><p>Ask who chose the network and why. With this data, the extra flexibility found nothing the line had not. That is a finding, not a failure.</p></aside>
+</section>
+
+<section class="slide" id="shift-kinds" data-lo="LO6">
+  <div class="kicker">Distribution shift</div>
+  <h2>A model meets rows unlike its training rows</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>New people</h4><p class="small mb0">A new sector, older clients, a new referral route: the inputs' mix changes.</p></div>
+    <div class="card c-coral"><h4>A changed measurement</h4><p class="small mb0">A new device, unit or protocol: the same client gets a different number.</p></div>
+    <div class="card c-purple"><h4>A changed outcome rate</h4><p class="small mb0">More or fewer events than in training: precision and the cheapest threshold move.</p></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout warn mt"><b>The model cannot tell you.</b> It scores whatever it is given. The checks must be built around it.</div>
+  <aside class="notes"><p>Ask for one example of each from the room's own work. A changed measurement is the most dangerous because nothing looks wrong to the people collecting it.</p></aside>
+</section>
+
+<section class="slide" id="monitoring" data-lo="LO6">
+  <div class="kicker">Monitoring</div>
+  <h2>Cheap checks catch shifts in the first week</h2>
+  <ul class="bullets">
+    <li><b>Share flagged</b>, by sector and by month, against the training period</li>
+    <li><b>The mean of each input</b>, by sector and by month, against the training period</li>
+    <li><b>Recall and precision</b> once the outcomes arrive, months later</li>
+    <li>An owner for each alert, and a person who decides on a pause</li>
+  </ul>
+  <div class="callout note mt"><b>A parallel example.</b> A new wound clinic records area in cm², not mm²: every area is 100 times smaller. Its mean area, and its flag rate, would show it on the first day.</div>
+  <aside class="notes"><p>The first two checks need no outcomes, so they work at once; recall needs to wait for the outcome window. Ask what a ranking score like AUC would show for the cm² clinic alone: nothing, because dividing by 100 keeps the order.</p></aside>
+</section>
+
+<section class="slide" id="check-s2" data-lo="LO6">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which check comes first?</h2>
+  <div class="quiz" data-type="single" data-lo="LO6">
+    <p class="lead">A wound-care screen goes live in a new clinic on Sunday. Outcomes take 30 days to arrive. Which check can warn of a problem in the first week?</p>
+    <div class="opts">
+      <div class="opt" data-why="Needs outcomes, which do not exist for 30 days">The clinic's recall at the threshold</div>
+      <div class="opt" data-why="Needs outcomes too, and a ranking score hides a change of unit">The clinic's AUC on its first week of visits</div>
+      <div class="opt" data-why="Retraining on a week of visits with no outcomes is not possible">Retraining the model on the clinic's visits</div>
+      <div class="opt" data-ok>The clinic's share flagged and input means</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Flag rates and input means need no outcomes, so they can be compared with the training period from the first day.</div>
+  </div>
+  <aside class="notes"><p>Answer: share flagged and input means. Recall and AUC come later, once outcomes arrive.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-4-2" data-auto="lab" data-lab="4.2">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI-off for the first attempt. Let people find the cause from the shift table and the plot before the notebook names it. Common error: refitting the model on the batch in place of correcting the column. Starts from the supplied assessments and batch.</p></aside>
 </section>
 
 <!-- Session 3 -->
 
-<section class="slide section" id="s3" data-auto="section" data-session="3"></section>
-
-<section class="slide" id="s3-idea">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide section" id="s3" data-auto="section" data-session="3">
+  <aside class="notes"><p>Session 3: the screen's errors are not the same for everyone.</p></aside>
 </section>
 
-<section class="slide" id="s3-steps">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="debrief-4-2" data-lo="LO6">
+  <div class="kicker">Lab 4.2 debrief</div>
+  <h2>Central was flagged 100% of the time because its walk was timed over six metres</h2>
+  <table class="t small">
+    <tr><th>Later batch, threshold 0.13</th><th class="num">Flagged</th><th class="num">Recall</th></tr>
+    <tr><td>Central, as recorded</td><td class="num">1.000</td><td class="num">1.000</td></tr>
+    <tr class="hl"><td>Central, walk converted to four metres</td><td class="num">0.517</td><td class="num">0.773</td></tr>
+    <tr><td>Other sectors</td><td class="num">0.38–0.46</td><td class="num">0.68–0.74</td></tr>
+  </table>
+  <div class="caption">Central's mean walk 9.56 s against 6.00 in training (ratio 1.59). Central's own AUC 0.724 before and after.</div>
+  <aside class="notes"><p>Who decides the correction? The physiotherapy team lead confirms the protocol; the change is recorded and reviewed by someone other than the analyst. The AUC line is the lesson: a ranking score did not see the problem.</p></aside>
+</section>
+
+<section class="slide" id="subgroup-rates" data-lo="LO6">
+  <div class="kicker">Errors by group</div>
+  <h2>One threshold can give different recall to different groups</h2>
+  <div class="cols cols-2">
+    <table class="t small">
+      <tr><th>Wound care, threshold 0.2</th><th class="num">Visits</th><th class="num">Long</th><th class="num">Recall</th></tr>
+      <tr><td>Age 65–74</td><td class="num">244</td><td class="num">25</td><td class="num">0.720</td></tr>
+      <tr><td>Age 75–84</td><td class="num">222</td><td class="num">17</td><td class="num">0.824</td></tr>
+      <tr><td>Age 85+</td><td class="num">69</td><td class="num">4</td><td class="num">1.000</td></tr>
+    </table>
+    <ul class="bullets">
+      <li>Report <b>recall and false positive rate</b> per group: they fail people differently</li>
+      <li>Report <b>the counts</b>: a recall of 1.000 on 4 visits says little</li>
+    </ul>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>Ask the room what the 85+ row means: four long visits, all caught. One more miss would make it 0.75. That is why the counts sit beside every rate. The lab measures the fall screen by sex.</p></aside>
+</section>
+
+<section class="slide" id="proxy" data-lo="LO6">
+  <div class="kicker">Proxies</div>
+  <h2>Leaving an attribute out does not remove it</h2>
+  <ul class="bullets">
+    <li>A <b>proxy</b> is an input that carries a sensitive attribute: a preference, a name, a home address</li>
+    <li>Test it: predict the attribute from the input; compare with guessing the larger group</li>
+    <li>An input can also be <b>recorded differently</b> for one group, so the model is weaker for that group even with no proxy</li>
+  </ul>
+  <div class="callout warn mt"><b>What goes wrong.</b> "The model does not use sex, so it cannot treat men and women differently." Measure, then say.</div>
+  <aside class="notes"><p>The lab has both effects: a column recorded at registration that carries sex, and an input recorded less completely for one group. Neither appears in the list of inputs; both appear in the error rates.</p></aside>
+</section>
+
+<section class="slide" id="ethics-principles" data-lo="LO6">
+  <div class="kicker">National reference</div>
+  <h2>The SDAIA AI Ethics Principles: fairness through the model's life</h2>
+  <ul class="bullets">
+    <li><b>Preparing input data:</b> sensitive attributes are not model inputs unless there is a justification</li>
+    <li><b>Building and validating:</b> the chosen model's fairness metrics fall within a defined threshold</li>
+    <li><b>Deploying and monitoring:</b> the predefined fairness metrics are monitored in production</li>
+  </ul>
+  <div class="callout note mt"><b>Course rule.</b> Also test for proxies of a sensitive attribute. The English edition asks for this explicitly; where the editions differ, this course follows the Arabic.</div>
+  <aside class="notes"><p>Principle 1, Fairness (النزاهة والإنصاف), in SDAIA's AI Ethics Principles, both editions read for this course (cover dated 2025). The three points are worded to what both editions say. The English edition adds that proxies are analysed and kept out; the Arabic edition speaks of identifying a substitute. Both editions are the current published text; where they differ this course follows the Arabic, and the proxy test here is the course's own rule.</p></aside>
+</section>
+
+<section class="slide" id="model-card" data-lo="LO6">
+  <div class="kicker">The model card</div>
+  <h2>One page that says what the model is for, and for whom it is weak</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li>Intended use and out of scope</li>
+      <li>Data, split and metrics, against a baseline</li>
+      <li>Metrics by group, with counts</li>
+      <li>Known limits and <b>who should not rely on it</b></li>
+      <li>Monitoring: what, how often, by whom</li>
+    </ul>
+    <div class="card c-teal"><h4>Prepared, reviewed, accepted</h4><p class="small mb0">The analyst prepares it; a different person reviews it; the owner of the decision accepts the model for use.</p></div>
+  </div>
+  <aside class="notes"><p>Adapted from Mitchell and colleagues' Model Cards for Model Reporting (2019). The template is labs/model_card_template.md and the capstone uses it. The separation of roles is required in every reference answer: the person who builds a model does not approve it.</p></aside>
+</section>
+
+<section class="slide" id="check-s3" data-lo="LO6">
+  <div class="kicker">Checkpoint</div>
+  <h2>What does the model card say?</h2>
+  <div class="quiz" data-type="single" data-lo="LO6">
+    <p class="lead">A wound-care screen has recall 0.82 for clients aged 75 to 84 (17 long visits) and 0.72 for 65 to 74 (25 long visits). What belongs in its model card?</p>
+    <div class="opts">
+      <div class="opt" data-why="Hides a measured gap behind the overall number">The overall recall only, since the groups are small</div>
+      <div class="opt" data-ok>Both rates with their counts, and a note that the gap is uncertain</div>
+      <div class="opt" data-why="A gap measured on 42 long visits is too uncertain to call proof of bias">A statement that the screen is biased against younger clients</div>
+      <div class="opt" data-why="Adding age changes the model without showing that the gap closes">A plan to add age as an input to fix the gap</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The card reports what was measured and how much it can bear; the counts show that these rates move a lot by chance.</div>
+  </div>
+  <aside class="notes"><p>Answer: both rates with counts and a note on uncertainty. Reporting is not the same as concluding; the reviewer and the owner decide what to do.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-4-3" data-auto="lab" data-lab="4.3">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI-off for the first attempt; graded lab. The model card is graded: rates with counts, the proxy evidence, and who should not rely on the screen. Watch for people who add sex as an input to "fix" the gap. Starts from the supplied assessments.</p></aside>
 </section>
 
 <!-- Session 4 -->
 
-<section class="slide section" id="s4" data-auto="section" data-session="4"></section>
-
-<section class="slide" id="s4-idea">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide section" id="s4" data-auto="section" data-session="4">
+  <aside class="notes"><p>Session 4: where language models sit on the map, then the capstone.</p></aside>
 </section>
 
-<section class="slide" id="s4-steps">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="debrief-4-3" data-lo="LO6">
+  <div class="kicker">Lab 4.3 debrief</div>
+  <h2>The screen caught 80% of female fallers and 59% of male fallers</h2>
+  <table class="t small">
+    <tr><th>Test period, threshold 0.13</th><th class="num">Assessments</th><th class="num">Recall</th><th class="num">False positive rate</th></tr>
+    <tr><td>Women</td><td class="num">836</td><td class="num">0.801</td><td class="num">0.430</td></tr>
+    <tr><td>Men</td><td class="num">600</td><td class="num">0.586</td><td class="num">0.333</td></tr>
+  </table>
+  <div class="caption">Mean recorded prior falls of those who fell: women 0.93, men 0.26. Nurse preference predicted sex with accuracy 0.913 (the larger group alone: 0.582).</div>
+  <aside class="notes"><p>The data cannot show why men's past falls are recorded less often; in this synthetic case they report them less. That is a question for the clinical team and a line in the card. Ask for a "who should not rely on it" sentence from two people.</p></aside>
+</section>
+
+<section class="slide" id="language-models" data-lo="LO4">
+  <div class="kicker">Where language models fit</div>
+  <h2>A language model is supervised learning on text, at a vast scale</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li>Features: the text so far. Label: the next piece of text</li>
+      <li>Fitted by the same idea as Day 1: gradient steps that make a loss small</li>
+      <li>The family is a very large neural network; the data are huge amounts of text</li>
+    </ul>
+    <div class="card c-purple"><h4>The same limits</h4><p class="small mb0">Leakage (test questions seen in training), shift (new topics), and gaps between groups apply here too.</p></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout note mt"><b>Next.</b> FND-AIC-102 How Language Models Work takes this further.</div>
+  <aside class="notes"><p>Keep this to five minutes. The point is continuity: nothing about a language model escapes held-out testing, baselines or leakage. DS-204 is the next step for tabular models: boosted trees, tuning and calibration.</p></aside>
+</section>
+
+<section class="slide" id="capstone-brief" data-lo="LO6">
+  <div class="kicker">The capstone</div>
+  <h2>A modelling report on a new screen: unplanned admission in 90 days</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li>Split by date, a baseline and two models in pipelines</li>
+      <li>A leak check, and a threshold from the stated costs and base rate</li>
+      <li>A one-page model card with an owner and a different reviewer</li>
+      <li>A public repository, its history kept; a ten-minute defence</li>
+    </ul>
+    <div class="card c-coral"><h4>AI and data</h4><p class="small mb0">AI-full for the capstone's code; you explain every line. Into any generative AI tool, only public or synthetic data.</p></div>
+  </div>
+  <aside class="notes"><p>The brief is labs/capstone/README.md. Only Public data goes into generative AI tools, never anything classified Restricted or higher, as SDAIA's guidelines for government require; here the data are synthetic. The defence re-runs the notebook and explains a result the instructor picks.</p></aside>
+</section>
+
+<section class="slide" id="capstone-rubric" data-lo="LO6">
+  <div class="kicker">How the capstone is scored</div>
+  <h2>Five criteria, 100 points</h2>
+  <table class="t small">
+    <tr><th>Criterion</th><th class="num">Points</th></tr>
+    <tr><td>Held-out workflow, end to end with a fixed seed</td><td class="num">25</td></tr>
+    <tr><td>Leakage-safe data handling</td><td class="num">15</td></tr>
+    <tr><td>Threshold decision from costs and base rate</td><td class="num">20</td></tr>
+    <tr><td>Model card with subgroups, limits, owner and reviewer</td><td class="num">20</td></tr>
+    <tr><td>Defence: re-runs and explains a selected result</td><td class="num">20</td></tr>
+  </table>
+  <aside class="notes"><p>Each criterion scores a different thing, so nothing is counted twice: the threshold is scored once, the model card once. The capstone is 40% of the course mark.</p></aside>
+</section>
+
+<section class="slide" id="check-s4" data-lo="LO4">
+  <div class="kicker">Checkpoint</div>
+  <h2>What is a language model's label?</h2>
+  <div class="quiz" data-type="single" data-lo="LO4">
+    <p class="lead">Seen as supervised learning, what plays the part of the label when a language model is trained?</p>
+    <div class="opts">
+      <div class="opt" data-ok>The next piece of text after the text so far</div>
+      <div class="opt" data-why="Describes feedback some models get later, not the main training">A score a person gives each answer</div>
+      <div class="opt" data-why="Confuses the input with the label: the text so far is the input">The whole text the model has read so far</div>
+      <div class="opt" data-why="There is no topic label in the main training; the text itself supplies the label">A topic tag attached to each document</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Each position in a text gives an example: the text so far as input, the piece that follows as label.</div>
+  </div>
+  <aside class="notes"><p>Answer: the next piece of text. People who know about feedback from human raters are not wrong that it exists; it comes after the main training.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-4-4" data-auto="lab" data-lab="4.4">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI-off for the leak check and the plan. Everyone must leave with the starter running and a first commit in their own public repository. Common problems: no GitHub account yet, and a notebook copied without hurbuth.py. Starts from the supplied admission data.</p></aside>
 </section>
 
 <section class="slide" id="wrap-up">
   <div class="kicker">Day 4 · wrap-up</div>
   <h2>Three things to keep</h2>
   <div class="cols cols-3">
-    <div class="card c-teal"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-coral"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-purple"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
+    <div class="card c-teal"><h4>Simple when tied</h4><p class="small mb0">Compare families on one pipeline; prefer the simpler one inside the noise.</p></div>
+    <div class="card c-coral"><h4>Watch it in use</h4><p class="small mb0">Flag rates and input means by group and month catch shifts early.</p></div>
+    <div class="card c-purple"><h4>Say who it fails</h4><p class="small mb0">Rates by group with counts, proxies tested, and a card that says who should not rely on it.</p></div>
   </div>
+  <aside class="notes"><p>Ask each person to say the one line of their capstone plan they are least sure about, and answer two or three.</p></aside>
 </section>
 
 <section class="slide dark" id="next" data-label="Next">
   <div class="kicker">Next</div>
-  <h2>Capstone: Capstone project presentations</h2>
-  <p class="lead">REPLACE: what participants prepare before then; unfinished labs can be finished at home</p>
-  <aside class="notes">REPLACE: accounts, installs or reading participants need before the next unit</aside>
+  <h2>Capstone day: the report and its defence</h2>
+  <p class="lead">Before capstone day, about 105 minutes: build the report in your repository, commit as you go. On the day: the supervised check without devices, then the defences.</p>
+  <aside class="notes"><p>The supervised check covers a hand fit, reading curves and spotting leaks; no devices, 120 minutes in two parts of 60. It counts 30% and needs at least 50% to pass the course.</p></aside>
 </section>
