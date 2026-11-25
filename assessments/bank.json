@@ -517,7 +517,7 @@
       "type": "single",
       "prompt": "An analyst scores four models on the test set and reports the best of the four test scores. What is wrong?",
       "options": [
-        "Choosing on the test set makes its best score flatter",
+        "Choosing on the test set makes its best score look better than it is",
         "Nothing: the test set was not used to fit any of the four models",
         "Four models are too many to compare on a single test set",
         "The analyst should have reported the mean of the four test scores"
