@@ -1,158 +1,319 @@
 <section class="slide title" id="title" data-auto="title">
-  <aside class="notes">REPLACE: welcome; introduce yourself; one question to the room that calibrates the pace; the rhythm of the day</aside>
+  <aside class="notes"><p>Welcome back. Calibrating question: "Whose threshold in Lab 2.4 was below 0.2?" Today is about the data itself: errors for a number, preparing columns, and the leaks that make a score look better than the model is. Same rhythm: four sessions, a lab each.</p></aside>
 </section>
 
-<section class="slide" id="agenda" data-auto="agenda"></section>
+<section class="slide" id="agenda" data-auto="agenda">
+  <aside class="notes"><p>Read the four titles. Today ends with a graded lab: three leaks seeded in a working pipeline.</p></aside>
+</section>
+
+<section class="slide" id="review-day2" data-lo="LO5" data-label="Day 2 review">
+  <div class="kicker">Day 2 review</div>
+  <h2>Where should the threshold come from?</h2>
+  <div class="quiz" data-type="single" data-lo="LO5">
+    <p class="lead">A wound-care team asks the analyst to "just use 0.5, it is the standard". What is the best reply?</p>
+    <div class="opts">
+      <div class="opt" data-why="Accepts a library default as if someone had decided it">Agree: 0.5 is where a probability turns into a yes</div>
+      <div class="opt" data-ok>Ask what a missed long visit and a needless slot each cost</div>
+      <div class="opt" data-why="Optimises a number the costs do not care about, and the large group dominates it">Choose the threshold with the highest accuracy</div>
+      <div class="opt" data-why="Choosing on test leaves no honest score to report">Choose the threshold that does best on the test set</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The threshold trades two errors; only their costs, and the base rate, say where the trade should sit.</div>
+  </div>
+  <aside class="notes"><p>Answer: ask for the costs. Remind the room that the owner of the decision sets the costs and approves the threshold; the analyst shows the trade-off.</p></aside>
+</section>
 
 <!-- Session 1 -->
 
-<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
-
-<section class="slide" id="s1-idea">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide section" id="s1" data-auto="section" data-session="1">
+  <aside class="notes"><p>Session 1 moves from flags to numbers: predicting how long a visit takes.</p></aside>
 </section>
 
-<section class="slide" id="s1-steps">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="debrief-2-4" data-lo="LO5">
+  <div class="kicker">Lab 2.4 debrief</div>
+  <h2>The cheapest threshold was 0.17, far from 0.5</h2>
+  <table class="t small">
+    <tr><th>Per 1,000 validation clients, costs 6 and 1</th><th class="num">Cost</th></tr>
+    <tr><td>Flag nobody</td><td class="num">974</td></tr>
+    <tr><td>Threshold 0.5</td><td class="num">903</td></tr>
+    <tr><td>Flag everyone</td><td class="num">838</td></tr>
+    <tr><td>The rule of thumb, 1/7 = 0.143</td><td class="num">571</td></tr>
+    <tr class="hl"><td>Cheapest on validation, 0.17</td><td class="num">544</td></tr>
+  </table>
+  <div class="caption">On test at 0.17: 32% flagged, recall 0.608, precision 0.322. With the base rate raised to 0.291, the cheapest threshold fell to 0.07.</div>
+  <aside class="notes"><p>Ask two people to read their justification. A good one names the costs, the base rate, the capacity question and the approver: the clinical director. Even flagging everyone beat 0.5 here.</p></aside>
+</section>
+
+<section class="slide" id="regression-errors" data-lo="LO4">
+  <div class="kicker">Regression</div>
+  <h2>For a number, measure how far off, on average</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li><b>MAE</b>, mean absolute error: the typical miss, in the target's units</li>
+      <li><b>RMSE</b>, root mean squared error: like MAE, but large misses weigh more</li>
+      <li>RMSE is never below MAE; a big gap means a few large misses</li>
+      <li>Always compare with a <b>naive baseline</b>: predict the training mean, or the median</li>
+    </ul>
+    <div class="card c-teal"><h4>Five errors, by hand</h4><p class="small mb0">Errors 3, −2, 10, −1, 0 minutes. MAE = 16 / 5 = <b>3.20</b>. RMSE = √(114 / 5) = <b>4.77</b>. The 10 pulls RMSE up.</p></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>Work the card on the board: absolute values 3, 2, 10, 1, 0 sum to 16; squares 9, 4, 100, 1, 0 sum to 114. These five are not the lab's rows; the lab gives five of its own to do by hand.</p></aside>
+</section>
+
+<section class="slide" id="baseline-regression" data-lo="LO4">
+  <div class="kicker">A parallel example</div>
+  <h2>Wound care: a linear model halves the baseline's error</h2>
+  <table class="t small">
+    <tr><th>Predict dressing visit minutes, on validation</th><th class="num">MAE</th></tr>
+    <tr><td>The training mean, for everyone</td><td class="num">8.30</td></tr>
+    <tr><td>The training median, for everyone</td><td class="num">8.24</td></tr>
+    <tr class="hl"><td>Linear regression on wound and client features</td><td class="num">4.60</td></tr>
+  </table>
+  <div class="caption">Synthetic wound-care visits, seed 7. The linear model's RMSE is 5.89.</div>
+  <div class="callout warn mt"><b>What goes wrong.</b> A model is reported with an MAE of 4.6 and no baseline: nobody can tell if that is good.</div>
+  <aside class="notes"><p>Ask: "Is 4.6 minutes good?" Only against the baseline. Then: errors by group. A model with a good average can be biased for one group; look at the mean signed error per group, as the lab does.</p></aside>
+</section>
+
+<section class="slide" id="check-s1" data-lo="LO4">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which error is larger?</h2>
+  <div class="quiz" data-type="single" data-lo="LO4">
+    <p class="lead">Four wound-care predictions miss by 2, −2, 2 and −10 minutes. Which is true of their MAE and RMSE?</p>
+    <div class="opts">
+      <div class="opt" data-why="Lets positive and negative misses cancel, which MAE does not do">MAE is −2 and RMSE is about 5.3</div>
+      <div class="opt" data-why="Puts RMSE below MAE, which cannot happen">MAE is 4 and RMSE is 3</div>
+      <div class="opt" data-why="Squares without averaging and taking the root">MAE is 4 and RMSE is 112</div>
+      <div class="opt" data-ok>MAE is 4 and RMSE is about 5.3</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> MAE = 16 / 4 = 4. RMSE = √((4 + 4 + 4 + 100) / 4) = √28 ≈ 5.3: the one large miss weighs more.</div>
+  </div>
+  <aside class="notes"><p>Answer: MAE 4, RMSE about 5.3. The first option averages the signed errors (−8 / 4); use it to show why MAE takes absolute values.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-3-1" data-auto="lab" data-lab="3.1">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI-off for the first attempt. Five rows by hand first. Common errors: computing the baseline on validation (it must come from training), and forgetting the root in RMSE. Starts from the supplied assessments.</p></aside>
 </section>
 
 <!-- Session 2 -->
 
-<section class="slide section" id="s2" data-auto="section" data-session="2"></section>
-
-<section class="slide" id="s2-idea">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide section" id="s2" data-auto="section" data-session="2">
+  <aside class="notes"><p>Session 2: turning raw columns into inputs a model can use.</p></aside>
 </section>
 
-<section class="slide" id="s2-steps">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="debrief-3-1" data-lo="LO4">
+  <div class="kicker">Lab 3.1 debrief</div>
+  <h2>The linear model cut the typical miss from 8.2 to 4.4 minutes</h2>
+  <table class="t small">
+    <tr><th>Visit minutes, validation</th><th class="num">MAE</th><th class="num">RMSE</th></tr>
+    <tr><td>Training mean (33.12)</td><td class="num">8.20</td><td class="num">10.17</td></tr>
+    <tr><td>Training median (32)</td><td class="num">8.23</td><td class="num">10.27</td></tr>
+    <tr class="hl"><td>Linear regression</td><td class="num">4.41</td><td class="num">5.48</td></tr>
+  </table>
+  <div class="caption">By walking aid: without 810 rows, MAE 4.37, mean error −0.19; with 453 rows, MAE 4.46, mean error +0.53.</div>
+  <aside class="notes"><p>Ask what the mean error by group tells the scheduler: visits for clients with a walking aid run about half a minute longer than predicted. Small here, but this is the habit for Day 4.</p></aside>
+</section>
+
+<section class="slide" id="column-kinds" data-lo="LO3">
+  <div class="kicker">Preparing columns</div>
+  <h2>Each kind of column needs its own step</h2>
+  <table class="t small">
+    <tr><th>Column</th><th>Problem</th><th>Step</th></tr>
+    <tr><td>sector (four names so far)</td><td>models need numbers</td><td>one-hot: one 0/1 column per sector</td></tr>
+    <tr><td>walk_seconds, age</td><td>different units and ranges</td><td>scale: subtract the mean, divide by the spread</td></tr>
+    <tr><td>bmi, sometimes blank</td><td>missing values</td><td>impute the median, add a "was missing" flag</td></tr>
+  </table>
+  <div class="callout note mt"><b>Learned from training rows.</b> The mean, the spread, the median and the list of sectors are all numbers a step learns. Learn them on training rows only.</div>
+  <aside class="notes"><p>Ask why a "was missing" flag might help: a measurement may be missing for a reason, such as a client who could not stand on a scale. One-hot with handle_unknown="ignore" stops a new sector from crashing the model; Day 4 meets one.</p></aside>
+</section>
+
+<section class="slide" id="scaling-matters" data-lo="LO3">
+  <div class="kicker">A parallel example</div>
+  <h2>Wound care: scaling changed a neighbour model's AUC from 0.821 to 0.875</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li>Five nearest neighbours, wound area in <b>mm²</b> beside small counts</li>
+      <li>Unscaled, the area's large numbers decide every distance</li>
+      <li>Scaled, each feature has a say</li>
+    </ul>
+    <div class="cols cols-2">
+      <div class="stat center"><div class="big">0.821</div><div class="lbl">AUC, unscaled</div></div>
+      <div class="stat center"><div class="big">0.875</div><div class="lbl">AUC, scaled</div></div>
+    </div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>This is the units trap of Day 1 at scale. Trees do not care about scale; distance models and gradient steps do. The lab measures it on the fall screen.</p></aside>
+</section>
+
+<section class="slide" id="column-transformer" data-lo="LO3">
+  <div class="kicker">In code</div>
+  <h2>A column transformer applies each step to its columns</h2>
+<pre class="code s" data-file="one preprocessing object"><code class="language-python">prep = ColumnTransformer([
+    ("numbers", StandardScaler(), FEATURES),
+    ("bmi", make_pipeline(SimpleImputer(strategy="median",
+                                        add_indicator=True),
+                          StandardScaler()), ["bmi"]),
+    ("sector", OneHotEncoder(handle_unknown="ignore"), ["sector"]),
+])
+model = make_pipeline(prep, LogisticRegression())</code></pre>
+  <aside class="notes"><p>Read it line by line. The pipeline is one object: fit learns every step on the rows it is given, predict applies them. That is what makes the next session's rule easy to keep.</p></aside>
+</section>
+
+<section class="slide" id="check-s2" data-lo="LO3">
+  <div class="kicker">Checkpoint</div>
+  <h2>Where does the median come from?</h2>
+  <div class="quiz" data-type="single" data-lo="LO3">
+    <p class="lead">Wound area is blank for some visits. The analyst fills blanks with the median. Which median should fill the blanks in the validation rows?</p>
+    <div class="opts">
+      <div class="opt" data-ok>The median of the training rows</div>
+      <div class="opt" data-why="Uses validation rows to prepare validation rows, a small leak">The median of the validation rows</div>
+      <div class="opt" data-why="Uses every row, including those the model will be scored on">The median of all rows together</div>
+      <div class="opt" data-why="A zero means no wound, which is a different fact from a missing measurement">Zero, because a blank means nothing</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Every learned step is part of the model, so it learns from training rows and is applied unchanged to new rows.</div>
+  </div>
+  <aside class="notes"><p>Answer: the training median. In use, the model meets one new visit at a time; there is no validation median to compute.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-3-2" data-auto="lab" data-lab="3.2">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI-off for the first attempt. Common errors: get_dummies on all rows, which breaks when a sector is missing from one side, and scaling before the split. Starts from the supplied assessments.</p></aside>
 </section>
 
 <!-- Session 3 -->
 
-<section class="slide section" id="s3" data-auto="section" data-session="3"></section>
-
-<section class="slide" id="s3-idea">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide section" id="s3" data-auto="section" data-session="3">
+  <aside class="notes"><p>Session 3: the rule behind the median question, and what happens when it is broken.</p></aside>
 </section>
 
-<section class="slide" id="s3-steps">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
+<section class="slide" id="debrief-3-2" data-lo="LO3">
+  <div class="kicker">Lab 3.2 debrief</div>
+  <h2>Scaling helped the neighbour model; the full pipeline scored 0.744</h2>
+  <ul class="bullets">
+    <li>BMI was blank in 6.1% of training rows; 83 validation rows were filled with the training median, 27.7</li>
+    <li>Fifty nearest neighbours: AUC <b>0.647</b> unscaled, <b>0.683</b> scaled</li>
+    <li>The column transformer and a logistic regression: 15 inputs, validation AUC <b>0.744</b></li>
+  </ul>
+  <aside class="notes"><p>Ask someone to count the 15 inputs: nine scaled features, BMI and its missing flag, four sectors (Central opens later). The gain over Lab 1.4's 0.739 is small: preparing columns well is hygiene, not magic.</p></aside>
+</section>
+
+<section class="slide" id="fit-on-train" data-lo="LO3">
+  <div class="kicker">The rule</div>
+  <h2>Fit every step on training rows, inside the pipeline</h2>
   <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+    <div class="step c-teal"><b>1 · Split first</b>before any step learns anything</div>
+    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · Fit the pipeline</b>scaling, filling, selection, model: on training rows</div>
+    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · Apply</b>the fitted pipeline to validation and test</div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout warn mt frag"><b>In cross-validation too.</b> The whole pipeline goes inside the folds, so each fold prepares from its own training part.</div>
+  <aside class="notes"><p>Press once per step. scikit-learn's guide on common pitfalls makes this its first recommendation. Scaling on all rows leaks a little; choosing features on all rows can leak a lot, as the next slide shows.</p></aside>
+</section>
+
+<section class="slide" id="selection-leak" data-lo="LO3">
+  <div class="kicker">A parallel example</div>
+  <h2>Noise columns, selected on all rows, looked useful</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li>150 wound-care visits, <b>600 columns of pure noise</b>, keep the 10 best</li>
+      <li>Selection on all rows, then cross-validation: AUC <b>0.783</b></li>
+      <li>Selection inside the pipeline: AUC <b>0.439</b>, no better than chance</li>
+    </ul>
+    <div class="card c-coral"><h4>Why it happens</h4><p class="small mb0">With 600 columns, some match the labels by luck. Choosing them with every label in view, then scoring on the same labels, rewards the luck.</p></div>
+  </div>
+  <aside class="notes"><p>scikit-learn's common pitfalls page shows the same effect with random data. Wide data with few rows is where it bites: sensors, genes, text. The lab has a sensor pilot with 400 columns.</p></aside>
+</section>
+
+<section class="slide" id="check-s3" data-lo="LO3">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which number is honest?</h2>
+  <div class="quiz" data-type="single" data-lo="LO3">
+    <p class="lead">A wound-care analyst keeps the 20 best of 900 sensor columns, chosen on all 200 visits, then reports a cross-validated AUC of 0.81. What should a reviewer ask for?</p>
+    <div class="opts">
+      <div class="opt" data-why="More folds repeat the same leak with smaller pieces">The same procedure with ten folds in place of five</div>
+      <div class="opt" data-why="A different model does not fix a choice made with every label in view">A random forest in place of the logistic regression</div>
+      <div class="opt" data-ok>The selection inside the pipeline, refitted in every fold</div>
+      <div class="opt" data-why="Fewer columns still chosen on all rows still leak">The 5 best columns in place of the 20 best</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Selection learns from labels, so it must happen inside each fold's training part, like every other step.</div>
+  </div>
+  <aside class="notes"><p>Answer: selection inside the pipeline. Shuffling the labels is a useful second test: an honest procedure scores near 0.5 on shuffled labels.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-3-3" data-auto="lab" data-lab="3.3">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI-off for the first attempt. Common errors: SelectKBest fitted before cross_val_score, and comparing scores from different folds. The shuffled-label check is the one to ask about. Starts from the supplied sensor pilot.</p></aside>
 </section>
 
 <!-- Session 4 -->
 
-<section class="slide section" id="s4" data-auto="section" data-session="4"></section>
-
-<section class="slide" id="s4-idea">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide section" id="s4" data-auto="section" data-session="4">
+  <aside class="notes"><p>Session 4: three more leaks, which a pipeline alone does not prevent.</p></aside>
 </section>
 
-<section class="slide" id="s4-steps">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="debrief-3-3" data-lo="LO3">
+  <div class="kicker">Lab 3.3 debrief</div>
+  <h2>Selection before the split turned noise into an AUC of 0.838</h2>
+  <table class="t small">
+    <tr><th>Sensor pilot, 240 clients, 400 noise columns</th><th class="num">Before the split</th><th class="num">In the pipeline</th></tr>
+    <tr><td>Real labels</td><td class="num">0.838</td><td class="num">0.457</td></tr>
+    <tr><td>Shuffled labels</td><td class="num">0.904</td><td class="num">0.533</td></tr>
+  </table>
+  <div class="caption">Scaling fitted on all rows against training rows: 0.7403 and 0.7403. Scaling leaked nothing measurable here; selection leaked a great deal.</div>
+  <aside class="notes"><p>The shuffled row is the proof: 0.904 on labels that carry no information at all. Keep the rule anyway for scaling: it costs nothing.</p></aside>
+</section>
+
+<section class="slide" id="leak-types" data-lo="LO3">
+  <div class="kicker">Leakage</div>
+  <h2>Three leaks a pipeline does not catch</h2>
+  <div class="cols cols-3">
+    <div class="card c-coral"><h4>Target leak</h4><p class="small mb0">A column recorded <b>after</b> the outcome, often because of it: a referral, a discharge letter.</p></div>
+    <div class="card c-amber"><h4>Duplicate leak</h4><p class="small mb0">The same row on both sides of the split; the model is scored on rows it has seen.</p></div>
+    <div class="card c-purple"><h4>Temporal leak</h4><p class="small mb0">A column, or the split, that uses the future: totals over later visits, a random split of dated rows.</p></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout note mt"><b>Not rare.</b> Kapoor and Narayanan found leakage in 329 published papers across 17 fields.</div>
+  <aside class="notes"><p>Their survey (arXiv 2207.07048) lists eight kinds; this course keeps the four that matter most for tabular screens: preprocessing, target, duplicate and temporal. The question for each column: is it known on the day the prediction is made?</p></aside>
+</section>
+
+<section class="slide" id="leak-checklist" data-lo="LO3">
+  <div class="kicker">A checklist</div>
+  <h2>Four questions before trusting a score</h2>
+  <ul class="bullets">
+    <li><b>When is each column recorded?</b> Read the data dictionary; anything after the prediction date goes</li>
+    <li><b>Does one column alone rank almost perfectly?</b> Score each alone; a very good one deserves the first question</li>
+    <li><b>Are there copies?</b> Count repeated identifiers, and test rows with a twin in training</li>
+    <li><b>Does the split match use?</b> The screen predicts next year, so train on the past and test on the latest period</li>
+  </ul>
+  <aside class="notes"><p>This is the checklist of Lab 3.4 and of the capstone starter in Lab 4.4. Ask the room what "known on the day" means for a wound-care screen: the wound measured at the visit is known; the dressing ordered next week is not.</p></aside>
+</section>
+
+<section class="slide" id="check-s4" data-lo="LO3">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which column is the leak?</h2>
+  <div class="quiz" data-type="single" data-lo="LO3">
+    <p class="lead">A screen predicts whether a wound will be infected within 30 days of a visit. Alone, one column ranks infected wounds with an AUC of 0.93. Which column is most likely a leak?</p>
+    <div class="opts">
+      <div class="opt" data-why="Measured at the visit, so it is known when the prediction is made">Wound area, measured at the visit</div>
+      <div class="opt" data-ok>An antibiotic prescription, updated over the 30 days</div>
+      <div class="opt" data-why="Recorded at registration, long before the outcome">The client's diabetes status, at registration</div>
+      <div class="opt" data-why="Known at the visit; a high value alone is not proof of a leak">The number of past wounds, counted at the visit</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> A prescription given because of an infection is recorded after, and because of, the outcome.</div>
+  </div>
+  <aside class="notes"><p>Answer: the antibiotic prescription. Ask what the analyst would have to show the reviewer: the column's recording time from the data dictionary, and the score without it.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-3-4" data-auto="lab" data-lab="3.4">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI-off for the search; graded lab. Do not hint at which columns leak; point people to the column notes. Common errors: dropping duplicates after the split, and removing a leaky column but keeping the random split. The leak log needs a number from their own run for each leak. Starts from the supplied export.</p></aside>
 </section>
 
 <section class="slide" id="wrap-up">
   <div class="kicker">Day 3 · wrap-up</div>
   <h2>Three things to keep</h2>
   <div class="cols cols-3">
-    <div class="card c-teal"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-coral"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-purple"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
+    <div class="card c-teal"><h4>Baseline first</h4><p class="small mb0">An error means nothing until a naive baseline is beside it.</p></div>
+    <div class="card c-coral"><h4>One pipeline</h4><p class="small mb0">Every learned step is fitted on training rows, inside the folds.</p></div>
+    <div class="card c-purple"><h4>Known on the day</h4><p class="small mb0">Each column must exist when the prediction is made; the split must match use.</p></div>
   </div>
+  <aside class="notes"><p>Ask for one leak someone has seen at work, in any field. The debrief of Lab 3.4 opens Day 4.</p></aside>
 </section>
 
 <section class="slide dark" id="next" data-label="Next">
   <div class="kicker">Next</div>
-  <h2>Day 4: REPLACE: the theme of this unit, in a few words</h2>
-  <p class="lead">REPLACE: what participants prepare before then; unfinished labs can be finished at home</p>
-  <aside class="notes">REPLACE: accounts, installs or reading participants need before the next unit</aside>
+  <h2>Day 4: Model families and limits</h2>
+  <p class="lead">About 20 minutes before Day 4: finish any lab you did not finish, then the Day 3 practice questions on the course page without an assistant.</p>
+  <aside class="notes"><p>If time remains, the stretch of Lab 3.4: fix one leak at a time and rank them. Every lab starts from supplied files.</p></aside>
 </section>
