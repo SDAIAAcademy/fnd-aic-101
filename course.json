@@ -1,0 +1,397 @@
+{
+  "$schema": "https://sdaiaacademy.github.io/engine/schemas/course.schema.json",
+  "engine": "1",
+  "id": "fnd-aic-101",
+  "code": "FND-AIC-101",
+  "version": "2027.1.0",
+  "lang": "en",
+  "title": {
+    "en": "How Machine Learning Works",
+    "ar": "كيف يعمل تعلم الآلة"
+  },
+  "tagline": "REPLACE: one line under the title: what participants can do after the course",
+  "description": "Participants work out how supervised learning turns labelled examples into predictions, by hand first and then in code. They fit a nearest-neighbour rule and a linear model on paper, make a model overfit on purpose, choose a decision threshold from error costs and base rates, and hunt leaks seeded in a pipeline. Labs run on a laptop with small public or synthetic tabular data, and the capstone is an honest modelling report with a model card, defended in person.",
+  "track": "foundations",
+  "level": 100,
+  "audience": "Beginners. Graduates, career changers and computing professionals preparing for Developer or Specialist courses, who can run a Python notebook but have not yet studied AI methods.",
+  "prerequisites": [
+    "FND-PRG-101 Python Programming for Data and AI",
+    "Writes short Python functions and loops; a passed placement exercise is accepted instead of FND-PRG-101",
+    "Uses school algebra; the derivative of a squared error is taught in the pre-work"
+  ],
+  "site": {
+    "url": "https://sdaiaacademy.github.io/fnd-aic-101/",
+    "repo": "SDAIAAcademy/fnd-aic-101"
+  },
+  "outcomes": [
+    {
+      "id": "LO1",
+      "text": "Explain how a supervised learner fits a prediction rule by minimising a loss, given a ten-row table and a one-feature linear model",
+      "level": "Awareness",
+      "evidence": "a hand-worked loss and two gradient steps, with a three-sentence explanation"
+    },
+    {
+      "id": "LO2",
+      "text": "Distinguish training, validation and test data, and identify overfitting and underfitting from plotted curves, given six complexity and learning curves",
+      "level": "Awareness",
+      "evidence": "a diagnosis and remedy per curve, at least five of six correct"
+    },
+    {
+      "id": "LO3",
+      "text": "Identify target, duplicate, preprocessing and temporal leakage in modelling pipelines, given eight short pipeline descriptions",
+      "level": "Awareness",
+      "evidence": "each leak named with its fix, at least six of eight correct"
+    },
+    {
+      "id": "LO4",
+      "text": "Implement a train, validate and test workflow comparing a baseline, a linear model and a decision tree, given a tabular dataset and a starter notebook",
+      "level": "Applied",
+      "evidence": "a notebook that runs end to end with a fixed seed and reports held-out metrics"
+    },
+    {
+      "id": "LO5",
+      "text": "Compute confusion-matrix metrics and choose a threshold from error costs and the base rate, given test-set scores and a cost per error type",
+      "level": "Applied",
+      "evidence": "a metrics table and a justified threshold"
+    },
+    {
+      "id": "LO6",
+      "text": "Draft a one-page model card with intended use, data, metrics by subgroup and known limits, given the participant's capstone model",
+      "level": "Applied",
+      "evidence": "a model card reviewed in the defence"
+    }
+  ],
+  "case_study": {
+    "name": "REPLACE: the name of the fictional organisation every lab works on",
+    "summary": "REPLACE: two sentences on the case study and its synthetic data"
+  },
+  "format": "intensive",
+  "format_note": "Intensive: 4 teaching days and a capstone day, with guided pre-work and a tracked follow-up task",
+  "hours": {
+    "instruction": 8,
+    "lab": 10,
+    "guided_self_study": 5,
+    "assessment": 2,
+    "capstone": 5
+  },
+  "unit": "day",
+  "days": [
+    {
+      "id": "day1",
+      "kind": "day",
+      "title": "REPLACE: the theme of this unit, in a few words",
+      "deck": "slides/day1.html",
+      "sessions": [
+        {
+          "title": "REPLACE: the title of Session 1",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "1.1",
+            "title": "REPLACE: what participants build in lab 1.1",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D1_1.ipynb"
+          }
+        },
+        {
+          "title": "REPLACE: the title of Session 2",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "1.2",
+            "title": "REPLACE: what participants build in lab 1.2",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D1_2.ipynb"
+          }
+        },
+        {
+          "title": "REPLACE: the title of Session 3",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "1.3",
+            "title": "REPLACE: what participants build in lab 1.3",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D1_3.ipynb"
+          }
+        },
+        {
+          "title": "REPLACE: the title of Session 4",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "1.4",
+            "title": "REPLACE: what participants build in lab 1.4",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D1_4.ipynb"
+          }
+        }
+      ]
+    },
+    {
+      "id": "day2",
+      "kind": "day",
+      "title": "REPLACE: the theme of this unit, in a few words",
+      "deck": "slides/day2.html",
+      "sessions": [
+        {
+          "title": "REPLACE: the title of Session 1",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "2.1",
+            "title": "REPLACE: what participants build in lab 2.1",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D2_1.ipynb"
+          }
+        },
+        {
+          "title": "REPLACE: the title of Session 2",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "2.2",
+            "title": "REPLACE: what participants build in lab 2.2",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D2_2.ipynb"
+          }
+        },
+        {
+          "title": "REPLACE: the title of Session 3",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "2.3",
+            "title": "REPLACE: what participants build in lab 2.3",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D2_3.ipynb"
+          }
+        },
+        {
+          "title": "REPLACE: the title of Session 4",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "2.4",
+            "title": "REPLACE: what participants build in lab 2.4",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D2_4.ipynb"
+          }
+        }
+      ]
+    },
+    {
+      "id": "day3",
+      "kind": "day",
+      "title": "REPLACE: the theme of this unit, in a few words",
+      "deck": "slides/day3.html",
+      "sessions": [
+        {
+          "title": "REPLACE: the title of Session 1",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "3.1",
+            "title": "REPLACE: what participants build in lab 3.1",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D3_1.ipynb"
+          }
+        },
+        {
+          "title": "REPLACE: the title of Session 2",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "3.2",
+            "title": "REPLACE: what participants build in lab 3.2",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D3_2.ipynb"
+          }
+        },
+        {
+          "title": "REPLACE: the title of Session 3",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "3.3",
+            "title": "REPLACE: what participants build in lab 3.3",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D3_3.ipynb"
+          }
+        },
+        {
+          "title": "REPLACE: the title of Session 4",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "3.4",
+            "title": "REPLACE: what participants build in lab 3.4",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D3_4.ipynb"
+          }
+        }
+      ]
+    },
+    {
+      "id": "day4",
+      "kind": "day",
+      "title": "REPLACE: the theme of this unit, in a few words",
+      "deck": "slides/day4.html",
+      "sessions": [
+        {
+          "title": "REPLACE: the title of Session 1",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "4.1",
+            "title": "REPLACE: what participants build in lab 4.1",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D4_1.ipynb"
+          }
+        },
+        {
+          "title": "REPLACE: the title of Session 2",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "4.2",
+            "title": "REPLACE: what participants build in lab 4.2",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D4_2.ipynb"
+          }
+        },
+        {
+          "title": "REPLACE: the title of Session 3",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "4.3",
+            "title": "REPLACE: what participants build in lab 4.3",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D4_3.ipynb"
+          }
+        },
+        {
+          "title": "REPLACE: the title of Session 4",
+          "outcomes": [
+            "REPLACE: what a participant can do after this session; list in lo the course outcomes it serves"
+          ],
+          "lo": [],
+          "lab": {
+            "id": "4.4",
+            "title": "REPLACE: what participants build in lab 4.4",
+            "summary": "REPLACE: one line on what participants build and take away; then list the steps of the lab in course.json, their minutes adding up to 25",
+            "minutes": 25,
+            "href": "D4_4.ipynb"
+          }
+        }
+      ]
+    },
+    {
+      "id": "capstone",
+      "kind": "capstone",
+      "title": "Capstone project presentations",
+      "deck": "slides/capstone.html",
+      "subtitle": "REPLACE: the catalog gives 10 minutes for each presentation and nothing about questions; decide whether the questions are inside those minutes, set capstone.talk_minutes and capstone.qa_minutes in course.json and the timers of the now-presenting slide, and remove this line"
+    }
+  ],
+  "capstone": {
+    "summary": "A modelling report on a provided public or synthetic dataset, with a baseline, two models, a threshold decision and a model card, defended in ten minutes; the follow-up task repeats it on a second dataset",
+    "submission": "REPLACE: what participants submit and how: a public repository link, or a shared folder for a course without code",
+    "talk_minutes": 10,
+    "rubric": [
+      {
+        "criterion": "REPLACE: rubric criterion 1 and its weight (the weights add up to 100)",
+        "weight": 25
+      },
+      {
+        "criterion": "REPLACE: rubric criterion 2 and its weight (the weights add up to 100)",
+        "weight": 25
+      },
+      {
+        "criterion": "REPLACE: rubric criterion 3 and its weight (the weights add up to 100)",
+        "weight": 20
+      },
+      {
+        "criterion": "REPLACE: rubric criterion 4 and its weight (the weights add up to 100)",
+        "weight": 20
+      },
+      {
+        "criterion": "REPLACE: rubric criterion 5 and its weight (the weights add up to 100)",
+        "weight": 10
+      }
+    ]
+  },
+  "labs": {
+    "kind": "notebooks",
+    "base": "labs/"
+  },
+  "tools": [
+    {
+      "slot": "Notebook environment",
+      "examples": [
+        "JupyterLab",
+        "a free hosted notebook service"
+      ]
+    },
+    {
+      "slot": "Machine learning library",
+      "examples": [
+        "scikit-learn",
+        "tidymodels in R"
+      ]
+    },
+    {
+      "slot": "Dataframes and plotting",
+      "examples": [
+        "pandas with Matplotlib",
+        "Polars with seaborn"
+      ]
+    }
+  ]
+}
