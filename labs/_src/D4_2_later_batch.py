@@ -53,6 +53,9 @@ print(f"later batch: {len(batch)} assessments, {batch.assessment_date.min():%Y-%
 print(batch.sector.value_counts().to_string())
 
 # %% [markdown]
+# The threshold here is the standard screen's own cheapest threshold on validation (the costs of Lab 2.4, six to
+# one). It differs from Lab 2.4's 0.17 because that lab used a different, fixed set of scores.
+#
 # ## 1 · Score the batch (5')
 
 # %%

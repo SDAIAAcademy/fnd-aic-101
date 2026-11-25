@@ -71,5 +71,5 @@ Do not show this file to participants before the labs.
 - **4.4** Admission screen: training 1,829 (base 0.124), validation 592, test 579. The starter's validation AUC:
   logistic regression 0.949, tree 0.920. Planted: `discharge_letter_received`, alone AUC 0.937. Without it:
   logistic regression 0.706, tree 0.648. No repeated `record_id`. Costs 8 to 1: the rule gives 1/9 = 0.111; the
-  cheapest threshold on validation for a logistic regression on the seven honest numeric columns is 0.14.
+  cheapest threshold on validation depends on each participant's model.
   Planted for the model card: men's emergency visits are recorded less often, as in the fall screen.

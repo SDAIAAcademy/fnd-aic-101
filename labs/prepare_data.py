@@ -23,7 +23,7 @@ assessment on a date then reads the world as a nurse would:
 
 Files written to labs/data/ (and the capstone and follow-up folders):
 
-  assessments.csv          4,000-odd assessments, Jan 2023 to Jun 2025, sectors North to West
+  assessments.csv          4,776 assessments of 2,500 clients, Jan 2023 to Jun 2025, sectors North to West
   later_batch.csv          Jul to Dec 2025, with the new Central sector (Lab 4.2)
   ten_rows.csv             the ten-row table of Day 1 (Labs 1.1 to 1.3)
   sensor_pilot.csv         240 clients and 400 activity columns that carry no signal (Lab 3.3)
@@ -32,8 +32,8 @@ Files written to labs/data/ (and the capstone and follow-up folders):
   capstone/admissions.csv  the 90-day unplanned admission screen (capstone)
   followup/pressure_injury.csv   the pressure-injury screen (follow-up task)
 
-Planted problems, the lab that finds each, and the expected numbers are written by
-`labs/_tools/make_reference.py` into labs/solutions/answer_key.md and labs/data/reference/.
+The planted problems, the lab that finds each and the numbers a correct run prints are listed in
+labs/solutions/answer_key.md; a solution run with FNDAIC101_WRITE_REF=1 rewrites labs/data/reference/.
 """
 from __future__ import annotations
 

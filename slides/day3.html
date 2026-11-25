@@ -260,9 +260,9 @@ model = make_pipeline(prep, LogisticRegression())</code></pre>
   <div class="kicker">Leakage</div>
   <h2>Three leaks a pipeline does not catch</h2>
   <div class="cols cols-3">
-    <div class="card c-coral"><h4>Target leak</h4><p class="small mb0">A column recorded <b>after</b> the outcome, often because of it: a referral, a discharge letter.</p></div>
+    <div class="card c-coral"><h4>Target leak</h4><p class="small mb0">A column recorded <b>after</b> the outcome, often because of it: a treatment started because the event happened.</p></div>
     <div class="card c-amber"><h4>Duplicate leak</h4><p class="small mb0">The same row on both sides of the split; the model is scored on rows it has seen.</p></div>
-    <div class="card c-purple"><h4>Temporal leak</h4><p class="small mb0">A column, or the split, that uses the future: totals over later visits, a random split of dated rows.</p></div>
+    <div class="card c-purple"><h4>Temporal leak</h4><p class="small mb0">A column, or the split, that uses what happened after the prediction date.</p></div>
   </div>
   <div class="callout note mt"><b>Not rare.</b> Kapoor and Narayanan found leakage in 329 published papers across 17 fields.</div>
   <aside class="notes"><p>Their survey (arXiv 2207.07048) lists eight kinds; this course keeps the four that matter most for tabular screens: preprocessing, target, duplicate and temporal. The question for each column: is it known on the day the prediction is made?</p></aside>
@@ -277,7 +277,7 @@ model = make_pipeline(prep, LogisticRegression())</code></pre>
     <li><b>Are there copies?</b> Count repeated identifiers, and test rows with a twin in training</li>
     <li><b>Does the split match use?</b> The screen predicts next year, so train on the past and test on the latest period</li>
   </ul>
-  <aside class="notes"><p>This is the checklist of Lab 3.4 and of the capstone starter in Lab 4.4. Ask the room what "known on the day" means for a wound-care screen: the wound measured at the visit is known; the dressing ordered next week is not.</p></aside>
+  <aside class="notes"><p>This is the checklist of Lab 3.4 and of the capstone starter in Lab 4.4. Ask the room what "known on the day" means for a wound-care screen: the wound measured at the visit is known; a swab result that comes back a week later is not.</p></aside>
 </section>
 
 <section class="slide" id="check-s4" data-lo="LO3">

@@ -572,7 +572,7 @@
       "prompt": "Of 500 visits, 25 ran long. A screen flagged 40 visits, of which 10 ran long. What is its precision?",
       "options": [
         "0.40",
-        "0.93",
+        "0.91",
         "0.25",
         "0.08"
       ],
@@ -582,7 +582,7 @@
       "explanation": "Precision is caught over flagged: 10 / 40 = 0.25.",
       "misconceptions": [
         "Computes recall: 10 of the 25 long visits",
-        "Computes accuracy: (10 + 455) / 500, dominated by short visits",
+        "Computes accuracy: (10 + 445) / 500, dominated by the short visits",
         "",
         "Computes the share flagged: 40 / 500"
       ],
@@ -710,17 +710,17 @@
     {
       "id": "q-lo6-proxy-test",
       "type": "single",
-      "prompt": "A screen does not use sex as an input but uses a column of the nurse each client asked for. How do you test whether that column carries sex?",
+      "prompt": "A wound screen does not use age as an input but uses a column of years since the client registered. How do you test whether that column carries age?",
       "options": [
-        "Check that sex does not appear anywhere in the list of the model's inputs",
+        "Check that age does not appear anywhere in the list of the model's inputs",
         "Compare the screen's overall AUC with and without the column",
-        "Ask the nurses whether they think the column is about sex",
-        "Predict sex from the column; compare with guessing the larger group"
+        "Ask the nurses whether they think the column is about age",
+        "Predict the age band from the column; compare with guessing the largest band"
       ],
       "correct": [
         3
       ],
-      "explanation": "If the column predicts sex far better than guessing the larger group, it carries the attribute into the model.",
+      "explanation": "If the column predicts the age band far better than guessing the largest band, it carries the attribute into the model.",
       "misconceptions": [
         "Takes an absent input for an absent effect",
         "Measures overall performance, not what the column encodes",

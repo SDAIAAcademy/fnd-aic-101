@@ -144,8 +144,8 @@ print(recorded.round(2).to_string())
 # ## 3 · The proxy (8')
 #
 # Leaving `sex` out of the inputs does not remove it if another column carries it. The SDAIA AI Ethics Principles
-# ask that sensitive attributes are not model inputs unless there is a justification, and that columns standing in
-# for them are looked for. `nurse_preference` is recorded at registration.
+# ask that sensitive attributes are not model inputs unless there is a justification. Looking for columns that
+# stand in for them is this course's own rule (the English edition of the Principles names it). `nurse_preference` is recorded at registration.
 #
 # ✏️ **Exercise** · Write `proxy_accuracy(tr, te)`: fit a logistic regression that predicts `sex == "M"` from the
 # one-hot encoding of `nurse_preference` on `tr`, and return its accuracy on `te`, next to the accuracy of always

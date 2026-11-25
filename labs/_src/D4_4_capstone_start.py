@@ -59,7 +59,8 @@ from sklearn.metrics import roc_auc_score
 # submit and the rubric.
 
 # %%
-print((U.LABS / "capstone" / "README.md").read_text(encoding="utf-8")[:1800])
+BRIEF = U.LABS / "capstone" / "README.md"
+print(BRIEF.read_text(encoding="utf-8")[:1800] if BRIEF.exists() else "capstone/README.md is not in this folder: read it in the course repository")
 
 # %% [markdown]
 # ## 2 · The starter, end to end (8')
@@ -97,6 +98,11 @@ def validation_auc(numbers: list[str]) -> pd.Series:
     return pd.Series(out, name="validation AUC")
 
 
+def safety_net(name: str):
+    """The course's reference result, or None in a capstone repository that does not hold data/reference/."""
+    return U.reference(name) if (U.REF / f"{name}.json").exists() or U.STRICT else None
+
+
 starter = validation_auc(STARTER_NUMBERS)
 print(starter.round(3).to_string())
 
@@ -125,11 +131,14 @@ def leak_check(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
 try:
     alone, repeated = leak_check(data)
 except NotImplementedError:
-    alone, repeated = U.reference("d4_4_alone"), U.reference("d4_4_repeated")
+    alone, repeated = safety_net("d4_4_alone"), safety_net("d4_4_repeated")
 U.keep("d4_4_alone", alone)
 U.keep("d4_4_repeated", repeated)
-print(alone.round(3).to_string())
-print(f"record_id values that appear more than once: {repeated}")
+if alone is None:
+    print("finish leak_check above, then run this cell again")
+else:
+    print(alone.round(3).to_string())
+    print(f"record_id values that appear more than once: {repeated}")
 
 # %% [markdown]
 # Read the data dictionary for the top column. Then decide which columns stay.
@@ -151,10 +160,13 @@ except NotImplementedError:
 if numbers is not None:
     honest = validation_auc(numbers)
 else:
-    honest = U.reference("d4_4_honest")
+    honest = safety_net("d4_4_honest")
 U.keep("d4_4_honest", honest)
-print(pd.DataFrame({"starter": starter, "without the leak": honest}).round(3).to_string())
-U.check(honest["logistic regression"] < starter["logistic regression"] - 0.1, "the honest score is much lower")
+if honest is None:
+    print("finish honest_numbers above, then run this cell again")
+else:
+    print(pd.DataFrame({"starter": starter, "without the leak": honest}).round(3).to_string())
+    U.check(honest["logistic regression"] < starter["logistic regression"] - 0.1, "the honest score is much lower")
 
 # %% [markdown]
 # ## 4 · Plan the report (10')
@@ -178,7 +190,7 @@ U.check(honest["logistic regression"] < starter["logistic regression"] - 0.1, "t
 #
 # ```
 # git init capstone && cd capstone
-# # copy D4_4_capstone_start.ipynb, hurbuth.py and capstone/admissions.csv in
+# # copy in D4_4_capstone_start.ipynb and hurbuth.py, and the folder capstone/ with admissions.csv and README.md
 # git add . && git commit -m "Start the admission screen report"
 # ```
 #

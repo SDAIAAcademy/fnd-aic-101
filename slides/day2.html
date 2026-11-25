@@ -59,13 +59,21 @@
 <section class="slide" id="depth-curve" data-lo="LO2" data-label="Session 1 · Complexity and regularisation">
   <div class="kicker">A parallel example</div>
   <h2>Wound care: deeper trees, then a falling validation score</h2>
-  <table class="t small">
-    <tr><th>Tree depth</th><th class="num">1</th><th class="num">2</th><th class="num">3</th><th class="num">4</th><th class="num">6</th><th class="num">8</th><th class="num">12</th><th class="num">no limit</th></tr>
-    <tr><td>Training accuracy</td><td class="num">.941</td><td class="num">.949</td><td class="num">.953</td><td class="num">.958</td><td class="num">.969</td><td class="num">.983</td><td class="num">.999</td><td class="num">1.000</td></tr>
-    <tr><td>Validation accuracy</td><td class="num">.927</td><td class="num">.935</td><td class="num">.935</td><td class="num">.935</td><td class="num">.929</td><td class="num">.923</td><td class="num">.923</td><td class="num">.916</td></tr>
-  </table>
-  <div class="caption">Synthetic wound-care visits (predict a visit over 50 minutes), seed 7, from labs/_tools/teaching_examples.py.</div>
-  <div class="callout tip mt"><b>Read the gap.</b> The gap between the rows grows with depth; choose the depth where validation peaks, not training.</div>
+  <div class="cols cols-2">
+    <table class="t small">
+      <tr><th>Tree depth</th><th class="num">Training</th><th class="num">Validation</th></tr>
+      <tr><td>1</td><td class="num">.941</td><td class="num">.927</td></tr>
+      <tr class="hl"><td>2</td><td class="num">.949</td><td class="num">.935</td></tr>
+      <tr><td>4</td><td class="num">.958</td><td class="num">.935</td></tr>
+      <tr><td>8</td><td class="num">.983</td><td class="num">.923</td></tr>
+      <tr><td>12</td><td class="num">.999</td><td class="num">.923</td></tr>
+      <tr><td>no limit</td><td class="num">1.000</td><td class="num">.916</td></tr>
+    </table>
+    <div>
+      <div class="callout tip"><b>Read the gap.</b> The gap between the columns grows with depth; choose the depth where validation peaks, not training.</div>
+      <p class="small">Accuracy on synthetic wound-care visits (predict a visit over 50 minutes), seed 7, from labs/_tools/teaching_examples.py. Depth 3 gives .953 and .935; depth 6 gives .969 and .929.</p>
+    </div>
+  </div>
   <aside class="notes"><p>This is a different dataset from the lab on purpose: the lab asks for the fall screen's own curve. Ask the room which depth they would pick: 2 to 4 tie; pick the simplest, depth 2. A model that is right on every training row is the worst on validation.</p></aside>
 </section>
 
@@ -317,13 +325,19 @@
 <section class="slide" id="cost-example" data-lo="LO5">
   <div class="kicker">A parallel example</div>
   <h2>Wound care: a missed long visit costs four short ones</h2>
-  <table class="t small">
-    <tr><th>Threshold</th><th class="num">0.1</th><th class="num">0.2</th><th class="num">0.3</th><th class="num">0.5</th></tr>
-    <tr><td>Cost per 1,000 visits</td><td class="num">112</td><td class="num">120</td><td class="num">159</td><td class="num">206</td></tr>
-    <tr><td>Share flagged</td><td class="num">0.161</td><td class="num">0.112</td><td class="num">0.077</td><td class="num">0.049</td></tr>
-  </table>
-  <div class="caption">Costs 4 (missed) and 1 (needless). The rule of thumb gives 1 / (1 + 4) = 0.2.</div>
-  <div class="callout tip mt"><b>Rule and search can differ.</b> The search on validation found 0.1; the rule said 0.2. The rule assumes the scores are calibrated probabilities.</div>
+  <div class="cols cols-2">
+    <table class="t small">
+      <tr><th>Threshold</th><th class="num">Cost per 1,000</th><th class="num">Flagged</th></tr>
+      <tr class="hl"><td>0.1</td><td class="num">112</td><td class="num">0.161</td></tr>
+      <tr><td>0.2</td><td class="num">120</td><td class="num">0.112</td></tr>
+      <tr><td>0.3</td><td class="num">159</td><td class="num">0.077</td></tr>
+      <tr><td>0.5</td><td class="num">206</td><td class="num">0.049</td></tr>
+    </table>
+    <div>
+      <div class="callout tip"><b>Rule and search can differ.</b> The search on validation found 0.1; the rule of thumb, 1 / (1 + 4), says 0.2. The rule assumes calibrated scores.</div>
+      <p class="small">Costs 4 for a missed long visit and 1 for a needless slot.</p>
+    </div>
+  </div>
   <aside class="notes"><p>The cheapest threshold flags more visits. The physiotherapy team lead would ask whether the team can handle 16% flagged: capacity is a real constraint the cost model may leave out. The lab asks for the fall screen's own threshold.</p></aside>
 </section>
 
