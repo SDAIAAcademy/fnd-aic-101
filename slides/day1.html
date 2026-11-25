@@ -293,11 +293,11 @@ b = b - rate * slope_b</code></pre>
 
 <!-- Session 3 -->
 
-<section class="slide section" id="s3" data-auto="section" data-session="3">
+<section class="slide section" id="s3" data-auto="section" data-session="3" data-label="Session 3 · Neighbours and lines by hand">
   <aside class="notes"><p>Debrief Lab 1.2 first, then two model families done by hand. Lab 1.3 is graded: say so before it starts.</p></aside>
 </section>
 
-<section class="slide" id="debrief-1-2" data-lo="LO1">
+<section class="slide" id="debrief-1-2" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand">
   <div class="kicker">Lab 1.2 debrief</div>
   <h2>Two steps took the loss from 1,757 to 123; two thousand reached 49</h2>
   <table class="t small">
@@ -312,7 +312,7 @@ b = b - rate * slope_b</code></pre>
   <aside class="notes"><p>Notice that w overshot to 6 before settling at 3.75: the first steps chase the steepest direction. Ask someone to read the final line in words: about 3.75 extra minutes per medicine on top of 19 minutes. The loss left over, about 49, is what medicines do not explain.</p></aside>
 </section>
 
-<section class="slide" id="two-families" data-lo="LO1">
+<section class="slide" id="two-families" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand">
   <div class="kicker">Two ways to use examples</div>
   <h2>Keep the examples, or keep a summary of them</h2>
   <div class="cols cols-2">
@@ -322,7 +322,7 @@ b = b - rate * slope_b</code></pre>
   <aside class="notes"><p>Two extremes of one design question: how much of the data does the model carry? Day 4 adds trees and small neural networks between them.</p></aside>
 </section>
 
-<section class="slide" id="distance" data-lo="LO1">
+<section class="slide" id="distance" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand">
   <div class="kicker">Nearest neighbours</div>
   <h2>Similar means close: a distance over the features</h2>
   <div class="cols cols-2">
@@ -345,7 +345,7 @@ b = b - rate * slope_b</code></pre>
   <aside class="notes"><p>Compute one distance aloud: (9, 4) to (10, 1) is the square root of 1 + 9, about 3.16. The number of neighbours, k, is a choice: k = 1 trusts a single row, a large k drifts towards the majority.</p></aside>
 </section>
 
-<section class="slide" id="units-trap" data-lo="LO1">
+<section class="slide" id="units-trap" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand">
   <div class="kicker">The trap in distances</div>
   <h2>Change a unit and the neighbours change</h2>
   <ul class="bullets">
@@ -358,7 +358,7 @@ b = b - rate * slope_b</code></pre>
   <aside class="notes"><p>The vote happens to stay at "will not run over" here, but the neighbours are different rows, which is enough to distrust the method without scaling. In the lab, recording the walk in tenths of a second changes the vote for both new clients. Rows are numbered from 1 as in the table.</p></aside>
 </section>
 
-<section class="slide" id="least-squares" data-lo="LO1">
+<section class="slide" id="least-squares" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand">
   <div class="kicker">A line by hand</div>
   <h2>For one feature, the best line comes from means</h2>
   <div class="cols cols-2">
@@ -372,7 +372,7 @@ b = b - rate * slope_b</code></pre>
   <aside class="notes"><p>Show the columns you would write on paper: x minus its mean, y minus its mean, their product, the square of the first. The formula exists only for a straight line with a squared error, which is why gradient descent is the general tool. Numbers from teaching_examples.py.</p></aside>
 </section>
 
-<section class="slide" id="fit-predict" data-lo="LO1">
+<section class="slide" id="fit-predict" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand">
   <div class="kicker">The same two models in code</div>
   <h2>Every scikit-learn model has the same two moves</h2>
   <pre class="code" data-file="fit, then predict"><code class="language-python">from sklearn.neighbors import KNeighborsClassifier
@@ -386,7 +386,7 @@ line.coef_, line.intercept_                            # w and b</code></pre>
   <aside class="notes"><p>fit learns from examples; predict applies the rule. X is always a table, even with one column, which is why it has double brackets. In the lab the check is exact: your paper numbers must match the library's.</p></aside>
 </section>
 
-<section class="slide" id="check-s3" data-lo="LO1">
+<section class="slide" id="check-s3" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand">
   <div class="kicker">Checkpoint</div>
   <h2>Why did the neighbours change?</h2>
   <div class="quiz" data-type="single" data-lo="LO1">
@@ -402,7 +402,7 @@ line.coef_, line.intercept_                            # w and b</code></pre>
   <aside class="notes"><p>Answer A. Follow up: "what would you do about it?" The answer, scaling, is Day 3 Session 2.</p></aside>
 </section>
 
-<section class="slide lab" id="lab-1-3" data-auto="lab" data-lab="1.3">
+<section class="slide lab" id="lab-1-3" data-auto="lab" data-lab="1.3" data-label="Session 3 · Neighbours and lines by hand">
   <aside class="notes"><p>Graded lab, AI-off. Collect the paper sheets at the end: distances and votes for both new clients, the means and the hand slope and intercept, and the three sentences. Grading: the code must reproduce the paper (the notebook checks it), and the sentences must say what each model keeps. Typical slip: sorting distances descending. Starts from the supplied ten rows.</p></aside>
 </section>
 

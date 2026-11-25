@@ -24,11 +24,11 @@
 
 <!-- Session 1 -->
 
-<section class="slide section" id="s1" data-auto="section" data-session="1">
+<section class="slide section" id="s1" data-auto="section" data-session="1" data-label="Session 1 · Three model families">
   <aside class="notes"><p>Session 1 compares three families of models on one honest workflow. The debrief of Lab 3.4 first.</p></aside>
 </section>
 
-<section class="slide" id="debrief-3-4" data-lo="LO3">
+<section class="slide" id="debrief-3-4" data-lo="LO3" data-label="Session 1 · Three model families">
   <div class="kicker">Lab 3.4 debrief</div>
   <h2>The analyst's 0.936 became an honest 0.732</h2>
   <table class="t small">
@@ -41,7 +41,7 @@
   <aside class="notes"><p>Ask who signs off the fixed pipeline: not the analyst who fixed it. The quality and data protection officer reviews it and the clinical director accepts the new score. The honest number is the useful one: it says what the screen will do.</p></aside>
 </section>
 
-<section class="slide" id="families" data-lo="LO4">
+<section class="slide" id="families" data-lo="LO4" data-label="Session 1 · Three model families">
   <div class="kicker">Three families</div>
   <h2>Each family draws the boundary between flag and pass differently</h2>
   <div class="cols cols-3">
@@ -53,7 +53,7 @@
   <aside class="notes"><p>Draw the three boundaries on one scatter of walk time against prior falls. More flexibility is not more truth: on tabular screens with a few thousand rows, a linear model is often as good as the others and far easier to check.</p></aside>
 </section>
 
-<section class="slide" id="seeds" data-lo="LO4">
+<section class="slide" id="seeds" data-lo="LO4" data-label="Session 1 · Three model families">
   <div class="kicker">Reproducibility</div>
   <h2>A fixed seed makes a run repeatable, not certain</h2>
   <ul class="bullets">
@@ -66,7 +66,7 @@
   <aside class="notes"><p>The repository pins library versions in a lock file for the same reason. The defence on capstone day re-runs the notebook from a fresh start: this is why.</p></aside>
 </section>
 
-<section class="slide" id="check-s1" data-lo="LO4">
+<section class="slide" id="check-s1" data-lo="LO4" data-label="Session 1 · Three model families">
   <div class="kicker">Checkpoint</div>
   <h2>What do you report?</h2>
   <div class="quiz" data-type="single" data-lo="LO4">
@@ -82,7 +82,7 @@
   <aside class="notes"><p>Answer: the logistic regression. The network's mean is 0.8695 against 0.869: no difference worth a word.</p></aside>
 </section>
 
-<section class="slide lab" id="lab-4-1" data-auto="lab" data-lab="4.1">
+<section class="slide lab" id="lab-4-1" data-auto="lab" data-lab="4.1" data-label="Session 1 · Three model families">
   <aside class="notes"><p>AI-off for the first attempt. Common errors: a different preprocessing for each model, and scoring every model on test. Ask everyone to restart and run all before step 5. Starts from the supplied assessments; nothing from Day 3 is needed.</p></aside>
 </section>
 
@@ -250,11 +250,11 @@
 
 <!-- Session 4 -->
 
-<section class="slide section" id="s4" data-auto="section" data-session="4">
+<section class="slide section" id="s4" data-auto="section" data-session="4" data-label="Session 4 · Language models and the capstone">
   <aside class="notes"><p>Session 4: where language models sit on the map, then the capstone.</p></aside>
 </section>
 
-<section class="slide" id="debrief-4-3" data-lo="LO6">
+<section class="slide" id="debrief-4-3" data-lo="LO6" data-label="Session 4 · Language models and the capstone">
   <div class="kicker">Lab 4.3 debrief</div>
   <h2>The screen caught 80% of female fallers and 59% of male fallers</h2>
   <table class="t small">
@@ -266,7 +266,7 @@
   <aside class="notes"><p>The data cannot show why men's past falls are recorded less often; in this synthetic case they report them less. That is a question for the clinical team and a line in the card. Ask for a "who should not rely on it" sentence from two people.</p></aside>
 </section>
 
-<section class="slide" id="language-models" data-lo="LO4">
+<section class="slide" id="language-models" data-lo="LO4" data-label="Session 4 · Language models and the capstone">
   <div class="kicker">Where language models fit</div>
   <h2>A language model is supervised learning on text, at a vast scale</h2>
   <div class="cols cols-2">
@@ -281,7 +281,7 @@
   <aside class="notes"><p>Keep this to five minutes. The point is continuity: nothing about a language model escapes held-out testing, baselines or leakage. DS-204 is the next step for tabular models: boosted trees, tuning and calibration.</p></aside>
 </section>
 
-<section class="slide" id="capstone-brief" data-lo="LO6">
+<section class="slide" id="capstone-brief" data-lo="LO6" data-label="Session 4 · Language models and the capstone">
   <div class="kicker">The capstone</div>
   <h2>A modelling report on a new screen: unplanned admission in 90 days</h2>
   <div class="cols cols-2">
@@ -296,7 +296,7 @@
   <aside class="notes"><p>The brief is labs/capstone/README.md. Only Public data goes into generative AI tools, never anything classified Restricted or higher, as SDAIA's guidelines for government require; here the data are synthetic. The defence re-runs the notebook and explains a result the instructor picks.</p></aside>
 </section>
 
-<section class="slide" id="capstone-rubric" data-lo="LO6">
+<section class="slide" id="capstone-rubric" data-lo="LO6" data-label="Session 4 · Language models and the capstone">
   <div class="kicker">How the capstone is scored</div>
   <h2>Five criteria, 100 points</h2>
   <table class="t small">
@@ -310,7 +310,7 @@
   <aside class="notes"><p>Each criterion scores a different thing, so nothing is counted twice: the threshold is scored once, the model card once. The capstone is 40% of the course mark.</p></aside>
 </section>
 
-<section class="slide" id="check-s4" data-lo="LO4">
+<section class="slide" id="check-s4" data-lo="LO4" data-label="Session 4 · Language models and the capstone">
   <div class="kicker">Checkpoint</div>
   <h2>What is a language model's label?</h2>
   <div class="quiz" data-type="single" data-lo="LO4">
@@ -326,11 +326,11 @@
   <aside class="notes"><p>Answer: the next piece of text. People who know about feedback from human raters are not wrong that it exists; it comes after the main training.</p></aside>
 </section>
 
-<section class="slide lab" id="lab-4-4" data-auto="lab" data-lab="4.4">
+<section class="slide lab" id="lab-4-4" data-auto="lab" data-lab="4.4" data-label="Session 4 · Language models and the capstone">
   <aside class="notes"><p>AI-off for the leak check and the plan. Everyone must leave with the starter running and a first commit in their own public repository. Common problems: no GitHub account yet, and a notebook copied without hurbuth.py. Starts from the supplied admission data.</p></aside>
 </section>
 
-<section class="slide" id="wrap-up">
+<section class="slide" id="wrap-up" data-label="Wrap-up">
   <div class="kicker">Day 4 · wrap-up</div>
   <h2>Three things to keep</h2>
   <div class="cols cols-3">

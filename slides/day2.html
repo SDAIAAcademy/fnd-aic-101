@@ -24,11 +24,11 @@
 
 <!-- Session 1 -->
 
-<section class="slide section" id="s1" data-auto="section" data-session="1">
+<section class="slide section" id="s1" data-auto="section" data-session="1" data-label="Session 1 · Complexity and regularisation">
   <aside class="notes"><p>Session 1 asks how flexible a model should be. The debrief of Lab 1.4 comes first because it sets up the question.</p></aside>
 </section>
 
-<section class="slide" id="debrief-1-4" data-lo="LO2">
+<section class="slide" id="debrief-1-4" data-lo="LO2" data-label="Session 1 · Complexity and regularisation">
   <div class="kicker">Lab 1.4 debrief</div>
   <h2>Accuracy barely moved; the ranking score did</h2>
   <table class="t small">
@@ -41,7 +41,7 @@
   <aside class="notes"><p>Point out that the tree, which is more flexible in one way, did worse than the line here. Today's first question is why a more flexible model can do worse on new rows. The small drop from 0.739 to 0.732 on test is normal.</p></aside>
 </section>
 
-<section class="slide" id="complexity" data-lo="LO2">
+<section class="slide" id="complexity" data-lo="LO2" data-label="Session 1 · Complexity and regularisation">
   <div class="kicker">Model complexity</div>
   <h2>A flexible model can learn the noise as well as the pattern</h2>
   <div class="cols cols-2">
@@ -56,7 +56,7 @@
   <aside class="notes"><p>Ask: "If a tree gets every training row right, what has it learned?" Draw a scatter with a smooth boundary and a wiggly one. The wiggly one fits every point and will be wrong on the next client.</p></aside>
 </section>
 
-<section class="slide" id="depth-curve" data-lo="LO2">
+<section class="slide" id="depth-curve" data-lo="LO2" data-label="Session 1 · Complexity and regularisation">
   <div class="kicker">A parallel example</div>
   <h2>Wound care: deeper trees, then a falling validation score</h2>
   <table class="t small">
@@ -69,7 +69,7 @@
   <aside class="notes"><p>This is a different dataset from the lab on purpose: the lab asks for the fall screen's own curve. Ask the room which depth they would pick: 2 to 4 tie; pick the simplest, depth 2. A model that is right on every training row is the worst on validation.</p></aside>
 </section>
 
-<section class="slide" id="regularisation" data-lo="LO2">
+<section class="slide" id="regularisation" data-lo="LO2" data-label="Session 1 · Complexity and regularisation">
   <div class="kicker">Regularisation</div>
   <h2>A penalty on large weights keeps a model simpler</h2>
   <div class="cols cols-2">
@@ -84,7 +84,7 @@
   <aside class="notes"><p>The lab fits a logistic regression on many polynomial features to make overfitting visible, then turns C. Warn people that C runs the opposite way from what they expect. Regularisation is why a network of millions of weights can still generalise; Day 4 returns to that.</p></aside>
 </section>
 
-<section class="slide" id="check-s1" data-lo="LO2">
+<section class="slide" id="check-s1" data-lo="LO2" data-label="Session 1 · Complexity and regularisation">
   <div class="kicker">Checkpoint</div>
   <h2>Which depth do you report?</h2>
   <div class="quiz" data-type="single" data-lo="LO2">
@@ -100,7 +100,7 @@
   <aside class="notes"><p>Answer: depth 3. If anyone picks the test set, ask what would then be left to report honestly.</p></aside>
 </section>
 
-<section class="slide lab" id="lab-2-1" data-auto="lab" data-lab="2.1">
+<section class="slide lab" id="lab-2-1" data-auto="lab" data-lab="2.1" data-label="Session 1 · Complexity and regularisation">
   <aside class="notes"><p>AI-off for the first attempt; graded lab. Watch for people who read the training curve as the result. Common errors: fitting on validation rows, and a depth loop that reuses one fitted tree. Starts from the supplied assessments; nothing from Day 1 is needed.</p></aside>
 </section>
 
