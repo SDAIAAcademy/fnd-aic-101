@@ -136,10 +136,10 @@ print("mean prior_falls_12m recorded at the visit, test period")
 print(recorded.round(2).to_string())
 
 # %% [markdown]
-# Men who went on to fall had far fewer prior falls *recorded*. The nurses' notes depend on what clients report,
-# and in this synthetic case men report past falls less often. The data cannot show this directly: there is no
-# column of true past falls. It is a question for the clinical team, and it belongs in the model card's known
-# limits.
+# Men who went on to fall had far fewer prior falls *recorded*. In this synthetic case the generator planted that
+# pattern: it is not a finding about real men or women. In real data the cause could be how the question is asked,
+# who answers it or how notes are kept, and the data cannot show which: there is no column of true past falls. It
+# is a question for the clinical team, and it belongs in the model card's known limits.
 #
 # ## 3 · The proxy (8')
 #

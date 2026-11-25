@@ -128,7 +128,7 @@
     <li>An owner for each alert, and a person who decides on a pause</li>
   </ul>
   <div class="callout note mt"><b>A parallel example.</b> A new wound clinic records area in cm², not mm²: every area is 100 times smaller. Its mean area, and its flag rate, would show it on the first day.</div>
-  <aside class="notes"><p>The first two checks need no outcomes, so they work at once; recall needs to wait for the outcome window. Ask what a ranking score like AUC would show for the cm² clinic alone: nothing, because dividing by 100 keeps the order.</p></aside>
+  <aside class="notes"><p>The first two checks need no outcomes, so they work at once; recall needs to wait for the outcome window. Ask what a ranking score like AUC would show for the cm² clinic alone: little or nothing. Every area there shrinks by the same factor, so the clinic's visits keep almost the same order among themselves; the flag rate, which compares scores with a fixed threshold, is what moves. Lab 4.2 shows the same: Central's own AUC stayed at 0.724.</p></aside>
 </section>
 
 <section class="slide" id="check-s2" data-lo="LO6">
@@ -208,8 +208,8 @@
     <li><b>Building and validating:</b> the chosen model's fairness metrics fall within a defined threshold</li>
     <li><b>Deploying and monitoring:</b> the predefined fairness metrics are monitored in production</li>
   </ul>
-  <div class="callout note mt"><b>Course rule.</b> Also test for proxies of a sensitive attribute. The English edition asks for this explicitly; where the editions differ, this course follows the Arabic.</div>
-  <aside class="notes"><p>Principle 1, Fairness (النزاهة والإنصاف), in SDAIA's AI Ethics Principles, both editions read for this course (cover dated 2025). The three points are worded to what both editions say. The English edition adds that proxies are analysed and kept out; the Arabic edition speaks of identifying a substitute. Both editions are the current published text; where they differ this course follows the Arabic, and the proxy test here is the course's own rule.</p></aside>
+  <div class="callout note mt"><b>Course rule.</b> Also test for proxies of a sensitive attribute. The English edition names this step and the Arabic edition does not, so the course states it as its own rule.</div>
+  <aside class="notes"><p>Principle 1, Fairness (النزاهة والإنصاف), in SDAIA's AI Ethics Principles, both editions read for this course (cover dated 2025). The three points are worded to what both editions say. The English edition adds that proxies are analysed and kept out; the Arabic edition speaks of identifying a substitute. Both editions are the current published text. The three points on the slide are what both say; the proxy test is the course's own rule, which the English edition also names.</p></aside>
 </section>
 
 <section class="slide" id="model-card" data-lo="LO6">
@@ -258,20 +258,20 @@
   <div class="kicker">Lab 4.3 debrief</div>
   <h2>The screen caught 80% of female fallers and 59% of male fallers</h2>
   <table class="t small">
-    <tr><th>Test period, threshold 0.13</th><th class="num">Assessments</th><th class="num">Recall</th><th class="num">False positive rate</th></tr>
-    <tr><td>Women</td><td class="num">836</td><td class="num">0.801</td><td class="num">0.430</td></tr>
-    <tr><td>Men</td><td class="num">600</td><td class="num">0.586</td><td class="num">0.333</td></tr>
+    <tr><th>Test, at 0.13</th><th class="num">Assessments</th><th class="num">Fallers</th><th class="num">Recall</th><th class="num">False pos. rate</th></tr>
+    <tr><td>Women</td><td class="num">836</td><td class="num">146</td><td class="num">0.801</td><td class="num">0.430</td></tr>
+    <tr><td>Men</td><td class="num">600</td><td class="num">99</td><td class="num">0.586</td><td class="num">0.333</td></tr>
   </table>
-  <div class="caption">Mean recorded prior falls of those who fell: women 0.93, men 0.26. Nurse preference predicted sex with accuracy 0.913 (the larger group alone: 0.582).</div>
-  <aside class="notes"><p>The data cannot show why men's past falls are recorded less often; in this synthetic case they report them less. That is a question for the clinical team and a line in the card. Ask for a "who should not rely on it" sentence from two people.</p></aside>
+  <div class="caption">Synthetic data with a planted pattern: men's past falls are recorded less often. Mean recorded prior falls of those who fell: women 0.93, men 0.26. Nurse preference predicted sex with accuracy 0.913 (the larger group alone: 0.582).</div>
+  <aside class="notes"><p>The data cannot show why men's past falls are recorded less often. In this synthetic case the generator planted it; it is not a finding about real men or women, and in real data the cause could be how questions are asked, who answers them or how notes are kept. That is a question for the clinical team and a line in the card. Ask for a "who should not rely on it" sentence from two people.</p></aside>
 </section>
 
 <section class="slide" id="language-models" data-lo="LO4" data-label="Session 4 · Language models and the capstone">
   <div class="kicker">Where language models fit</div>
-  <h2>A language model is supervised learning on text, at a vast scale</h2>
+  <h2>A language model learns like a supervised model, on text, at a vast scale</h2>
   <div class="cols cols-2">
     <ul class="bullets">
-      <li>Features: the text so far. Label: the next piece of text</li>
+      <li>Features: the text so far. Label: the next piece of text, taken from the text itself</li>
       <li>Fitted by the same idea as Day 1: gradient steps that make a loss small</li>
       <li>The family is a very large neural network; the data are huge amounts of text</li>
     </ul>

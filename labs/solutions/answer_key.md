@@ -73,3 +73,12 @@ Do not show this file to participants before the labs.
   logistic regression 0.706, tree 0.648. No repeated `record_id`. Costs 8 to 1: the rule gives 1/9 = 0.111; the
   cheapest threshold on validation depends on each participant's model.
   Planted for the model card: men's emergency visits are recorded less often, as in the fall screen.
+
+## Follow-up task
+
+- **Pressure-injury screen** (`followup/pressure_injury.csv`, no notebook: numbers from a reviewer's check run
+  with the course's split and a scaled logistic regression on the visit columns, BMI imputed with a flag and the
+  sector one-hot encoded). 2,400 assessments; training 1,450 (base 0.106), validation 497 (0.101), test 453
+  (0.106). No repeated `record_id`. Planted: `wound_dressing_ordered`, updated when an order is placed, alone AUC
+  0.908 on validation. Validation AUC with it 0.983, without it 0.830. Costs 5 to 1: the rule gives 1/6 = 0.167.
+  No group-recording pattern is planted in this screen.
