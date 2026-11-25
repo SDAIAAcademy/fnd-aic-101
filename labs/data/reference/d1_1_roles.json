@@ -1,0 +1,10 @@
+{
+ "id": "client_id",
+ "label": "fell_6m",
+ "features": [
+  "n_medications",
+  "visit_minutes",
+  "prior_falls_12m",
+  "walk_seconds"
+ ]
+}

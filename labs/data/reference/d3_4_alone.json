@@ -1,0 +1,31 @@
+{
+ "__series__": {
+  "name": null,
+  "index": [
+   "physio_referral",
+   "client_falls_total",
+   "walk_seconds",
+   "prior_falls_12m",
+   "uses_walking_aid",
+   "vision_problem",
+   "age",
+   "lives_alone",
+   "n_medications",
+   "stairs_at_home",
+   "diabetes"
+  ],
+  "data": [
+   0.8802884797,
+   0.7378338919,
+   0.6868658207,
+   0.635042223,
+   0.5894737414,
+   0.5793853034,
+   0.5737952952,
+   0.5366270799,
+   0.5246614737,
+   0.5157211061,
+   0.4803046646
+  ]
+ }
+}

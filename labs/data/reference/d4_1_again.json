@@ -1,0 +1,32 @@
+{
+ "__frame__": {
+  "columns": [
+   "validation AUC",
+   "validation accuracy"
+  ],
+  "index": [
+   "baseline",
+   "logistic regression",
+   "decision tree",
+   "small neural network"
+  ],
+  "data": [
+   [
+    0.5,
+    0.8376880443
+   ],
+   [
+    0.7438978284,
+    0.8408551069
+   ],
+   [
+    0.6854880354,
+    0.8408551069
+   ],
+   [
+    0.7427128959,
+    0.8400633413
+   ]
+  ]
+ }
+}

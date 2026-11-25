@@ -1,0 +1,43 @@
+{
+ "__frame__": {
+  "columns": [
+   "alone_auc"
+  ],
+  "index": [
+   "discharge_letter_received",
+   "er_visits_12m",
+   "n_medications",
+   "diabetes",
+   "age",
+   "heart_failure",
+   "lives_alone",
+   "uses_walking_aid"
+  ],
+  "data": [
+   [
+    0.9368548125
+   ],
+   [
+    0.6507696877
+   ],
+   [
+    0.571382413
+   ],
+   [
+    0.5657699352
+   ],
+   [
+    0.5597834755
+   ],
+   [
+    0.5449644442
+   ],
+   [
+    0.5178012616
+   ],
+   [
+    0.5159299774
+   ]
+  ]
+ }
+}

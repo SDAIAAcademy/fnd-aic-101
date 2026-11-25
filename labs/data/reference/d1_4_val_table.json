@@ -1,0 +1,27 @@
+{
+ "__frame__": {
+  "columns": [
+   "accuracy",
+   "auc"
+  ],
+  "index": [
+   "baseline (nobody falls)",
+   "logistic regression",
+   "decision tree"
+  ],
+  "data": [
+   [
+    0.8376880443,
+    0.5
+   ],
+   [
+    0.8424386382,
+    0.7392203421
+   ],
+   [
+    0.8337292162,
+    0.6822859514
+   ]
+  ]
+ }
+}
