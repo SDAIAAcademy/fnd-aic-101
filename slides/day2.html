@@ -1,158 +1,380 @@
 <section class="slide title" id="title" data-auto="title">
-  <aside class="notes">REPLACE: welcome; introduce yourself; one question to the room that calibrates the pace; the rhythm of the day</aside>
+  <aside class="notes"><p>Welcome back. Calibrating question: "Who finished Lab 1.4 and saw the test score?" Today is about how much a score can be trusted: complexity, folds, the four cells of a confusion matrix and a threshold. Same rhythm as Day 1: four sessions, about 30 minutes of ideas and a lab each.</p></aside>
 </section>
 
-<section class="slide" id="agenda" data-auto="agenda"></section>
+<section class="slide" id="agenda" data-auto="agenda">
+  <aside class="notes"><p>Read the four titles. By the end of the day each participant can say what a screen should flag and why, in costs, not in accuracy.</p></aside>
+</section>
+
+<section class="slide" id="review-day1" data-lo="LO1" data-label="Day 1 review">
+  <div class="kicker">Day 1 review</div>
+  <h2>What did fitting do yesterday?</h2>
+  <div class="quiz" data-type="single" data-lo="LO1">
+    <p class="lead">A colleague says: "Fitting the wound-care line means the computer searched for the line that passes through the most points." What is the accurate version?</p>
+    <div class="opts">
+      <div class="opt" data-why="Counts points on the line; least squares rarely passes exactly through any point">It finds the line that passes through every point</div>
+      <div class="opt" data-why="Describes a rule written by hand, not a fitted one">It uses the rule the nurse wrote down</div>
+      <div class="opt" data-ok>It finds the numbers with the lowest mean squared error</div>
+      <div class="opt" data-why="Confuses fitting with testing: the test set takes no part in fitting">It picks the line with the best test score</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Fitting chooses w and b to make the loss small on the training rows; gradient steps or the exact formula find them.</div>
+  </div>
+  <aside class="notes"><p>Answer: the lowest mean squared error. Ask one person to recall the slope formula from the pre-work: 2 times the mean of error times x. If many miss this, spend two minutes on the bowl picture from Day 1 before going on.</p></aside>
+</section>
 
 <!-- Session 1 -->
 
-<section class="slide section" id="s1" data-auto="section" data-session="1"></section>
-
-<section class="slide" id="s1-idea">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide section" id="s1" data-auto="section" data-session="1">
+  <aside class="notes"><p>Session 1 asks how flexible a model should be. The debrief of Lab 1.4 comes first because it sets up the question.</p></aside>
 </section>
 
-<section class="slide" id="s1-steps">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="debrief-1-4" data-lo="LO2">
+  <div class="kicker">Lab 1.4 debrief</div>
+  <h2>Accuracy barely moved; the ranking score did</h2>
+  <table class="t small">
+    <tr><th>On validation (1,263 assessments)</th><th class="num">Accuracy</th><th class="num">AUC</th></tr>
+    <tr><td>Baseline: nobody falls</td><td class="num">0.838</td><td class="num">0.500</td></tr>
+    <tr class="hl"><td>Logistic regression</td><td class="num">0.842</td><td class="num">0.739</td></tr>
+    <tr><td>Decision tree, depth 4</td><td class="num">0.834</td><td class="num">0.682</td></tr>
+  </table>
+  <div class="caption">Lab 1.4 reference run. Chosen on validation: the logistic regression; test, opened once: accuracy 0.841, AUC 0.732.</div>
+  <aside class="notes"><p>Point out that the tree, which is more flexible in one way, did worse than the line here. Today's first question is why a more flexible model can do worse on new rows. The small drop from 0.739 to 0.732 on test is normal.</p></aside>
+</section>
+
+<section class="slide" id="complexity" data-lo="LO2">
+  <div class="kicker">Model complexity</div>
+  <h2>A flexible model can learn the noise as well as the pattern</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li>A tree's <b>depth</b> is how many questions it may ask; each extra level doubles the possible groups</li>
+      <li>With enough depth, every training row gets its own leaf: training error reaches zero</li>
+      <li><b>Overfitting:</b> training score keeps rising while the validation score falls</li>
+      <li><b>Underfitting:</b> both scores are low; the model is too simple to show the pattern</li>
+    </ul>
+    <div class="card c-teal"><h4>In the case</h4><p class="small mb0">Two clients with the same walk time and the same falls can have different outcomes. A tree that separates them is memorising chance.</p></div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>Ask: "If a tree gets every training row right, what has it learned?" Draw a scatter with a smooth boundary and a wiggly one. The wiggly one fits every point and will be wrong on the next client.</p></aside>
+</section>
+
+<section class="slide" id="depth-curve" data-lo="LO2">
+  <div class="kicker">A parallel example</div>
+  <h2>Wound care: deeper trees, then a falling validation score</h2>
+  <table class="t small">
+    <tr><th>Tree depth</th><th class="num">1</th><th class="num">2</th><th class="num">3</th><th class="num">4</th><th class="num">6</th><th class="num">8</th><th class="num">12</th><th class="num">no limit</th></tr>
+    <tr><td>Training accuracy</td><td class="num">.941</td><td class="num">.949</td><td class="num">.953</td><td class="num">.958</td><td class="num">.969</td><td class="num">.983</td><td class="num">.999</td><td class="num">1.000</td></tr>
+    <tr><td>Validation accuracy</td><td class="num">.927</td><td class="num">.935</td><td class="num">.935</td><td class="num">.935</td><td class="num">.929</td><td class="num">.923</td><td class="num">.923</td><td class="num">.916</td></tr>
+  </table>
+  <div class="caption">Synthetic wound-care visits (predict a visit over 50 minutes), seed 7, from labs/_tools/teaching_examples.py.</div>
+  <div class="callout tip mt"><b>Read the gap.</b> The gap between the rows grows with depth; choose the depth where validation peaks, not training.</div>
+  <aside class="notes"><p>This is a different dataset from the lab on purpose: the lab asks for the fall screen's own curve. Ask the room which depth they would pick: 2 to 4 tie; pick the simplest, depth 2. A model that is right on every training row is the worst on validation.</p></aside>
+</section>
+
+<section class="slide" id="regularisation" data-lo="LO2">
+  <div class="kicker">Regularisation</div>
+  <h2>A penalty on large weights keeps a model simpler</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li>Add to the loss a cost for large weights: the model trades fit for simplicity</li>
+      <li>In scikit-learn's logistic regression, <code>C</code> is the inverse: <b>small C, strong penalty</b></li>
+      <li>For trees, the penalty is a limit: <code>max_depth</code>, <code>min_samples_leaf</code></li>
+      <li>The strength is chosen on validation, like depth</li>
+    </ul>
+    <div class="card c-purple"><h4>Same picture, other dial</h4><p class="small mb0">Strong penalty: underfit. No penalty with many features: overfit. The best setting sits between.</p></div>
+  </div>
+  <aside class="notes"><p>The lab fits a logistic regression on many polynomial features to make overfitting visible, then turns C. Warn people that C runs the opposite way from what they expect. Regularisation is why a network of millions of weights can still generalise; Day 4 returns to that.</p></aside>
+</section>
+
+<section class="slide" id="check-s1" data-lo="LO2">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which depth do you report?</h2>
+  <div class="quiz" data-type="single" data-lo="LO2">
+    <p class="lead">For a wound-care screen, a tree of depth 12 has training accuracy 0.999 and validation 0.923; a tree of depth 3 has 0.953 and 0.935. Which do you choose, and why?</p>
+    <div class="opts">
+      <div class="opt" data-why="Chooses on training rows, where depth always wins">Depth 12, because its training score is higher</div>
+      <div class="opt" data-ok>Depth 3, because its validation score is higher</div>
+      <div class="opt" data-why="Uses the test set to choose, so its score is no longer honest">Whichever does better on the test set</div>
+      <div class="opt" data-why="Averages scores of different rows, which measures nothing">Depth 12, because its average of the two is higher</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Validation rows played no part in fitting, so they show how each tree does on new visits.</div>
+  </div>
+  <aside class="notes"><p>Answer: depth 3. If anyone picks the test set, ask what would then be left to report honestly.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-2-1" data-auto="lab" data-lab="2.1">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI-off for the first attempt; graded lab. Watch for people who read the training curve as the result. Common errors: fitting on validation rows, and a depth loop that reuses one fitted tree. Starts from the supplied assessments; nothing from Day 1 is needed.</p></aside>
 </section>
 
 <!-- Session 2 -->
 
-<section class="slide section" id="s2" data-auto="section" data-session="2"></section>
-
-<section class="slide" id="s2-idea">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide section" id="s2" data-auto="section" data-session="2">
+  <aside class="notes"><p>Session 2: how much one validation score can be trusted, and what more data would buy.</p></aside>
 </section>
 
-<section class="slide" id="s2-steps">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
+<section class="slide" id="debrief-2-1" data-lo="LO2">
+  <div class="kicker">Lab 2.1 debrief</div>
+  <h2>The unlimited tree was perfect on training and worst on validation</h2>
+  <table class="t small">
+    <tr><th>Fall screen, AUC</th><th class="num">Training</th><th class="num">Validation</th></tr>
+    <tr><td>Stump (depth 1)</td><td class="num">0.623</td><td class="num">0.626</td></tr>
+    <tr class="hl"><td>Depth 6, the validation peak</td><td class="num">0.780</td><td class="num">0.694</td></tr>
+    <tr><td>No depth limit</td><td class="num">1.000</td><td class="num">0.563</td></tr>
+  </table>
+  <div class="caption">Lab 2.1 reference run. Depth 2 reached 0.691; depth 6 scored 0.668 on test. Regularisation: C = 0.001 gave 0.736 / 0.705, C = 1,000 gave 0.942 / 0.538.</div>
+  <aside class="notes"><p>Ask: depth 6 beat depth 2 by 0.003. Is that a real difference? Hold the question: this session's tools answer it. Note the strong penalty gave the better validation score in the regularisation part.</p></aside>
+</section>
+
+<section class="slide" id="cv-idea" data-lo="LO2">
+  <div class="kicker">Cross-validation</div>
+  <h2>Several folds show how much a score moves by chance</h2>
   <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+    <div class="step c-teal"><b>1 · Cut</b>the training rows into five folds</div>
+    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · Rotate</b>fit on four, score the fifth, five times</div>
+    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · Report</b>the mean and the spread of five scores</div>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <div class="callout warn mt frag"><b>Repeat clients.</b> If one client's visits sit in two folds, the model is scored on someone it has seen. Group the folds by client.</div>
+  <aside class="notes"><p>Press once per step. The spread is the point: a difference between two models smaller than the spread is not evidence. GroupKFold keeps each client in one fold. The fall data have clients with several assessments, so the lab uses it.</p></aside>
+</section>
+
+<section class="slide" id="cv-example" data-lo="LO2">
+  <div class="kicker">A parallel example</div>
+  <h2>Wound care: five grouped folds, one spread</h2>
+  <div class="cols cols-2">
+    <table class="t small">
+      <tr><th>Fold</th><th class="num">AUC</th></tr>
+      <tr><td>1</td><td class="num">0.903</td></tr>
+      <tr><td>2</td><td class="num">0.932</td></tr>
+      <tr><td>3</td><td class="num">0.920</td></tr>
+      <tr><td>4</td><td class="num">0.960</td></tr>
+      <tr><td>5</td><td class="num">0.917</td></tr>
+    </table>
+    <div>
+      <div class="stat center"><div class="big">0.927 ± 0.019</div><div class="lbl">mean and standard deviation of the five folds</div></div>
+      <p class="small">Logistic regression on the synthetic wound-care visits, folds grouped by client.</p>
+    </div>
+  </div>
+  <aside class="notes"><p>One fold alone could have said 0.903 or 0.960. Ask: "Two models differ by 0.005 on one validation set; what would you need to see?" The folds' spread. Different data from the lab on purpose.</p></aside>
+</section>
+
+<section class="slide" id="learning-curves" data-lo="LO2">
+  <div class="kicker">Learning curves</div>
+  <h2>Training and validation scores as the rows grow</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Good fit</h4><p class="small mb0">The two curves meet at a useful score. More rows help a little.</p></div>
+    <div class="card c-coral"><h4>Overfit</h4><p class="small mb0">Training stays near perfect, validation well below. More rows or a simpler model help.</p></div>
+    <div class="card c-purple"><h4>Underfit</h4><p class="small mb0">Both curves meet low. More rows do not help; better features or a richer model do.</p></div>
+  </div>
+  <div class="callout tip mt"><b>A question to ask.</b> Will collecting more assessments help? The curve answers before anyone collects them.</div>
+  <aside class="notes"><p>Sketch each shape on the board. The lab gives six curves to classify. Watch for people who call any gap overfitting: a small gap that is closing is a good fit.</p></aside>
+</section>
+
+<section class="slide" id="check-s2" data-lo="LO2">
+  <div class="kicker">Checkpoint</div>
+  <h2>Is the new model better?</h2>
+  <div class="quiz" data-type="single" data-lo="LO2">
+    <p class="lead">On the wound-care screen, five grouped folds give a mean AUC of 0.927 with a spread of 0.019. A new model scores 0.931 on the same folds. What do you conclude?</p>
+    <div class="opts">
+      <div class="opt" data-why="Treats any increase as real; the gain is far smaller than the spread">The new model is better and should replace the old one</div>
+      <div class="opt" data-why="Turns no evidence of a gain into evidence of a loss">The new model is worse, because it is more complex</div>
+      <div class="opt" data-why="The folds were grouped by client already; regrouping does not settle it">Regroup the folds by sector and score again</div>
+      <div class="opt" data-ok>They are tied; prefer the simpler one</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> A difference of 0.004 is well inside the fold-to-fold spread of 0.019, so it may be chance.</div>
+  </div>
+  <aside class="notes"><p>Answer: tied, choose the simpler. This rule comes back in Lab 4.1, where a small network ties with a logistic regression.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-2-2" data-auto="lab" data-lab="2.2">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI-off for the first attempt. Common errors: KFold in place of GroupKFold, and passing client codes as a feature. For the six curves, ask people to commit to a label before running the check cell. Starts from the supplied assessments.</p></aside>
 </section>
 
 <!-- Session 3 -->
 
-<section class="slide section" id="s3" data-auto="section" data-session="3"></section>
-
-<section class="slide" id="s3-idea">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide section" id="s3" data-auto="section" data-session="3">
+  <aside class="notes"><p>Session 3 opens the score into its four cells.</p></aside>
 </section>
 
-<section class="slide" id="s3-steps">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="debrief-2-2" data-lo="LO2">
+  <div class="kicker">Lab 2.2 debrief</div>
+  <h2>Five folds spread from 0.568 to 0.704</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li>Grouped folds on 1,486 training clients (585 with repeat visits): mean AUC <b>0.657</b>, spread <b>0.047</b></li>
+      <li>The single validation score was 0.682: one draw from a wide range</li>
+      <li>The logistic regression's learning curve met near 0.73 to 0.74: a good fit; more rows add little</li>
+    </ul>
+    <table class="t small">
+      <tr><th>Curve</th><th>Label</th></tr>
+      <tr><td>A, B</td><td>overfit, underfit</td></tr>
+      <tr><td>C, D</td><td>good fit, underfit</td></tr>
+      <tr><td>E, F</td><td>overfit, overfit</td></tr>
+    </table>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>Ask who labelled D as overfit: two weak features score low on both, which is underfitting. So: the 0.003 between depth 2 and depth 6 in Lab 2.1 is not evidence.</p></aside>
+</section>
+
+<section class="slide" id="four-cells" data-lo="LO5">
+  <div class="kicker">The confusion matrix</div>
+  <h2>Four cells: caught, needless, missed and correctly passed</h2>
+  <table class="t small">
+    <tr><th></th><th>Flagged</th><th>Not flagged</th></tr>
+    <tr><td><b>Fell</b></td><td>caught (true positive, TP)</td><td>missed (false negative, FN)</td></tr>
+    <tr><td><b>Did not fall</b></td><td>needless (false positive, FP)</td><td>correct pass (true negative, TN)</td></tr>
+  </table>
+  <div class="callout note mt"><b>A threshold makes the flag.</b> A model gives a score from 0 to 1; flag when the score is at or above the threshold. Change it and the four cells change.</div>
+  <aside class="notes"><p>Use the screen's own words: caught, needless, missed, correct pass. "Positive" means flagged, not good news. Ask which cell the physiotherapy team lead worries about (needless: capacity) and which the clinical director worries about (missed).</p></aside>
+</section>
+
+<section class="slide" id="rates" data-lo="LO5">
+  <div class="kicker">Rates from the cells</div>
+  <h2>Precision and recall answer two different questions</h2>
+  <div class="cols cols-2">
+    <div class="card c-teal"><h4>Recall = TP / (TP + FN)</h4><p class="small mb0">Of those who fell, the share we flagged. Low recall: fallers missed.</p></div>
+    <div class="card c-coral"><h4>Precision = TP / (TP + FP)</h4><p class="small mb0">Of those we flagged, the share who fell. Low precision: programmes wasted.</p></div>
+  </div>
+  <ul class="bullets mt">
+    <li><b>Specificity</b> = TN / (TN + FP): of those who did not fall, the share left alone</li>
+    <li><b>Accuracy</b> = (TP + TN) / all: dominated by the larger group when one outcome is rare</li>
+  </ul>
+  <aside class="notes"><p>Say each formula as a sentence. A screen for a rare outcome can have high accuracy and miss almost everyone; the next slide shows it on wound care.</p></aside>
+</section>
+
+<section class="slide" id="accuracy-trap" data-lo="LO5">
+  <div class="kicker">A parallel example</div>
+  <h2>Wound care at 0.5: accuracy 0.940, recall 0.435</h2>
+  <div class="cols cols-2">
+    <table class="t small">
+      <tr><th>535 visits</th><th class="num">Flagged</th><th class="num">Not flagged</th></tr>
+      <tr><td>Over 50 min</td><td class="num">20</td><td class="num">26</td></tr>
+      <tr><td>Not over</td><td class="num">6</td><td class="num">483</td></tr>
+    </table>
+    <ul class="bullets">
+      <li>Precision 20 / 26 = <b>0.769</b></li>
+      <li>Recall 20 / 46 = <b>0.435</b></li>
+      <li>Specificity 483 / 489 = 0.988</li>
+      <li>At threshold 0.2: recall 0.783, precision 0.600, accuracy 0.936</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>Work one cell aloud with the room. Then the 0.2 line: accuracy fell by 0.004 and recall almost doubled. Which threshold is right depends on what each error costs: Session 4. The lab asks for the fall screen's four cells; do not give them.</p></aside>
+</section>
+
+<section class="slide" id="check-s3" data-lo="LO5">
+  <div class="kicker">Checkpoint</div>
+  <h2>What does this screen miss?</h2>
+  <div class="quiz" data-type="single" data-lo="LO5">
+    <p class="lead">A wound-care screen flags 30 of 500 visits; 24 of the 30 ran long, and 60 visits ran long in all. What is its recall?</p>
+    <div class="opts">
+      <div class="opt" data-ok>0.40: it caught 24 of the 60 long visits</div>
+      <div class="opt" data-why="Computes precision: 24 of the 30 flagged, not of the 60 long visits">0.80: 24 of the 30 flagged visits ran long</div>
+      <div class="opt" data-why="Computes the share flagged, which counts no outcome at all">0.06: it flagged 30 of the 500 visits</div>
+      <div class="opt" data-why="Computes accuracy, which the many short visits dominate">0.92: it was right on 458 of the 500 visits</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Recall divides the caught (24) by everyone who had the outcome (60).</div>
+  </div>
+  <aside class="notes"><p>Answer: 0.40. Check the 0.92: right = 24 caught + 434 correct passes = 458. Ask the room to name each option's formula.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-2-3" data-auto="lab" data-lab="2.3">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI-off for the hand count. Twenty rows by hand at threshold 0.2, then all of validation in code. Common error: swapping FP and FN. Ask for the four counts on paper before the check cell. Starts from the supplied scores.</p></aside>
 </section>
 
 <!-- Session 4 -->
 
-<section class="slide section" id="s4" data-auto="section" data-session="4"></section>
-
-<section class="slide" id="s4-idea">
-  <div class="kicker">REPLACE: the question this slide answers</div>
-  <h2>REPLACE: one idea, stated as a sentence</h2>
-  <div class="cols cols-2">
-    <ul class="bullets">
-      <li>REPLACE: at most six bullets, each a complete thought</li>
-      <li>REPLACE: bold the key phrase; numbers come from the lab run, not from memory</li>
-    </ul>
-    <div class="card c-teal"><h4>In the case study</h4><p class="small mb0">REPLACE: tie the idea to the case study and its data</p></div>
-  </div>
-  <div class="callout warn mt"><b>What goes wrong.</b> REPLACE: the failure participants will hit, and how to recognise it</div>
-  <aside class="notes">REPLACE: what to say, the demo to run, the question to ask the room, the common failure and its fix</aside>
+<section class="slide section" id="s4" data-auto="section" data-session="4">
+  <aside class="notes"><p>Session 4 sets the threshold from what errors cost.</p></aside>
 </section>
 
-<section class="slide" id="s4-steps">
-  <div class="kicker">Step by step</div>
-  <h2>REPLACE: a process, shown one step per key press</h2>
-  <div class="flow">
-    <div class="step c-teal"><b>1 · REPLACE: name</b>REPLACE: what happens first</div>
-    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · REPLACE: name</b>REPLACE: the next piece</div>
-    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · REPLACE: name</b>REPLACE: the result</div>
+<section class="slide" id="debrief-2-3" data-lo="LO5">
+  <div class="kicker">Lab 2.3 debrief</div>
+  <h2>At 0.5, the fall screen was 84% accurate and missed 188 of 205 fallers</h2>
+  <div class="cols cols-2">
+    <table class="t small">
+      <tr><th>Validation at 0.5</th><th class="num">Flagged</th><th class="num">Not</th></tr>
+      <tr><td>Fell</td><td class="num">17</td><td class="num">188</td></tr>
+      <tr><td>Did not fall</td><td class="num">12</td><td class="num">1,046</td></tr>
+    </table>
+    <ul class="bullets">
+      <li>Recall <b>0.083</b>, precision 0.586</li>
+      <li>Accuracy 0.842, against 0.838 for flagging nobody</li>
+      <li>Twenty rows at 0.2: 2 caught, 3 needless, 1 missed, 14 right</li>
+    </ul>
   </div>
-  <div class="callout tip mt frag"><b>Takeaway.</b> REPLACE: the one sentence to remember</div>
-  <aside class="notes">Press once per step and say what each step adds before the next one appears. REPLACE: the example to walk through</aside>
+  <aside class="notes"><p>The default threshold of 0.5 is not a decision anyone made: it is a library default. With a base rate of 0.16, few scores reach 0.5. The question is now: what threshold?</p></aside>
+</section>
+
+<section class="slide" id="costs" data-lo="LO5">
+  <div class="kicker">Error costs</div>
+  <h2>Choose the threshold with the lowest expected cost</h2>
+  <ul class="bullets">
+    <li>Give each error a cost in the same units: a missed outcome <code>C_FN</code>, a needless flag <code>C_FP</code></li>
+    <li>Expected cost = C_FN × FN + C_FP × FP, per 1,000 clients</li>
+    <li>Try thresholds on <b>validation</b>; keep the cheapest; report it once on test</li>
+    <li>The owner of the decision sets the costs; the analyst shows the trade-off</li>
+  </ul>
+  <div class="callout note mt"><b>A rule of thumb.</b> If scores are well calibrated, flag when the score exceeds C_FP / (C_FP + C_FN).</div>
+  <aside class="notes"><p>In the case, the clinical director estimates a missed fall costs about six times a needless programme. The analyst does not pick the costs. The rule follows from comparing the expected cost of flagging, (1 − p) × C_FP, with not flagging, p × C_FN.</p></aside>
+</section>
+
+<section class="slide" id="cost-example" data-lo="LO5">
+  <div class="kicker">A parallel example</div>
+  <h2>Wound care: a missed long visit costs four short ones</h2>
+  <table class="t small">
+    <tr><th>Threshold</th><th class="num">0.1</th><th class="num">0.2</th><th class="num">0.3</th><th class="num">0.5</th></tr>
+    <tr><td>Cost per 1,000 visits</td><td class="num">112</td><td class="num">120</td><td class="num">159</td><td class="num">206</td></tr>
+    <tr><td>Share flagged</td><td class="num">0.161</td><td class="num">0.112</td><td class="num">0.077</td><td class="num">0.049</td></tr>
+  </table>
+  <div class="caption">Costs 4 (missed) and 1 (needless). The rule of thumb gives 1 / (1 + 4) = 0.2.</div>
+  <div class="callout tip mt"><b>Rule and search can differ.</b> The search on validation found 0.1; the rule said 0.2. The rule assumes the scores are calibrated probabilities.</div>
+  <aside class="notes"><p>The cheapest threshold flags more visits. The physiotherapy team lead would ask whether the team can handle 16% flagged: capacity is a real constraint the cost model may leave out. The lab asks for the fall screen's own threshold.</p></aside>
+</section>
+
+<section class="slide" id="base-rate" data-lo="LO5">
+  <div class="kicker">Base rates</div>
+  <h2>The same screen gives a different precision where the outcome is more common</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li>The <b>base rate</b> is the share with the outcome, before any model</li>
+      <li>Same scores, more fallers: more of the flagged are fallers, so precision rises</li>
+      <li>The cheapest threshold moves too, because misses happen more often</li>
+    </ul>
+    <div class="card c-coral"><h4>What goes wrong</h4><p class="small mb0">A precision measured in one sector is quoted for another with twice the base rate. Report the base rate with every precision.</p></div>
+  </div>
+  <aside class="notes"><p>This prepares Day 4's later batch, where a new sector arrives. Ask: "A screen has precision 0.30 where 10% fall. What happens where 30% fall?" It rises, with the same model.</p></aside>
+</section>
+
+<section class="slide" id="check-s4" data-lo="LO5">
+  <div class="kicker">Checkpoint</div>
+  <h2>What does the rule of thumb give?</h2>
+  <div class="quiz" data-type="single" data-lo="LO5">
+    <p class="lead">For a wound-care screen, a missed long visit costs 9 units and a needless extra slot costs 1. With calibrated scores, above which score should a visit be flagged?</p>
+    <div class="opts">
+      <div class="opt" data-why="Uses the library default, which ignores both costs">0.5</div>
+      <div class="opt" data-why="Divides the missed cost by the needless one, which is a ratio, not a threshold">9</div>
+      <div class="opt" data-ok>0.1</div>
+      <div class="opt" data-why="Puts the missed cost on top: 9 / (9 + 1) is the share of cost in misses">0.9</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Flag when p × 9 exceeds (1 − p) × 1, that is when p is above 1 / (1 + 9) = 0.1.</div>
+  </div>
+  <aside class="notes"><p>Answer: 0.1. Then ask why the search on validation might still pick another value: the scores may not be calibrated.</p></aside>
 </section>
 
 <section class="slide lab" id="lab-2-4" data-auto="lab" data-lab="2.4">
-  <aside class="notes">REPLACE: what to watch for while participants work, the typical problems, and the fallback for anyone who did not finish an earlier lab</aside>
+  <aside class="notes"><p>AI-off for the first attempt; graded lab. Watch for people who choose the threshold on test. The justification is graded: it must name the costs, the base rate, and who approves the threshold (the clinical director, not the analyst). Starts from the supplied scores.</p></aside>
 </section>
 
 <section class="slide" id="wrap-up">
   <div class="kicker">Day 2 · wrap-up</div>
   <h2>Three things to keep</h2>
   <div class="cols cols-3">
-    <div class="card c-teal"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-coral"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
-    <div class="card c-purple"><h4>Remember</h4><p class="small mb0">REPLACE: one idea participants keep</p></div>
+    <div class="card c-teal"><h4>Choose on validation</h4><p class="small mb0">Training scores always favour flexibility. The validation peak is the choice.</p></div>
+    <div class="card c-coral"><h4>Scores have a spread</h4><p class="small mb0">Grouped folds show how much a score moves; smaller differences are ties.</p></div>
+    <div class="card c-purple"><h4>Costs set the threshold</h4><p class="small mb0">Four cells, two costs and the base rate decide what to flag; 0.5 is a default, not a decision.</p></div>
   </div>
+  <aside class="notes"><p>Ask each table for one sentence they would say to the clinical director about the threshold. The debrief of Lab 2.4 opens Day 3.</p></aside>
 </section>
 
 <section class="slide dark" id="next" data-label="Next">
   <div class="kicker">Next</div>
-  <h2>Day 3: REPLACE: the theme of this unit, in a few words</h2>
-  <p class="lead">REPLACE: what participants prepare before then; unfinished labs can be finished at home</p>
-  <aside class="notes">REPLACE: accounts, installs or reading participants need before the next unit</aside>
+  <h2>Day 3: Data and leakage</h2>
+  <p class="lead">About 20 minutes before Day 3: finish any lab you did not finish, then the Day 2 practice questions on the course page without an assistant.</p>
+  <aside class="notes"><p>If time remains, the stretch of Lab 2.4 is a good use of it. Every lab starts from supplied files, so an unfinished one never blocks the next day.</p></aside>
 </section>
