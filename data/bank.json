@@ -1,0 +1,1456 @@
+{
+  "format": "academy-bank",
+  "version": 1,
+  "course": {
+    "id": "fnd-aic-101",
+    "code": "FND-AIC-101",
+    "title": "How Machine Learning Works",
+    "lang": "en",
+    "version": "2027.1.0"
+  },
+  "questions": [
+    {
+      "id": "check-s1-q1",
+      "type": "single",
+      "prompt": "An analyst at a home-care company lists four columns for a rule that runs at the end of the nurse's assessment visit. Which one may the rule use?",
+      "options": [
+        "The client's code",
+        "Seconds the client took to walk four metres in the visit",
+        "Whether the client called for help in the following month",
+        "Whether the client fell in the following six months"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The walk is measured during the visit, so it is known when the rule runs. The others are an identifier, a future event and the label itself.",
+      "misconceptions": [
+        "Treats an identifier as information: a client code says who the row is about, not how likely the client is to fall",
+        "",
+        "Uses the future: an emergency call after the visit is not known when the rule runs",
+        "Confuses the label with a feature: the six-month outcome is what the rule predicts"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 1,
+      "slide": "check-s1",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s2-q1",
+      "type": "single",
+      "prompt": "A line predicts dressing minutes from wound area. At the current line the slope of the loss in w is -40 and the rate is 0.01. What does one gradient step do to w?",
+      "options": [
+        "It lowers w by 0.4",
+        "It raises w by 40",
+        "It raises w by 0.4",
+        "It leaves w where it is"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The step is w minus rate times slope: w - 0.01 × (-40) = w + 0.4. A negative slope means the loss falls as w grows.",
+      "misconceptions": [
+        "Moves with the slope: the step goes against it, so a negative slope raises w",
+        "Mixes up the rate and the step: the change is the rate times the slope, not the slope itself",
+        "",
+        "Thinks a negative slope means the bottom: the bottom is where the slope is zero"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 2,
+      "slide": "check-s2",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s3-q1",
+      "type": "single",
+      "prompt": "A colleague switched the \"walk\" column of a neighbour model from seconds to milliseconds, and the three nearest clients of a new client changed. What happened?",
+      "options": [
+        "The walk now has far larger numbers, so it dominates every distance",
+        "The clients' walks were measured again",
+        "The model's weights were refitted",
+        "The colleague changed k"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A distance adds raw differences. Multiplying one column by 1,000 makes its differences swamp the others.",
+      "misconceptions": [
+        "",
+        "Thinks the data changed: the clients and their walks are the same, only the unit differs",
+        "Thinks a neighbour model has weights: it keeps rows and fits nothing",
+        "Confuses k with the distance: k fixes how many neighbours vote, not which ones are close"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 3,
+      "slide": "check-s3",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s4-q1",
+      "type": "single",
+      "prompt": "An analyst trains five models for a wound-care screen, keeps the one with the best validation AUC (0.91), then scores the test set once (0.88). Which number describes how the screen will do next year?",
+      "options": [
+        "0.91, the validation AUC",
+        "The mean of the two, about 0.90",
+        "The training AUC, which is higher still",
+        "0.88, the test AUC"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The test set took no part in fitting or choosing, so its score is the honest estimate.",
+      "misconceptions": [
+        "Trusts the winner's own score: chosen as the best of five, it is flattering",
+        "Averages a chosen score with a clean one, which keeps part of the flattery",
+        "Trusts the training score, which every model tops on its own rows",
+        ""
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 1,
+      "session": 4,
+      "slide": "check-s4",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "review-day1-q1",
+      "type": "single",
+      "prompt": "A colleague says: \"Fitting the wound-care line means the computer searched for the line that passes through the most points.\" What is the accurate version?",
+      "options": [
+        "It finds the line that passes through every point",
+        "It uses the rule the nurse wrote down",
+        "It finds the numbers with the lowest mean squared error",
+        "It picks the line with the best test score"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Fitting chooses w and b to make the loss small on the training rows; gradient steps or the exact formula find them.",
+      "misconceptions": [
+        "Counts points on the line; least squares rarely passes exactly through any point",
+        "Describes a rule written by hand, not a fitted one",
+        "",
+        "Confuses fitting with testing: the test set takes no part in fitting"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 2,
+      "slide": "review-day1",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s1-q1",
+      "type": "single",
+      "prompt": "For a wound-care screen, a tree of depth 12 has training accuracy 0.999 and validation 0.923; a tree of depth 3 has 0.953 and 0.935. Which do you choose, and why?",
+      "options": [
+        "Depth 12, because its training score is higher",
+        "Depth 3, because its validation score is higher",
+        "Whichever does better on the test set",
+        "Depth 12, because its average of the two is higher"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Validation rows played no part in fitting, so they show how each tree does on new visits.",
+      "misconceptions": [
+        "Chooses on training rows, where depth always wins",
+        "",
+        "Uses the test set to choose, so its score is no longer honest",
+        "Averages scores of different rows, which measures nothing"
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 1,
+      "slide": "check-s1",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s2-q1",
+      "type": "single",
+      "prompt": "On the wound-care screen, five grouped folds give a mean AUC of 0.927 with a spread of 0.019. A new model scores 0.931 on the same folds. What do you conclude?",
+      "options": [
+        "The new model is better and should replace the old one",
+        "The new model is worse, because it is more complex",
+        "Regroup the folds by sector and score again",
+        "They are tied; prefer the simpler one"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "A difference of 0.004 is well inside the fold-to-fold spread of 0.019, so it may be chance.",
+      "misconceptions": [
+        "Treats any increase as real; the gain is far smaller than the spread",
+        "Turns no evidence of a gain into evidence of a loss",
+        "The folds were grouped by client already; regrouping does not settle it",
+        ""
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 2,
+      "slide": "check-s2",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s3-q1",
+      "type": "single",
+      "prompt": "A wound-care screen flags 30 of 500 visits; 24 of the 30 ran long, and 60 visits ran long in all. What is its recall?",
+      "options": [
+        "0.40: it caught 24 of the 60 long visits",
+        "0.80: 24 of the 30 flagged visits ran long",
+        "0.06: it flagged 30 of the 500 visits",
+        "0.92: it was right on 458 of the 500 visits"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Recall divides the caught (24) by everyone who had the outcome (60).",
+      "misconceptions": [
+        "",
+        "Computes precision: 24 of the 30 flagged, not of the 60 long visits",
+        "Computes the share flagged, which counts no outcome at all",
+        "Computes accuracy, which the many short visits dominate"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 2,
+      "session": 3,
+      "slide": "check-s3",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s4-q1",
+      "type": "single",
+      "prompt": "For a wound-care screen, a missed long visit costs 9 units and a needless extra slot costs 1. With calibrated scores, above which score should a visit be flagged?",
+      "options": [
+        "0.5",
+        "9",
+        "0.1",
+        "0.9"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Flag when p × 9 exceeds (1 − p) × 1, that is when p is above 1 / (1 + 9) = 0.1.",
+      "misconceptions": [
+        "Uses the library default, which ignores both costs",
+        "Divides the missed cost by the needless one, which is a ratio, not a threshold",
+        "",
+        "Puts the missed cost on top: 9 / (9 + 1) is the share of cost in misses"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 2,
+      "session": 4,
+      "slide": "check-s4",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "review-day2-q1",
+      "type": "single",
+      "prompt": "A wound-care team asks the analyst to \"just use 0.5, it is the standard\". What is the best reply?",
+      "options": [
+        "Agree: 0.5 is where a probability turns into a yes",
+        "Ask what a missed long visit and a needless slot each cost",
+        "Choose the threshold with the highest accuracy",
+        "Choose the threshold that does best on the test set"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The threshold trades two errors; only their costs, and the base rate, say where the trade should sit.",
+      "misconceptions": [
+        "Accepts a library default as if someone had decided it",
+        "",
+        "Optimises a number the costs do not care about, and the large group dominates it",
+        "Choosing on test leaves no honest score to report"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 3,
+      "slide": "review-day2",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s1-q1",
+      "type": "single",
+      "prompt": "Four wound-care predictions miss by 2, −2, 2 and −10 minutes. Which is true of their MAE and RMSE?",
+      "options": [
+        "MAE is −2 and RMSE is about 5.3",
+        "MAE is 4 and RMSE is 3",
+        "MAE is 4 and RMSE is 112",
+        "MAE is 4 and RMSE is about 5.3"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "MAE = 16 / 4 = 4. RMSE = √((4 + 4 + 4 + 100) / 4) = √28 ≈ 5.3: the one large miss weighs more.",
+      "misconceptions": [
+        "Lets positive and negative misses cancel, which MAE does not do",
+        "Puts RMSE below MAE, which cannot happen",
+        "Squares without averaging and taking the root",
+        ""
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": 3,
+      "session": 1,
+      "slide": "check-s1",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s2-q1",
+      "type": "single",
+      "prompt": "Wound area is blank for some visits. The analyst fills blanks with the median. Which median should fill the blanks in the validation rows?",
+      "options": [
+        "The median of the training rows",
+        "The median of the validation rows",
+        "The median of all rows together",
+        "Zero, because a blank means nothing"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Every learned step is part of the model, so it learns from training rows and is applied unchanged to new rows.",
+      "misconceptions": [
+        "",
+        "Uses validation rows to prepare validation rows, a small leak",
+        "Uses every row, including those the model will be scored on",
+        "A zero means no wound, which is a different fact from a missing measurement"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 2,
+      "slide": "check-s2",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s3-q1",
+      "type": "single",
+      "prompt": "A wound-care analyst keeps the 20 best of 900 sensor columns, chosen on all 200 visits, then reports a cross-validated AUC of 0.81. What should a reviewer ask for?",
+      "options": [
+        "The same procedure with ten folds in place of five",
+        "A random forest in place of the logistic regression",
+        "The selection inside the pipeline, refitted in every fold",
+        "The 5 best columns in place of the 20 best"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Selection learns from labels, so it must happen inside each fold's training part, like every other step.",
+      "misconceptions": [
+        "More folds repeat the same leak with smaller pieces",
+        "A different model does not fix a choice made with every label in view",
+        "",
+        "Fewer columns still chosen on all rows still leak"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 3,
+      "slide": "check-s3",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s4-q1",
+      "type": "single",
+      "prompt": "A screen predicts whether a wound will be infected within 30 days of a visit. Alone, one column ranks infected wounds with an AUC of 0.93. Which column is most likely a leak?",
+      "options": [
+        "Wound area, measured at the visit",
+        "An antibiotic prescription, updated over the 30 days",
+        "The client's diabetes status, at registration",
+        "The number of past wounds, counted at the visit"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A prescription given because of an infection is recorded after, and because of, the outcome.",
+      "misconceptions": [
+        "Measured at the visit, so it is known when the prediction is made",
+        "",
+        "Recorded at registration, long before the outcome",
+        "Known at the visit; a high value alone is not proof of a leak"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 4,
+      "slide": "check-s4",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "review-day3-q1",
+      "type": "single",
+      "prompt": "A wound-care screen will score next year's visits. The analyst has three years of dated visits, many clients with several. Which split gives an honest test score?",
+      "options": [
+        "Train on the first two years, test on the third",
+        "A random 70/30 split of all visits",
+        "Train on the last two years, test on the first",
+        "A random split of clients, all years mixed"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The screen will meet visits from after its training period, so the test rows must come from after it too.",
+      "misconceptions": [
+        "",
+        "Puts later visits in training and earlier ones in test, and splits clients across both",
+        "Uses the future to predict the past, the reverse of use",
+        "Grouping by client helps, but a random draw of clients still mixes the years"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 4,
+      "slide": "review-day3",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s1-q1",
+      "type": "single",
+      "prompt": "On a wound-care screen, a small network scores a validation AUC of 0.873 with seed 1 and 0.866 with seed 2; a logistic regression scores 0.869. Which choice is best supported?",
+      "options": [
+        "The network, quoting its seed 1 score of 0.873",
+        "The network, because its mean is 0.0005 higher",
+        "The logistic regression, because they are tied",
+        "Whichever scores higher on the test set"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The gap between the models is smaller than the network's own change across seeds; when tied, the simpler model is easier to explain and check.",
+      "misconceptions": [
+        "Reports the luckier seed as if it were the model",
+        "Averages away the evidence that the two are tied, then still picks a winner",
+        "",
+        "Opening the test set to break a tie turns it into a second validation set"
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": 4,
+      "session": 1,
+      "slide": "check-s1",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s2-q1",
+      "type": "single",
+      "prompt": "A wound-care screen goes live in a new clinic on Sunday. Outcomes take 30 days to arrive. Which check can warn of a problem in the first week?",
+      "options": [
+        "The clinic's recall at the threshold",
+        "The clinic's AUC on its first week of visits",
+        "Retraining the model on the clinic's visits",
+        "The clinic's share flagged and input means"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Flag rates and input means need no outcomes, so they can be compared with the training period from the first day.",
+      "misconceptions": [
+        "Needs outcomes, which do not exist for 30 days",
+        "Needs outcomes too, and a ranking score hides a change of unit",
+        "Retraining on a week of visits with no outcomes is not possible",
+        ""
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 2,
+      "slide": "check-s2",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s3-q1",
+      "type": "single",
+      "prompt": "A wound-care screen has recall 0.82 for clients aged 75 to 84 (17 long visits) and 0.72 for 65 to 74 (25 long visits). What belongs in its model card?",
+      "options": [
+        "The overall recall only, since the groups are small",
+        "Both rates with their counts, and a note that the gap is uncertain",
+        "A statement that the screen is biased against younger clients",
+        "A plan to add age as an input to fix the gap"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The card reports what was measured and how much it can bear; the counts show that these rates move a lot by chance.",
+      "misconceptions": [
+        "Hides a measured gap behind the overall number",
+        "",
+        "A gap measured on 42 long visits is too uncertain to call proof of bias",
+        "Adding age changes the model without showing that the gap closes"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 3,
+      "slide": "check-s3",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "check-s4-q1",
+      "type": "single",
+      "prompt": "Seen as supervised learning, what plays the part of the label when a language model is trained?",
+      "options": [
+        "The next piece of text after the text so far",
+        "A score a person gives each answer",
+        "The whole text the model has read so far",
+        "A topic tag attached to each document"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Each position in a text gives an example: the text so far as input, the piece that follows as label.",
+      "misconceptions": [
+        "",
+        "Describes feedback some models get later, not the main training",
+        "Confuses the input with the label: the text so far is the input",
+        "There is no topic label in the main training; the text itself supplies the label"
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": 4,
+      "session": 4,
+      "slide": "check-s4",
+      "pool": "checkpoint",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo1-mse-two-rows",
+      "type": "single",
+      "prompt": "A line predicts dressing minutes of 6 and 9 for two wound-care visits that took 8 and 8 minutes. What is its mean squared error on these two visits?",
+      "options": [
+        "1.5",
+        "-0.5",
+        "2.5",
+        "5"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The errors are -2 and 1; their squares are 4 and 1, and their mean is 5 / 2 = 2.5.",
+      "misconceptions": [
+        "Averages the absolute errors, which is the MAE, not the squared error",
+        "Averages the signed errors, so a miss above cancels a miss below",
+        "",
+        "Sums the squared errors without dividing by the number of visits"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 2,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo1-gradient-step",
+      "type": "single",
+      "prompt": "At the current line, the slope of the loss with respect to w is 30 and the learning rate is 0.01. The current w is 2. What is w after one gradient step?",
+      "options": [
+        "1.7",
+        "2.3",
+        "-28",
+        "2.0"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A step moves against the slope: 2 - 0.01 × 30 = 1.7.",
+      "misconceptions": [
+        "",
+        "Moves with the slope, which climbs the loss instead of descending it",
+        "Subtracts the slope without multiplying it by the learning rate",
+        "Thinks a small learning rate leaves w unchanged after one step"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 2,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo1-three-neighbours",
+      "type": "single",
+      "prompt": "A three-nearest-neighbour screen scores a new client. The four training clients are at distances 1.5 (did not fall), 2.0 (fell), 2.5 (fell) and 4.0 (did not fall). What does it predict?",
+      "options": [
+        "No fall, because the single nearest client did not fall",
+        "No fall, because two of the four clients did not fall",
+        "It cannot say until a line is fitted to the four clients",
+        "A fall, because two of the three nearest clients fell"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The three nearest are at 1.5, 2.0 and 2.5; two of them fell, so the majority vote is a fall.",
+      "misconceptions": [
+        "Uses one neighbour in place of three",
+        "Votes over every training client instead of the nearest three",
+        "Thinks a neighbour model needs a fitted line; it only needs distances",
+        ""
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 3,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo1-label",
+      "type": "single",
+      "prompt": "A screen will predict, at a nurse's first visit, whether a wound heals within eight weeks. Which column is the label?",
+      "options": [
+        "The wound's area in square millimetres at the first visit",
+        "Whether the wound healed within eight weeks",
+        "The client's age in years at the first visit",
+        "The nurse's estimate of healing time, in weeks"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The label is the outcome the screen predicts; the other columns are known at the visit and are candidate features.",
+      "misconceptions": [
+        "Takes the most important measurement for the label; it is a feature",
+        "",
+        "Takes a client attribute for the label; it is a feature",
+        "Takes a guess made at the visit for the outcome itself"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 1,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo1-units-tf",
+      "type": "tf",
+      "prompt": "Changing a walk time from seconds to tenths of a second can change which training rows a nearest-neighbour model calls nearest.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Distances add up the differences in every feature, so a feature measured in larger numbers weighs more; unscaled, its unit changes the neighbours.",
+      "misconceptions": [
+        "",
+        "Thinks a distance ignores the units of each feature"
+      ],
+      "lo": [
+        "LO1"
+      ],
+      "day": 1,
+      "session": 3,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo2-validation-role",
+      "type": "single",
+      "prompt": "An analyst has training, validation and test rows for a wound-care screen and three candidate models. What are the validation rows for?",
+      "options": [
+        "Fitting the three models, together with the training rows",
+        "Reporting how the chosen model will do next year",
+        "Choosing among the three models and their settings",
+        "Checking the code runs before the training rows are used"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Validation rows take no part in fitting, so they compare candidates fairly; the test rows are kept for one final, honest score.",
+      "misconceptions": [
+        "Merges validation into training, so nothing is left to choose with",
+        "Gives validation the test set's job; a score used to choose is flattering",
+        "",
+        "Treats validation as a code check rather than a measure"
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 1,
+      "session": 4,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo2-overfit-curve",
+      "type": "single",
+      "prompt": "As a tree's depth grows from 1 to 15, its training accuracy rises to 1.00 while its validation accuracy peaks at depth 4 and then falls. What is the diagnosis and the remedy?",
+      "options": [
+        "Underfitting: allow deeper trees and more leaves",
+        "Overfitting beyond depth 4: limit the depth",
+        "A leak: remove the validation rows and refit",
+        "A good fit: report the depth-15 tree as it is"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Past depth 4 the tree learns noise in the training rows: the training score keeps rising while the validation score falls.",
+      "misconceptions": [
+        "Reads the low early scores as the whole story and adds flexibility",
+        "",
+        "Mistakes a widening train-validation gap for a leak",
+        "Reads the training curve as the result"
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 1,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo2-underfit-curve",
+      "type": "single",
+      "prompt": "A learning curve for a two-feature model shows training and validation AUC meeting at 0.55 as the rows grow from 200 to 4,000. What will most likely help?",
+      "options": [
+        "Collecting another 4,000 rows",
+        "A stronger penalty on large weights",
+        "Removing the validation rows from the curve",
+        "Better features or a more flexible model"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Both curves have met at a low score: the model underfits, so more rows add little and the model or its features must change.",
+      "misconceptions": [
+        "Expects more rows to help a model that already learns all it can",
+        "Adds more simplicity to a model that is already too simple",
+        "Changes the measurement instead of the model",
+        ""
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 2,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo2-grouped-folds",
+      "type": "single",
+      "prompt": "Many wound-care clients have several visits. Why should the cross-validation folds be grouped by client?",
+      "options": [
+        "So no client has visits in both a fold's fitting and scoring parts",
+        "So each fold has the same share of long visits as the whole data set",
+        "So the folds are smaller and run faster on a laptop",
+        "So the test set can be used as an extra, sixth fold"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Visits of one client resemble each other; if they sit on both sides, the model is scored on someone it has seen.",
+      "misconceptions": [
+        "",
+        "Describes stratified folds, which balance the label, not the clients",
+        "Thinks grouping is about speed",
+        "Mixes the test set into model choice"
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 2,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo2-c-penalty-tf",
+      "type": "tf",
+      "prompt": "In scikit-learn's LogisticRegression, a smaller C means a weaker penalty on large weights.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "C is the inverse of the penalty's strength: a smaller C means a stronger penalty and a simpler model.",
+      "misconceptions": [
+        "Reads C as the penalty's strength rather than its inverse",
+        ""
+      ],
+      "lo": [
+        "LO2"
+      ],
+      "day": 2,
+      "session": 1,
+      "level": "remember",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo3-target-leak",
+      "type": "single",
+      "prompt": "A screen predicts, at booking, whether a client will miss a clinic appointment. Which column is a target leak?",
+      "options": [
+        "Days between booking and the appointment, counted at booking",
+        "Number of appointments the client missed in the past year",
+        "A reminder-call outcome logged after the appointment",
+        "Whether the client lives alone, recorded at registration"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "A note logged after the appointment can record the miss itself; it is not known at booking.",
+      "misconceptions": [
+        "Known at booking, so it is a fair feature",
+        "A past count, known at booking; a strong feature is not a leak by itself",
+        "",
+        "Known at booking and unrelated to the outcome's timing"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 4,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo3-duplicates",
+      "type": "single",
+      "prompt": "An export holds 8% repeated rows of the same visit, and the analyst splits it at random. What is the fix?",
+      "options": [
+        "Use a more flexible model so the copies matter less",
+        "Keep the copies and use ten folds in place of five",
+        "Drop the copies after the split, in the test rows only",
+        "Drop repeated visit identifiers before any split"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Copies on both sides let the model be scored on rows it was fitted on; removing them before the split removes the leak.",
+      "misconceptions": [
+        "Expects a flexible model to suffer less, when it exploits copies most",
+        "More folds keep the copies on both sides",
+        "Leaves copies inside training and misses those already shared",
+        ""
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 4,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo3-preprocessing-leak",
+      "type": "single",
+      "prompt": "Four steps are fitted on all 300 rows before cross-validation. Which one is most likely to inflate the score a great deal?",
+      "options": [
+        "Scaling eight numeric columns to mean 0 and spread 1",
+        "Keeping the 20 of 2,000 columns most correlated with the label",
+        "Filling blank values with the median of each column",
+        "One-hot encoding a column with four sector names"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Choosing columns by their link to the label, with every label in view, rewards chance matches; the other steps learn little or nothing from the label.",
+      "misconceptions": [
+        "Scaling learns no label information; its leak is usually tiny",
+        "",
+        "Medians learn no label information; still fit them on training rows",
+        "Encoding names learns no label information"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 3,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo3-temporal",
+      "type": "single",
+      "prompt": "An export has a column visits_total: the number of visits each client had over the whole export, which runs to last month. A screen will score clients at their first visit. What kind of problem is this column?",
+      "options": [
+        "A temporal leak: it counts visits after the prediction date",
+        "A duplicate leak: it repeats the same visit in several rows",
+        "A preprocessing leak: it was scaled using all the rows",
+        "No problem: the column has a value for every single client"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "At a first visit, later visits have not happened; a total over the whole export uses the future.",
+      "misconceptions": [
+        "",
+        "Confuses a future count with repeated rows",
+        "Confuses a future count with a fitting step",
+        "Treats 'present in the export' as 'known on the day'"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 4,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo3-pipeline-tf",
+      "type": "tf",
+      "prompt": "When a scaler and a model are put in one pipeline and the pipeline is cross-validated, the scaler is refitted on the training part of each fold.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Cross-validating a pipeline refits every step in each fold, so no fold's scoring rows shape its preparation.",
+      "misconceptions": [
+        "",
+        "Thinks a pipeline fits its steps once, on all rows"
+      ],
+      "lo": [
+        "LO3"
+      ],
+      "day": 3,
+      "session": 3,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo4-why-baseline",
+      "type": "single",
+      "prompt": "A screen for a rare outcome reports a test accuracy of 0.93. Why must a baseline be reported next to it?",
+      "options": [
+        "Because a no-model baseline is always more accurate than a model",
+        "Because the test set is too small to report a score on its own",
+        "Because predicting \"no\" for everyone may score about the same",
+        "Because accuracy cannot be computed without a baseline to divide by"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "When few people have the outcome, a no-model baseline can reach a high accuracy; only the comparison shows what the model adds.",
+      "misconceptions": [
+        "Thinks baselines win by default",
+        "Confuses a comparison with the size of the test set",
+        "",
+        "Thinks a baseline is part of computing accuracy"
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": 1,
+      "session": 4,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo4-regression-baseline",
+      "type": "single",
+      "prompt": "A visit-length model has a validation MAE of 6.1 minutes. Predicting the training median for every visit gives 6.3. What is the fair summary?",
+      "options": [
+        "The model is accurate: six minutes is a small error",
+        "The model is worse than the baseline",
+        "The baseline leaks, so its score should be ignored",
+        "The model barely beats a naive baseline"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "An error means something only next to a baseline; 0.2 minutes better than a constant is little.",
+      "misconceptions": [
+        "Judges an error without a baseline",
+        "Reads a lower MAE as worse",
+        "Thinks a constant prediction can leak",
+        ""
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": 3,
+      "session": 1,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo4-seed",
+      "type": "single",
+      "prompt": "A notebook fixes random_state=101 for every model. What does that guarantee?",
+      "options": [
+        "That the chosen model is the best one the data allow",
+        "The same numbers on a rerun with the same data and versions",
+        "That another seed would give exactly the same scores",
+        "That the test score will hold for next year's clients too"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A seed fixes the random draws, so a rerun repeats them; it says nothing about how much the result depends on that draw.",
+      "misconceptions": [
+        "Confuses repeatable with optimal",
+        "",
+        "Thinks a seed removes randomness from the method",
+        "Confuses repeatable with generalising"
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": 4,
+      "session": 1,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo4-test-once",
+      "type": "single",
+      "prompt": "An analyst scores four models on the test set and reports the best of the four test scores. What is wrong?",
+      "options": [
+        "Choosing on the test set makes its best score look better than it is",
+        "Nothing: the test set was not used to fit any of the four models",
+        "Four models are too many to compare on a single test set",
+        "The analyst should have reported the mean of the four test scores"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Choosing on the test set turns it into a validation set; the reported number is no longer an honest estimate.",
+      "misconceptions": [
+        "",
+        "Thinks only fitting can bias a score, not choosing",
+        "Blames the number of models, not the use of the test set",
+        "Averaging still mixes choice into the test score"
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": 4,
+      "session": 1,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo4-language-model-tf",
+      "type": "tf",
+      "prompt": "A language model is trained without any labels, so held-out testing does not apply to it.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Its label is the next piece of text, and it is fitted by making a loss small; held-out tests, and leaks into them, matter as for any model.",
+      "misconceptions": [
+        "Thinks text supplies no labels, and that scale exempts a model from testing",
+        ""
+      ],
+      "lo": [
+        "LO4"
+      ],
+      "day": 4,
+      "session": 4,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo5-precision",
+      "type": "single",
+      "prompt": "Of 500 visits, 25 ran long. A screen flagged 40 visits, of which 10 ran long. What is its precision?",
+      "options": [
+        "0.40",
+        "0.91",
+        "0.25",
+        "0.08"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Precision is caught over flagged: 10 / 40 = 0.25.",
+      "misconceptions": [
+        "Computes recall: 10 of the 25 long visits",
+        "Computes accuracy: (10 + 445) / 500, dominated by the short visits",
+        "",
+        "Computes the share flagged: 40 / 500"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 2,
+      "session": 3,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo5-cost-rule",
+      "type": "single",
+      "prompt": "A missed long visit costs 3 units and a needless extra slot costs 1. With calibrated scores, above which score should a visit be flagged?",
+      "options": [
+        "0.75",
+        "0.5",
+        "0.33",
+        "0.25"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Flag when p × 3 exceeds (1 − p) × 1, that is when p is above 1 / (1 + 3) = 0.25.",
+      "misconceptions": [
+        "Puts the missed cost on top: 3 / 4 is the share of cost in misses",
+        "Uses the library default, which ignores the costs",
+        "Divides the two costs, 1 / 3, which is a ratio and not the threshold",
+        ""
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 2,
+      "session": 4,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo5-base-rate",
+      "type": "single",
+      "prompt": "A screen has precision 0.30 in a sector where 10% of clients fall. It is used unchanged in a sector where 30% fall and ranks clients equally well. What happens to its precision?",
+      "options": [
+        "It stays at 0.30, because the model itself did not change at all",
+        "It rises, because more of the flagged clients are fallers",
+        "It falls, because the screen was fitted on a different sector",
+        "It cannot be compared across two sectors with different rates"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "With the same ranking and more fallers, a larger share of the flagged clients fall, so precision rises with the base rate.",
+      "misconceptions": [
+        "Thinks precision belongs to the model alone, not to the population",
+        "",
+        "Confuses a base-rate change with a loss of ranking",
+        "Gives up on a comparison that the base rate explains"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 2,
+      "session": 4,
+      "level": "analyze",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo5-accuracy-trap",
+      "type": "single",
+      "prompt": "A vendor's screen for an outcome that 5% of clients have reports 95% accuracy. What should you ask first?",
+      "options": [
+        "Its recall: it may flag almost nobody",
+        "Its training accuracy, to compare",
+        "How many features it uses",
+        "Whether the 95% was rounded"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Flagging nobody gives 95% accuracy here; recall shows whether any client with the outcome is caught.",
+      "misconceptions": [
+        "",
+        "Training scores flatter and do not answer the question",
+        "The number of features says nothing about what it misses",
+        "Rounding is not the issue; the base rate is"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 2,
+      "session": 3,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo5-lower-threshold-tf",
+      "type": "tf",
+      "prompt": "Lowering a screen's threshold can never lower its recall.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A lower threshold flags every client flagged before and possibly more, so caught cases cannot fall; precision may fall instead.",
+      "misconceptions": [
+        "",
+        "Confuses recall with precision, which can fall as the threshold drops"
+      ],
+      "lo": [
+        "LO5"
+      ],
+      "day": 2,
+      "session": 4,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo6-proxy-test",
+      "type": "single",
+      "prompt": "A wound screen does not use age as an input but uses a column of years since the client registered. How do you test whether that column carries age?",
+      "options": [
+        "Check that age does not appear anywhere in the list of the model's inputs",
+        "Compare the screen's overall AUC with and without the column",
+        "Ask the nurses whether they think the column is about age",
+        "Predict the age band from the column; compare with guessing the largest band"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "If the column predicts the age band far better than guessing the largest band, it carries the attribute into the model.",
+      "misconceptions": [
+        "Takes an absent input for an absent effect",
+        "Measures overall performance, not what the column encodes",
+        "Replaces a measurement with an opinion",
+        ""
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 3,
+      "level": "apply",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo6-shift",
+      "type": "single",
+      "prompt": "A screen flags 40% of visits in its first clinics and 95% in a newly opened one. Which first step is most likely to find the cause?",
+      "options": [
+        "Refit the screen on the new clinic's visits straight away",
+        "Lower the threshold for the new clinic until the rate drops",
+        "Compare the clinic's input means with the training period",
+        "Wait for the outcomes, then compute the new clinic's AUC"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "A jump in flags with no outcomes yet points to changed inputs, such as a new unit or protocol; input means by clinic show it at once.",
+      "misconceptions": [
+        "Refits before knowing whether the data are wrong",
+        "Moves the threshold the wrong way and treats a symptom",
+        "",
+        "Waits months, and a ranking score can hide a unit change"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 2,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo6-who-not",
+      "type": "single",
+      "prompt": "A wound-infection screen's recall is 0.82 for clients who live with family (120 infections) and 0.61 for clients who live alone (70 infections). What belongs under 'who should not rely on it' in the model card?",
+      "options": [
+        "Nobody: the overall recall is acceptable",
+        "Clients who live alone: a low score is weaker evidence, so nurses check the wound directly",
+        "Clients with family: they are flagged more often, so their flags are wrong",
+        "Everyone: any gap makes a screen unusable"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The measured gap means a low score for a client living alone rules out less; the card says so and says what staff do instead.",
+      "misconceptions": [
+        "Hides a measured gap behind the overall number",
+        "",
+        "Confuses being flagged more with being flagged wrongly",
+        "Turns a reported limit into a refusal to use the screen"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 3,
+      "level": "evaluate",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo6-roles",
+      "type": "single",
+      "prompt": "Who should review the model card that the analyst prepared for a home-care screen?",
+      "options": [
+        "A different role, such as the quality and data protection officer",
+        "The analyst who built it, because the analyst knows the model best",
+        "Nobody needs to, as long as the notebook runs from end to end",
+        "The person on the team with the highest score in the capstone"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Separating the roles means the person who built the model does not review or approve it; the owner of the decision accepts it.",
+      "misconceptions": [
+        "",
+        "Lets the builder check their own work",
+        "Confuses a reproducible notebook with a reviewed one",
+        "Picks a reviewer by skill rather than by role"
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 3,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    },
+    {
+      "id": "q-lo6-sensitive-input-tf",
+      "type": "tf",
+      "prompt": "If sex is not among a screen's inputs, the screen's recall cannot differ between women and men.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Inputs can be recorded differently by group, and other columns can carry the attribute, so error rates can still differ and must be measured.",
+      "misconceptions": [
+        "Takes an absent input for an absent effect",
+        ""
+      ],
+      "lo": [
+        "LO6"
+      ],
+      "day": 4,
+      "session": 3,
+      "level": "understand",
+      "pool": "practice",
+      "weight": 1,
+      "timer": 30
+    }
+  ]
+}

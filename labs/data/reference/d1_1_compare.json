@@ -1,0 +1,20 @@
+{
+ "your rule": {
+  "caught": 73,
+  "missed": 77,
+  "needless": 153,
+  "passed": 697
+ },
+ "colleague (walk \u2265 7 s)": {
+  "caught": 62,
+  "missed": 88,
+  "needless": 188,
+  "passed": 662
+ },
+ "flag nobody": {
+  "caught": 0,
+  "missed": 150,
+  "needless": 0,
+  "passed": 850
+ }
+}

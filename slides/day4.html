@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-ax="deck" data-track="foundations">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 4 · Model families and limits · How Machine Learning Works</title>
+<meta name="generator" content="SDAIA Academy engine 1.0.0">
+<link rel="icon" href="../_engine/icon.svg">
+<link rel="alternate" type="text/markdown" href="day4.md">
+<link rel="describedby" href="../llms.txt">
+<link rel="stylesheet" href="../_engine/academy.css">
+</head>
+<body>
+<div class="deck" data-course="How Machine Learning Works" data-track="foundations" data-day="Day 4">
+<section class="slide title" id="title" data-auto="title" data-label="Welcome" data-n="1">
+  <div class="kicker">SDAIA Academy · How Machine Learning Works</div>
+  <h1>Model families and limits</h1>
+  <p class="lead mt">Day 4: Trees, linear models and a small neural network, a later batch from a new sector, error gaps by sex, a model card, and the capstone</p>
+  <div class="meta"><span class="track">Data &amp; AI Foundations Track</span><span>4 teaching days + capstone day</span><span>4 sessions · 4 labs</span><span>FND-AIC-101</span></div>
+  <aside class="notes"><p>Welcome to the last teaching day. Calibrating question: "Whose fixed pipeline in Lab 3.4 scored above 0.8?" Nobody's should have. Today: three model families compared honestly, what happens when the data change, error gaps between groups, the model card, and the capstone brief.</p></aside>
+</section>
+
+<section class="slide" id="agenda" data-auto="agenda" data-label="Agenda" data-n="2">
+  <div class="kicker">Today</div>
+  <h2>Model families and limits</h2>
+  <div class="agenda"><div class="item"><div><b>Session 1 · Trees, linear models and small neural networks</b><small>Three families, one pipeline, one fixed seed: compare them honestly against a baseline</small></div></div><div class="item"><div><b>Session 2 · Distribution shift</b><small>A model meets data that differ from its training rows: new places, new people, a changed measurement</small></div></div><div class="item"><div><b>Session 3 · Subgroup error gaps and the model card</b><small>Error rates can differ by group at one threshold, a dropped attribute can return through a proxy, and a model card says so</small></div></div><div class="item"><div><b>Session 4 · Where language models fit, and the capstone</b><small>A language model learns by the same loss minimisation at a far larger scale; the capstone applies the week to a new screen</small></div></div></div>
+  <aside class="notes"><p>Read the four titles. Session 4 ends with the capstone starter running on everyone's machine; protect its 35 minutes.</p></aside>
+</section>
+
+<section class="slide" id="review-day3" data-lo="LO3" data-label="Day 3 review" data-n="3">
+  <div class="kicker">Day 3 review</div>
+  <h2>Which split matches use?</h2>
+  <div class="quiz" data-type="single" data-lo="LO3" data-id="review-day3-q1">
+    <p class="lead">A wound-care screen will score next year's visits. The analyst has three years of dated visits, many clients with several. Which split gives an honest test score?</p>
+    <div class="opts">
+      <div class="opt" data-ok data-k="A">Train on the first two years, test on the third</div>
+      <div class="opt" data-why="Puts later visits in training and earlier ones in test, and splits clients across both" data-k="B">A random 70/30 split of all visits</div>
+      <div class="opt" data-why="Uses the future to predict the past, the reverse of use" data-k="C">Train on the last two years, test on the first</div>
+      <div class="opt" data-why="Grouping by client helps, but a random draw of clients still mixes the years" data-k="D">A random split of clients, all years mixed</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The screen will meet visits from after its training period, so the test rows must come from after it too.</div>
+  </div>
+  <aside class="notes"><p>Answer: train on the past, test on the latest year. The last option is the best of the wrong ones: it fixes the duplicate leak but not the temporal one.</p></aside>
+</section>
+
+<!-- Session 1 -->
+
+<section class="slide section" id="s1" data-auto="section" data-session="1" data-label="Session 1 · Three model families" data-n="4">
+  <div class="kicker">Session 1</div>
+  <h1>Trees, linear models and small neural networks</h1>
+  <ul class="bullets outcomes"><li>Describe how a tree, a linear model and a small neural network each draw a boundary</li><li>Compare the three families and a baseline in one reproducible notebook</li><li>Explain what a fixed seed does and does not guarantee</li></ul>
+  <div class="sess-no">01</div>
+  <aside class="notes"><p>Session 1 compares three families of models on one honest workflow. The debrief of Lab 3.4 first.</p></aside>
+</section>
+
+<section class="slide" id="debrief-3-4" data-lo="LO3" data-label="Session 1 · Three model families" data-n="5" data-session="1">
+  <div class="kicker">Lab 3.4 debrief</div>
+  <h2>The analyst's 0.936 became an honest 0.732</h2>
+  <table class="t small">
+    <tr><th>Leak</th><th>Evidence in the reference run</th></tr>
+    <tr><td>Target: <code>physio_referral</code></td><td>AUC alone 0.880; updated during the six months after the visit</td></tr>
+    <tr><td>Duplicate: the random split</td><td>573 repeated rows; 236 of 1,605 test rows also in training</td></tr>
+    <tr><td>Temporal: <code>client_falls_total</code>, the split</td><td>10.7% of rows count later visits; 30.2% of training rows from 2025</td></tr>
+  </table>
+  <div class="caption">Lab 3.4 reference run. The best clinical feature alone, walk_seconds, scored 0.687.</div>
+  <aside class="notes"><p>Ask who signs off the fixed pipeline: not the analyst who fixed it. The quality and data protection officer reviews it and the clinical director accepts the new score. The honest number is the useful one: it says what the screen will do.</p></aside>
+</section>
+
+<section class="slide" id="families" data-lo="LO4" data-label="Session 1 · Three model families" data-n="6" data-session="1">
+  <div class="kicker">Three families</div>
+  <h2>Each family draws the boundary between flag and pass differently</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Linear model</h4><p class="small mb0">A weighted sum of the inputs; the boundary is a straight line, or a flat plane. Each weight can be read.</p></div>
+    <div class="card c-amber"><h4>Decision tree</h4><p class="small mb0">Yes-or-no questions on one input at a time; the boundary is a staircase of boxes.</p></div>
+    <div class="card c-purple"><h4>Small neural network</h4><p class="small mb0">Several weighted sums, each bent, then summed again; the boundary can curve.</p></div>
+  </div>
+  <div class="callout note mt"><b>All fitted the same way.</b> The line and the network by gradient steps on a loss, as on Day 1; the tree by choosing one split at a time.</div>
+  <aside class="notes"><p>Draw the three boundaries on one scatter of walk time against prior falls. More flexibility is not more truth: on tabular screens with a few thousand rows, a linear model is often as good as the others and far easier to check.</p></aside>
+</section>
+
+<section class="slide" id="seeds" data-lo="LO4" data-label="Session 1 · Three model families" data-n="7" data-session="1">
+  <div class="kicker">Reproducibility</div>
+  <h2>A fixed seed makes a run repeatable, not certain</h2>
+  <ul class="bullets">
+    <li>A network starts from random weights; a tree breaks ties at random: the <b>seed</b> fixes those draws</li>
+    <li>Same seed, same data, same library versions: the same numbers, every time</li>
+    <li>Another seed gives a slightly different model: that change is part of the result's uncertainty</li>
+    <li>Two models closer than the seed-to-seed change are <b>tied</b></li>
+  </ul>
+  <div class="callout warn mt"><b>What goes wrong.</b> A notebook that only works when its cells are run in one hidden order. Restart and run all before reporting.</div>
+  <aside class="notes"><p>The repository pins library versions in a lock file for the same reason. The defence on capstone day re-runs the notebook from a fresh start: this is why.</p></aside>
+</section>
+
+<section class="slide" id="check-s1" data-lo="LO4" data-label="Session 1 · Three model families" data-n="8" data-session="1">
+  <div class="kicker">Checkpoint</div>
+  <h2>What do you report?</h2>
+  <div class="quiz" data-type="single" data-lo="LO4" data-id="check-s1-q1">
+    <p class="lead">On a wound-care screen, a small network scores a validation AUC of 0.873 with seed 1 and 0.866 with seed 2; a logistic regression scores 0.869. Which choice is best supported?</p>
+    <div class="opts">
+      <div class="opt" data-why="Reports the luckier seed as if it were the model" data-k="A">The network, quoting its seed 1 score of 0.873</div>
+      <div class="opt" data-why="Averages away the evidence that the two are tied, then still picks a winner" data-k="B">The network, because its mean is 0.0005 higher</div>
+      <div class="opt" data-ok data-k="C">The logistic regression, because they are tied</div>
+      <div class="opt" data-why="Opening the test set to break a tie turns it into a second validation set" data-k="D">Whichever scores higher on the test set</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The gap between the models is smaller than the network's own change across seeds; when tied, the simpler model is easier to explain and check.</div>
+  </div>
+  <aside class="notes"><p>Answer: the logistic regression. The network's mean is 0.8695 against 0.869: no difference worth a word.</p></aside>
+</section>
+
+<section class="slide lab top" id="lab-4-1" data-auto="lab" data-lab="4.1" data-label="Session 1 · Three model families" data-n="9" data-session="1">
+  <div class="cols cols-2 mid"><div><div class="lab-tag">Lab 4.1 · 40 min</div><h2>Three families and a baseline</h2><p class="lead small">Train a baseline, a logistic regression, a decision tree and a small neural network through one pipeline with a fixed seed, and report held-out results</p><a class="nb" href="../labs/D4_1_three_families.ipynb">D4_1_three_families.ipynb</a></div><ul class="checklist"><li>One preprocessing pipeline for every model <span class="min">6 min</span></li><li>Fit a baseline, a logistic regression, a tree and a small neural network <span class="min">10 min</span></li><li>The validation table with a fixed seed <span class="min">8 min</span></li><li>Run again, then with another seed: what changes <span class="min">6 min</span></li><li>Choose, score the test set once and save the table <span class="min">10 min</span></li><li class="stretch">✱ Stretch: Change the size of the neural network's hidden layer and watch the validation score</li></ul></div>
+  <aside class="notes"><p>AI-off for the first attempt. Common errors: a different preprocessing for each model, and scoring every model on test. Ask everyone to restart and run all before step 5. Starts from the supplied assessments; nothing from Day 3 is needed.</p></aside>
+</section>
+
+<!-- Session 2 -->
+
+<section class="slide section" id="s2" data-auto="section" data-session="2" data-n="10">
+  <div class="kicker">Session 2</div>
+  <h1>Distribution shift</h1>
+  <ul class="bullets outcomes"><li>Compare a later batch with the training rows feature by feature</li><li>Measure a screen's flag rate and recall by sector on a later batch</li><li>Name a shift and the check that would have caught it</li></ul>
+  <div class="sess-no">02</div>
+  <aside class="notes"><p>Session 2: the screen is in use, and the data change.</p></aside>
+</section>
+
+<section class="slide" id="debrief-4-1" data-lo="LO4" data-n="11" data-session="2">
+  <div class="kicker">Lab 4.1 debrief</div>
+  <h2>The network tied with the logistic regression</h2>
+  <table class="t small">
+    <tr><th>Validation AUC, seed 101</th><th class="num">AUC</th></tr>
+    <tr><td>Baseline</td><td class="num">0.500</td></tr>
+    <tr class="hl"><td>Logistic regression</td><td class="num">0.744</td></tr>
+    <tr><td>Decision tree, depth 4</td><td class="num">0.685</td></tr>
+    <tr><td>Small neural network, 16 units</td><td class="num">0.743</td></tr>
+  </table>
+  <div class="caption">Seed 7 gave the network 0.743 again. Chosen: the logistic regression; test AUC, opened once: 0.731.</div>
+  <aside class="notes"><p>Ask who chose the network and why. With this data, the extra flexibility found nothing the line had not. That is a finding, not a failure.</p></aside>
+</section>
+
+<section class="slide" id="shift-kinds" data-lo="LO6" data-n="12" data-session="2">
+  <div class="kicker">Distribution shift</div>
+  <h2>A model meets rows unlike its training rows</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>New people</h4><p class="small mb0">A new sector, older clients, a new referral route: the inputs' mix changes.</p></div>
+    <div class="card c-coral"><h4>A changed measurement</h4><p class="small mb0">A new device, unit or protocol: the same client gets a different number.</p></div>
+    <div class="card c-purple"><h4>A changed outcome rate</h4><p class="small mb0">More or fewer events than in training: precision and the cheapest threshold move.</p></div>
+  </div>
+  <div class="callout warn mt"><b>The model cannot tell you.</b> It scores whatever it is given. The checks must be built around it.</div>
+  <aside class="notes"><p>Ask for one example of each from the room's own work. A changed measurement is the most dangerous because nothing looks wrong to the people collecting it.</p></aside>
+</section>
+
+<section class="slide" id="monitoring" data-lo="LO6" data-n="13" data-session="2">
+  <div class="kicker">Monitoring</div>
+  <h2>Cheap checks catch shifts in the first week</h2>
+  <ul class="bullets">
+    <li><b>Share flagged</b>, by sector and by month, against the training period</li>
+    <li><b>The mean of each input</b>, by sector and by month, against the training period</li>
+    <li><b>Recall and precision</b> once the outcomes arrive, months later</li>
+    <li>An owner for each alert, and a person who decides on a pause</li>
+  </ul>
+  <div class="callout note mt"><b>A parallel example.</b> A new wound clinic records area in cm², not mm²: every area is 100 times smaller. Its mean area, and its flag rate, would show it on the first day.</div>
+  <aside class="notes"><p>The first two checks need no outcomes, so they work at once; recall needs to wait for the outcome window. Ask what a ranking score like AUC would show for the cm² clinic alone: little or nothing. Every area there shrinks by the same factor, so the clinic's visits keep almost the same order among themselves; the flag rate, which compares scores with a fixed threshold, is what moves. Lab 4.2 shows the same: Central's own AUC stayed at 0.724.</p></aside>
+</section>
+
+<section class="slide" id="check-s2" data-lo="LO6" data-n="14" data-session="2">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which check comes first?</h2>
+  <div class="quiz" data-type="single" data-lo="LO6" data-id="check-s2-q1">
+    <p class="lead">A wound-care screen goes live in a new clinic on Sunday. Outcomes take 30 days to arrive. Which check can warn of a problem in the first week?</p>
+    <div class="opts">
+      <div class="opt" data-why="Needs outcomes, which do not exist for 30 days" data-k="A">The clinic's recall at the threshold</div>
+      <div class="opt" data-why="Needs outcomes too, and a ranking score hides a change of unit" data-k="B">The clinic's AUC on its first week of visits</div>
+      <div class="opt" data-why="Retraining on a week of visits with no outcomes is not possible" data-k="C">Retraining the model on the clinic's visits</div>
+      <div class="opt" data-ok data-k="D">The clinic's share flagged and input means</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Flag rates and input means need no outcomes, so they can be compared with the training period from the first day.</div>
+  </div>
+  <aside class="notes"><p>Answer: share flagged and input means. Recall and AUC come later, once outcomes arrive.</p></aside>
+</section>
+
+<section class="slide lab top" id="lab-4-2" data-auto="lab" data-lab="4.2" data-label="Lab 4.2" data-n="15" data-session="2">
+  <div class="cols cols-2 mid"><div><div class="lab-tag">Lab 4.2 · 35 min</div><h2>A later batch from a new sector</h2><p class="lead small">Score a later batch that includes a newly opened sector, find what moved, correct it and note it for the model card</p><a class="nb" href="../labs/D4_2_later_batch.ipynb">D4_2_later_batch.ipynb</a></div><ul class="checklist"><li>Score the later batch with the chosen screen <span class="min">5 min</span></li><li>Flag rates and recall by sector <span class="min">8 min</span></li><li>Compare feature distributions: training rows against the batch <span class="min">10 min</span></li><li>Find the cause and correct it <span class="min">7 min</span></li><li>Note what the model card must say <span class="min">5 min</span></li><li class="stretch">✱ Stretch: Compare the base rate of the new sector with the training period</li></ul></div>
+  <aside class="notes"><p>AI-off for the first attempt. Let people find the cause from the shift table and the plot before the notebook names it. Common error: refitting the model on the batch in place of correcting the column. Starts from the supplied assessments and batch.</p></aside>
+</section>
+
+<!-- Session 3 -->
+
+<section class="slide section" id="s3" data-auto="section" data-session="3" data-n="16">
+  <div class="kicker">Session 3</div>
+  <h1>Subgroup error gaps and the model card</h1>
+  <ul class="bullets outcomes"><li>Measure recall and false positive rate by sex, with their counts</li><li>Show how a proxy feature carries a protected attribute</li><li>Draft a one-page model card with intended use, data, metrics by subgroup and limits</li></ul>
+  <div class="sess-no">03</div>
+  <aside class="notes"><p>Session 3: the screen's errors are not the same for everyone.</p></aside>
+</section>
+
+<section class="slide" id="debrief-4-2" data-lo="LO6" data-n="17" data-session="3">
+  <div class="kicker">Lab 4.2 debrief</div>
+  <h2>Central was flagged 100% of the time because its walk was timed over six metres</h2>
+  <table class="t small">
+    <tr><th>Later batch, threshold 0.13</th><th class="num">Flagged</th><th class="num">Recall</th></tr>
+    <tr><td>Central, as recorded</td><td class="num">1.000</td><td class="num">1.000</td></tr>
+    <tr class="hl"><td>Central, walk converted to four metres</td><td class="num">0.517</td><td class="num">0.773</td></tr>
+    <tr><td>Other sectors</td><td class="num">0.38–0.46</td><td class="num">0.68–0.74</td></tr>
+  </table>
+  <div class="caption">Central's mean walk 9.56 s against 6.00 in training (ratio 1.59). Central's own AUC 0.724 before and after.</div>
+  <aside class="notes"><p>Who decides the correction? The physiotherapy team lead confirms the protocol; the change is recorded and reviewed by someone other than the analyst. The AUC line is the lesson: a ranking score did not see the problem. If someone asks why 0.13 and not Lab 2.4's 0.17: Day 4 uses the standard screen's own scores, and its cheapest threshold on validation under the same six-to-one costs is 0.13; Lab 2.4 worked on a fixed, supplied set of scores.</p></aside>
+</section>
+
+<section class="slide" id="subgroup-rates" data-lo="LO6" data-n="18" data-session="3">
+  <div class="kicker">Errors by group</div>
+  <h2>One threshold can give different recall to different groups</h2>
+  <div class="cols cols-2">
+    <table class="t small">
+      <tr><th>Wound care, threshold 0.2</th><th class="num">Visits</th><th class="num">Long</th><th class="num">Recall</th></tr>
+      <tr><td>Age 65–74</td><td class="num">244</td><td class="num">25</td><td class="num">0.720</td></tr>
+      <tr><td>Age 75–84</td><td class="num">222</td><td class="num">17</td><td class="num">0.824</td></tr>
+      <tr><td>Age 85+</td><td class="num">69</td><td class="num">4</td><td class="num">1.000</td></tr>
+    </table>
+    <ul class="bullets">
+      <li>Report <b>recall and false positive rate</b> per group: they fail people differently</li>
+      <li>Report <b>the counts</b>: a recall of 1.000 on 4 visits says little</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>Ask the room what the 85+ row means: four long visits, all caught. One more miss would make it 0.75. That is why the counts sit beside every rate. The lab measures the fall screen by sex.</p></aside>
+</section>
+
+<section class="slide" id="proxy" data-lo="LO6" data-n="19" data-session="3">
+  <div class="kicker">Proxies</div>
+  <h2>Leaving an attribute out does not remove it</h2>
+  <ul class="bullets">
+    <li>A <b>proxy</b> is an input that carries a sensitive attribute: a first name, a home address, a job title</li>
+    <li>Test it: predict the attribute from the input; compare with guessing the larger group</li>
+    <li>An input can also be <b>recorded differently</b> for one group, so the model is weaker for that group even with no proxy</li>
+  </ul>
+  <div class="callout warn mt"><b>What goes wrong.</b> "The model does not use sex, so it cannot treat men and women differently." Measure, then say.</div>
+  <aside class="notes"><p>Give a parallel: a wound screen without age as an input can still separate age groups through a column such as years since registration. Neither effect shows in the list of inputs; both show in the error rates. Do not name the lab's columns before Lab 4.3.</p></aside>
+</section>
+
+<section class="slide" id="ethics-principles" data-lo="LO6" data-n="20" data-session="3">
+  <div class="kicker">National reference</div>
+  <h2>The SDAIA AI Ethics Principles: fairness through the model's life</h2>
+  <ul class="bullets">
+    <li><b>Preparing input data:</b> sensitive attributes are not model inputs unless there is a justification</li>
+    <li><b>Building and validating:</b> the chosen model's fairness metrics fall within a defined threshold</li>
+    <li><b>Deploying and monitoring:</b> the predefined fairness metrics are monitored in production</li>
+  </ul>
+  <div class="callout note mt"><b>Course rule.</b> Also test for proxies of a sensitive attribute. The English edition names this step and the Arabic edition does not, so the course states it as its own rule.</div>
+  <aside class="notes"><p>Principle 1, Fairness (النزاهة والإنصاف), in SDAIA's AI Ethics Principles, both editions read for this course (cover dated 2025). The three points are worded to what both editions say. The English edition adds that proxies are analysed and kept out; the Arabic edition speaks of identifying a substitute. Both editions are the current published text. The three points on the slide are what both say; the proxy test is the course's own rule, which the English edition also names.</p></aside>
+</section>
+
+<section class="slide" id="model-card" data-lo="LO6" data-n="21" data-session="3">
+  <div class="kicker">The model card</div>
+  <h2>One page that says what the model is for, and for whom it is weak</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li>Intended use and out of scope</li>
+      <li>Data, split and metrics, against a baseline</li>
+      <li>Metrics by group, with counts</li>
+      <li>Known limits and <b>who should not rely on it</b></li>
+      <li>Monitoring: what, how often, by whom</li>
+    </ul>
+    <div class="card c-teal"><h4>Prepared, reviewed, accepted</h4><p class="small mb0">The analyst prepares it; a different person reviews it; the owner of the decision accepts the model for use.</p></div>
+  </div>
+  <aside class="notes"><p>Adapted from Mitchell and colleagues' Model Cards for Model Reporting (2019). The template is labs/model_card_template.md and the capstone uses it. The separation of roles is required in every reference answer: the person who builds a model does not approve it.</p></aside>
+</section>
+
+<section class="slide" id="check-s3" data-lo="LO6" data-n="22" data-session="3">
+  <div class="kicker">Checkpoint</div>
+  <h2>What does the model card say?</h2>
+  <div class="quiz" data-type="single" data-lo="LO6" data-id="check-s3-q1">
+    <p class="lead">A wound-care screen has recall 0.82 for clients aged 75 to 84 (17 long visits) and 0.72 for 65 to 74 (25 long visits). What belongs in its model card?</p>
+    <div class="opts">
+      <div class="opt" data-why="Hides a measured gap behind the overall number" data-k="A">The overall recall only, since the groups are small</div>
+      <div class="opt" data-ok data-k="B">Both rates with their counts, and a note that the gap is uncertain</div>
+      <div class="opt" data-why="A gap measured on 42 long visits is too uncertain to call proof of bias" data-k="C">A statement that the screen is biased against younger clients</div>
+      <div class="opt" data-why="Adding age changes the model without showing that the gap closes" data-k="D">A plan to add age as an input to fix the gap</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The card reports what was measured and how much it can bear; the counts show that these rates move a lot by chance.</div>
+  </div>
+  <aside class="notes"><p>Answer: both rates with counts and a note on uncertainty. Reporting is not the same as concluding; the reviewer and the owner decide what to do.</p></aside>
+</section>
+
+<section class="slide lab top" id="lab-4-3" data-auto="lab" data-lab="4.3" data-label="Lab 4.3" data-n="23" data-session="3">
+  <div class="cols cols-2 mid"><div><div class="lab-tag">Lab 4.3 · 40 min</div><h2>Subgroup error rates and a model card</h2><p class="lead small">Measure subgroup error rates and draft a model card: recall and false positive rate by sex at the chosen threshold, the proxy that carries sex, and who should not rely on the screen</p><a class="nb" href="../labs/D4_3_subgroups_model_card.ipynb">D4_3_subgroups_model_card.ipynb</a></div><ul class="checklist"><li>Error rates by sex at the chosen threshold <span class="min">10 min</span></li><li>The counts behind each rate <span class="min">6 min</span></li><li>The proxy: predict sex from nurse preference <span class="min">8 min</span></li><li>Draft the model card from the template <span class="min">12 min</span></li><li>Write who should not rely on the screen <span class="min">4 min</span></li><li class="stretch">✱ Stretch: Add nurse preference to the screen and compare the gap</li></ul></div>
+  <aside class="notes"><p>AI-off for the first attempt; graded lab. The model card is graded: rates with counts, the proxy evidence, and who should not rely on the screen. Watch for people who add sex as an input to "fix" the gap. Starts from the supplied assessments.</p></aside>
+</section>
+
+<!-- Session 4 -->
+
+<section class="slide section" id="s4" data-auto="section" data-session="4" data-label="Session 4 · Language models and the capstone" data-n="24">
+  <div class="kicker">Session 4</div>
+  <h1>Where language models fit, and the capstone</h1>
+  <ul class="bullets outcomes"><li>Place a language model on the map of supervised learning</li><li>Read the capstone brief and its rubric</li><li>Start the capstone from a starter notebook that runs end to end</li></ul>
+  <div class="sess-no">04</div>
+  <aside class="notes"><p>Session 4: where language models sit on the map, then the capstone.</p></aside>
+</section>
+
+<section class="slide" id="debrief-4-3" data-lo="LO6" data-label="Session 4 · Language models and the capstone" data-n="25" data-session="4">
+  <div class="kicker">Lab 4.3 debrief</div>
+  <h2>The screen caught 80% of female fallers and 59% of male fallers</h2>
+  <table class="t small">
+    <tr><th>Test, at 0.13</th><th class="num">Assessments</th><th class="num">Fallers</th><th class="num">Recall</th><th class="num">False pos. rate</th></tr>
+    <tr><td>Women</td><td class="num">836</td><td class="num">146</td><td class="num">0.801</td><td class="num">0.430</td></tr>
+    <tr><td>Men</td><td class="num">600</td><td class="num">99</td><td class="num">0.586</td><td class="num">0.333</td></tr>
+  </table>
+  <div class="caption">Synthetic data with a planted pattern: men's past falls are recorded less often. Mean recorded prior falls of those who fell: women 0.93, men 0.26. Nurse preference predicted sex with accuracy 0.913 (the larger group alone: 0.582).</div>
+  <aside class="notes"><p>The data cannot show why men's past falls are recorded less often. In this synthetic case the generator planted it; it is not a finding about real men or women, and in real data the cause could be how questions are asked, who answers them or how notes are kept. That is a question for the clinical team and a line in the card. Ask for a "who should not rely on it" sentence from two people.</p></aside>
+</section>
+
+<section class="slide" id="language-models" data-lo="LO4" data-label="Session 4 · Language models and the capstone" data-n="26" data-session="4">
+  <div class="kicker">Where language models fit</div>
+  <h2>A language model learns like a supervised model, on text, at a vast scale</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li>Features: the text so far. Label: the next piece of text, taken from the text itself</li>
+      <li>Fitted by the same idea as Day 1: gradient steps that make a loss small</li>
+      <li>The family is a very large neural network; the data are huge amounts of text</li>
+    </ul>
+    <div class="card c-purple"><h4>The same limits</h4><p class="small mb0">Leakage (test questions seen in training), shift (new topics), and gaps between groups apply here too.</p></div>
+  </div>
+  <div class="callout note mt"><b>Next.</b> FND-AIC-102 How Language Models Work takes this further.</div>
+  <aside class="notes"><p>Keep this to five minutes. The point is continuity: nothing about a language model escapes held-out testing, baselines or leakage. DS-204 is the next step for tabular models: boosted trees, tuning and calibration.</p></aside>
+</section>
+
+<section class="slide" id="capstone-brief" data-lo="LO6" data-label="Session 4 · Language models and the capstone" data-n="27" data-session="4">
+  <div class="kicker">The capstone</div>
+  <h2>A modelling report on a new screen: unplanned admission in 90 days</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li>Split by date, a baseline and two models in pipelines</li>
+      <li>A leak check, and a threshold from the stated costs and base rate</li>
+      <li>A one-page model card with an owner and a different reviewer</li>
+      <li>A public repository, its history kept; a ten-minute defence</li>
+    </ul>
+    <div class="card c-coral"><h4>AI and data</h4><p class="small mb0">AI-full for the capstone's code; you explain every line. Into any generative AI tool, only public or synthetic data.</p></div>
+  </div>
+  <aside class="notes"><p>The brief is labs/capstone/README.md. Only Public data goes into generative AI tools, never anything classified Restricted or higher, as SDAIA's guidelines for government require; here the data are synthetic. The defence re-runs the notebook and explains a result the instructor picks.</p></aside>
+</section>
+
+<section class="slide" id="capstone-rubric" data-lo="LO6" data-label="Session 4 · Language models and the capstone" data-n="28" data-session="4">
+  <div class="kicker">How the capstone is scored</div>
+  <h2>Five criteria, 100 points</h2>
+  <table class="t small">
+    <tr><th>Criterion</th><th class="num">Points</th></tr>
+    <tr><td>Held-out workflow, end to end with a fixed seed</td><td class="num">25</td></tr>
+    <tr><td>Leakage-safe data handling</td><td class="num">15</td></tr>
+    <tr><td>Threshold decision from costs and base rate</td><td class="num">20</td></tr>
+    <tr><td>Model card with subgroups, limits, owner and reviewer</td><td class="num">20</td></tr>
+    <tr><td>Defence: re-runs and explains a selected result</td><td class="num">20</td></tr>
+  </table>
+  <aside class="notes"><p>Each criterion scores a different thing, so nothing is counted twice: the threshold is scored once, the model card once. The capstone is 40% of the course mark.</p></aside>
+</section>
+
+<section class="slide" id="check-s4" data-lo="LO4" data-label="Session 4 · Language models and the capstone" data-n="29" data-session="4">
+  <div class="kicker">Checkpoint</div>
+  <h2>What is a language model's label?</h2>
+  <div class="quiz" data-type="single" data-lo="LO4" data-id="check-s4-q1">
+    <p class="lead">Seen as supervised learning, what plays the part of the label when a language model is trained?</p>
+    <div class="opts">
+      <div class="opt" data-ok data-k="A">The next piece of text after the text so far</div>
+      <div class="opt" data-why="Describes feedback some models get later, not the main training" data-k="B">A score a person gives each answer</div>
+      <div class="opt" data-why="Confuses the input with the label: the text so far is the input" data-k="C">The whole text the model has read so far</div>
+      <div class="opt" data-why="There is no topic label in the main training; the text itself supplies the label" data-k="D">A topic tag attached to each document</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> Each position in a text gives an example: the text so far as input, the piece that follows as label.</div>
+  </div>
+  <aside class="notes"><p>Answer: the next piece of text. People who know about feedback from human raters are not wrong that it exists; it comes after the main training.</p></aside>
+</section>
+
+<section class="slide lab top" id="lab-4-4" data-auto="lab" data-lab="4.4" data-label="Session 4 · Language models and the capstone" data-n="30" data-session="4">
+  <div class="cols cols-2 mid"><div><div class="lab-tag">Lab 4.4 · 35 min</div><h2>The capstone starter</h2><p class="lead small">Run the capstone starter on the admission screen end to end with its fixed seed, check its data for leaks and write the plan of the report</p><a class="nb" href="../labs/D4_4_capstone_start.ipynb">D4_4_capstone_start.ipynb</a></div><ul class="checklist"><li>Read the capstone brief and the data dictionary <span class="min">5 min</span></li><li>Run the starter end to end with the fixed seed <span class="min">8 min</span></li><li>Check the data with the leak checklist of Lab 3.4 <span class="min">7 min</span></li><li>Plan the report: baseline, two models, threshold, model card <span class="min">10 min</span></li><li>Create the repository and commit the starter <span class="min">5 min</span></li><li class="stretch">✱ Stretch: Work out the cost ratio of the admission screen and the threshold it implies</li></ul></div>
+  <aside class="notes"><p>AI-off for the leak check and the plan. Everyone must leave with the starter running and a first commit in their own public repository. Common problems: no GitHub account yet, and a notebook copied without hurbuth.py. Starts from the supplied admission data.</p></aside>
+</section>
+
+<section class="slide" id="wrap-up" data-label="Wrap-up" data-n="31" data-session="4">
+  <div class="kicker">Day 4 · wrap-up</div>
+  <h2>Three things to keep</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Simple when tied</h4><p class="small mb0">Compare families on one pipeline; prefer the simpler one inside the noise.</p></div>
+    <div class="card c-coral"><h4>Watch it in use</h4><p class="small mb0">Flag rates and input means by group and month catch shifts early.</p></div>
+    <div class="card c-purple"><h4>Say who it fails</h4><p class="small mb0">Rates by group with counts, proxies tested, and a card that says who should not rely on it.</p></div>
+  </div>
+  <aside class="notes"><p>Ask each person to say the one line of their capstone plan they are least sure about, and answer two or three.</p></aside>
+</section>
+
+<section class="slide dark" id="next" data-label="Next" data-n="32" data-session="4">
+  <div class="kicker">Next</div>
+  <h2>Capstone day: the report and its defence</h2>
+  <p class="lead">Before capstone day, about 105 minutes: build the report in your repository, commit as you go. On the day: the supervised check without devices, then the defences.</p>
+  <aside class="notes"><p>The supervised check covers a hand fit, reading curves and spotting leaks; no devices, 120 minutes in two parts of 60. It counts 30% and needs at least 50% to pass the course.</p></aside>
+</section>
+</div>
+<script type="application/json" id="academy-data">{"v":1,"engine":"1.0.0","build":{"at":"2026-11-25T02:20:54Z","version":"2027.1.0","commit":"193791f"},"course":{"id":"fnd-aic-101","code":"FND-AIC-101","title":"How Machine Learning Works","track":"foundations","lang":"en","dir":"ltr","url":"https://sdaiaacademy.github.io/fnd-aic-101/","repo":"SDAIAAcademy/fnd-aic-101","home":"../index.html"},"deck":{"id":"day4","kind":"day","day":4,"label":"Day 4","title":"Model families and limits","prev":"day3.html","next":"capstone.html","md":"day4.md","alt":{}},"sessions":[{"n":1,"label":"Session 1","title":"Trees, linear models and small neural networks","slide":"s1","outcomes":["Describe how a tree, a linear model and a small neural network each draw a boundary","Compare the three families and a baseline in one reproducible notebook","Explain what a fixed seed does and does not guarantee"],"minutes":70,"lab":{"id":"4.1","title":"Three families and a baseline","minutes":40,"href":"../labs/D4_1_three_families.ipynb"}},{"n":2,"label":"Session 2","title":"Distribution shift","slide":"s2","outcomes":["Compare a later batch with the training rows feature by feature","Measure a screen's flag rate and recall by sector on a later batch","Name a shift and the check that would have caught it"],"minutes":65,"lab":{"id":"4.2","title":"A later batch from a new sector","minutes":35,"href":"../labs/D4_2_later_batch.ipynb"}},{"n":3,"label":"Session 3","title":"Subgroup error gaps and the model card","slide":"s3","outcomes":["Measure recall and false positive rate by sex, with their counts","Show how a proxy feature carries a protected attribute","Draft a one-page model card with intended use, data, metrics by subgroup and limits"],"minutes":70,"lab":{"id":"4.3","title":"Subgroup error rates and a model card","minutes":40,"href":"../labs/D4_3_subgroups_model_card.ipynb"}},{"n":4,"label":"Session 4","title":"Where language models fit, and the capstone","slide":"s4","outcomes":["Place a language model on the map of supervised learning","Read the capstone brief and its rubric","Start the capstone from a starter notebook that runs end to end"],"minutes":65,"lab":{"id":"4.4","title":"The capstone starter","minutes":35,"href":"../labs/D4_4_capstone_start.ipynb"}}],"slides":[{"id":"title","n":1,"title":"Model families and limits","kind":"title","session":0,"hash":"314ab97a","md":"#### [day4#title] Model families and limits\n\n*SDAIA Academy · How Machine Learning Works*\n\nDay 4: Trees, linear models and a small neural network, a later batch from a new sector, error gaps by sex, a model card, and the capstone\n\nData & AI Foundations Track · 4 teaching days + capstone day · 4 sessions · 4 labs · FND-AIC-101","notes":"Welcome to the last teaching day. Calibrating question: \"Whose fixed pipeline in Lab 3.4 scored above 0.8?\" Nobody's should have. Today: three model families compared honestly, what happens when the data change, error gaps between groups, the model card, and the capstone brief.","minutes":null,"lo":[]},{"id":"agenda","n":2,"title":"Model families and limits","kind":"content","session":0,"hash":"e84c216b","md":"#### [day4#agenda] Model families and limits\n\n*Today*\n\n- **Session 1 · Trees, linear models and small neural networks**: Three families, one pipeline, one fixed seed: compare them honestly against a baseline\n- **Session 2 · Distribution shift**: A model meets data that differ from its training rows: new places, new people, a changed measurement\n- **Session 3 · Subgroup error gaps and the model card**: Error rates can differ by group at one threshold, a dropped attribute can return through a proxy, and a model card says so\n- **Session 4 · Where language models fit, and the capstone**: A language model learns by the same loss minimisation at a far larger scale; the capstone applies the week to a new screen","notes":"Read the four titles. Session 4 ends with the capstone starter running on everyone's machine; protect its 35 minutes.","minutes":null,"lo":[]},{"id":"review-day3","n":3,"title":"Which split matches use?","kind":"quiz","session":0,"hash":"9f19d827","md":"#### [day4#review-day3] Which split matches use?\n\n*Day 3 review*\n\n**Question:** A wound-care screen will score next year's visits. The analyst has three years of dated visits, many clients with several. Which split gives an honest test score?\n\n- A. Train on the first two years, test on the third\n- B. A random 70/30 split of all visits\n- C. Train on the last two years, test on the first\n- D. A random split of clients, all years mixed","notes":"Answer: train on the past, test on the latest year. The last option is the best of the wrong ones: it fixes the duplicate leak but not the temporal one.","minutes":null,"lo":["LO3"]},{"id":"s1","n":4,"title":"Trees, linear models and small neural networks","kind":"section","session":1,"hash":"38b40d6e","md":"#### [day4#s1] Trees, linear models and small neural networks\n\n*Session 1*\n\n- Describe how a tree, a linear model and a small neural network each draw a boundary\n- Compare the three families and a baseline in one reproducible notebook\n- Explain what a fixed seed does and does not guarantee","notes":"Session 1 compares three families of models on one honest workflow. The debrief of Lab 3.4 first.","minutes":null,"lo":["LO4"]},{"id":"debrief-3-4","n":5,"title":"The analyst's 0.936 became an honest 0.732","kind":"content","session":1,"hash":"4721adb4","md":"#### [day4#debrief-3-4] The analyst's 0.936 became an honest 0.732\n\n*Lab 3.4 debrief*\n\n| Leak | Evidence in the reference run |\n| --- | --- |\n| Target: `physio_referral` | AUC alone 0.880; updated during the six months after the visit |\n| Duplicate: the random split | 573 repeated rows; 236 of 1,605 test rows also in training |\n| Temporal: `client_falls_total`, the split | 10.7% of rows count later visits; 30.2% of training rows from 2025 |\n\nLab 3.4 reference run. The best clinical feature alone, walk_seconds, scored 0.687.","notes":"Ask who signs off the fixed pipeline: not the analyst who fixed it. The quality and data protection officer reviews it and the clinical director accepts the new score. The honest number is the useful one: it says what the screen will do.","minutes":null,"lo":["LO3"]},{"id":"families","n":6,"title":"Each family draws the boundary between flag and pass differently","kind":"content","session":1,"hash":"603e7611","md":"#### [day4#families] Each family draws the boundary between flag and pass differently\n\n*Three families*\n\n- **Linear model.** A weighted sum of the inputs; the boundary is a straight line, or a flat plane. Each weight can be read.\n- **Decision tree.** Yes-or-no questions on one input at a time; the boundary is a staircase of boxes.\n- **Small neural network.** Several weighted sums, each bent, then summed again; the boundary can curve.\n\n> **All fitted the same way.** The line and the network by gradient steps on a loss, as on Day 1; the tree by choosing one split at a time.","notes":"Draw the three boundaries on one scatter of walk time against prior falls. More flexibility is not more truth: on tabular screens with a few thousand rows, a linear model is often as good as the others and far easier to check.","minutes":null,"lo":["LO4"]},{"id":"seeds","n":7,"title":"A fixed seed makes a run repeatable, not certain","kind":"content","session":1,"hash":"50d9d133","md":"#### [day4#seeds] A fixed seed makes a run repeatable, not certain\n\n*Reproducibility*\n\n- A network starts from random weights; a tree breaks ties at random: the **seed** fixes those draws\n- Same seed, same data, same library versions: the same numbers, every time\n- Another seed gives a slightly different model: that change is part of the result's uncertainty\n- Two models closer than the seed-to-seed change are **tied**\n\n> **What goes wrong.** A notebook that only works when its cells are run in one hidden order. Restart and run all before reporting.","notes":"The repository pins library versions in a lock file for the same reason. The defence on capstone day re-runs the notebook from a fresh start: this is why.","minutes":null,"lo":["LO4"]},{"id":"check-s1","n":8,"title":"What do you report?","kind":"quiz","session":1,"hash":"5b6055ee","md":"#### [day4#check-s1] What do you report?\n\n*Checkpoint*\n\n**Question:** On a wound-care screen, a small network scores a validation AUC of 0.873 with seed 1 and 0.866 with seed 2; a logistic regression scores 0.869. Which choice is best supported?\n\n- A. The network, quoting its seed 1 score of 0.873\n- B. The network, because its mean is 0.0005 higher\n- C. The logistic regression, because they are tied\n- D. Whichever scores higher on the test set","notes":"Answer: the logistic regression. The network's mean is 0.8695 against 0.869: no difference worth a word.","minutes":null,"lo":["LO4"]},{"id":"lab-4-1","n":9,"title":"Three families and a baseline","kind":"lab","session":1,"hash":"f4292ac8","md":"#### [day4#lab-4-1] Three families and a baseline\n\nLab 4.1 · 40 min\n\nTrain a baseline, a logistic regression, a decision tree and a small neural network through one pipeline with a fixed seed, and report held-out results\n\n[D4_1_three_families.ipynb](https://sdaiaacademy.github.io/fnd-aic-101/labs/D4_1_three_families.ipynb)\n\n- [ ] One preprocessing pipeline for every model (6 min)\n- [ ] Fit a baseline, a logistic regression, a tree and a small neural network (10 min)\n- [ ] The validation table with a fixed seed (8 min)\n- [ ] Run again, then with another seed: what changes (6 min)\n- [ ] Choose, score the test set once and save the table (10 min)\n- [ ] ✱ Stretch: Change the size of the neural network's hidden layer and watch the validation score","notes":"AI-off for the first attempt. Common errors: a different preprocessing for each model, and scoring every model on test. Ask everyone to restart and run all before step 5. Starts from the supplied assessments; nothing from Day 3 is needed.","minutes":null,"lo":[]},{"id":"s2","n":10,"title":"Distribution shift","kind":"section","session":2,"hash":"fcf29ad9","md":"#### [day4#s2] Distribution shift\n\n*Session 2*\n\n- Compare a later batch with the training rows feature by feature\n- Measure a screen's flag rate and recall by sector on a later batch\n- Name a shift and the check that would have caught it","notes":"Session 2: the screen is in use, and the data change.","minutes":null,"lo":["LO6"]},{"id":"debrief-4-1","n":11,"title":"The network tied with the logistic regression","kind":"content","session":2,"hash":"cc13b8e2","md":"#### [day4#debrief-4-1] The network tied with the logistic regression\n\n*Lab 4.1 debrief*\n\n| Validation AUC, seed 101 | AUC |\n| --- | --- |\n| Baseline | 0.500 |\n| Logistic regression | 0.744 |\n| Decision tree, depth 4 | 0.685 |\n| Small neural network, 16 units | 0.743 |\n\nSeed 7 gave the network 0.743 again. Chosen: the logistic regression; test AUC, opened once: 0.731.","notes":"Ask who chose the network and why. With this data, the extra flexibility found nothing the line had not. That is a finding, not a failure.","minutes":null,"lo":["LO4"]},{"id":"shift-kinds","n":12,"title":"A model meets rows unlike its training rows","kind":"content","session":2,"hash":"8f9daf60","md":"#### [day4#shift-kinds] A model meets rows unlike its training rows\n\n*Distribution shift*\n\n- **New people.** A new sector, older clients, a new referral route: the inputs' mix changes.\n- **A changed measurement.** A new device, unit or protocol: the same client gets a different number.\n- **A changed outcome rate.** More or fewer events than in training: precision and the cheapest threshold move.\n\n> **The model cannot tell you.** It scores whatever it is given. The checks must be built around it.","notes":"Ask for one example of each from the room's own work. A changed measurement is the most dangerous because nothing looks wrong to the people collecting it.","minutes":null,"lo":["LO6"]},{"id":"monitoring","n":13,"title":"Cheap checks catch shifts in the first week","kind":"content","session":2,"hash":"d5a94073","md":"#### [day4#monitoring] Cheap checks catch shifts in the first week\n\n*Monitoring*\n\n- **Share flagged**, by sector and by month, against the training period\n- **The mean of each input**, by sector and by month, against the training period\n- **Recall and precision** once the outcomes arrive, months later\n- An owner for each alert, and a person who decides on a pause\n\n> **A parallel example.** A new wound clinic records area in cm², not mm²: every area is 100 times smaller. Its mean area, and its flag rate, would show it on the first day.","notes":"The first two checks need no outcomes, so they work at once; recall needs to wait for the outcome window. Ask what a ranking score like AUC would show for the cm² clinic alone: little or nothing. Every area there shrinks by the same factor, so the clinic's visits keep almost the same order among themselves; the flag rate, which compares scores with a fixed threshold, is what moves. Lab 4.2 shows the same: Central's own AUC stayed at 0.724.","minutes":null,"lo":["LO6"]},{"id":"check-s2","n":14,"title":"Which check comes first?","kind":"quiz","session":2,"hash":"8b02d122","md":"#### [day4#check-s2] Which check comes first?\n\n*Checkpoint*\n\n**Question:** A wound-care screen goes live in a new clinic on Sunday. Outcomes take 30 days to arrive. Which check can warn of a problem in the first week?\n\n- A. The clinic's recall at the threshold\n- B. The clinic's AUC on its first week of visits\n- C. Retraining the model on the clinic's visits\n- D. The clinic's share flagged and input means","notes":"Answer: share flagged and input means. Recall and AUC come later, once outcomes arrive.","minutes":null,"lo":["LO6"]},{"id":"lab-4-2","n":15,"title":"A later batch from a new sector","kind":"lab","session":2,"hash":"a2e80a8f","md":"#### [day4#lab-4-2] A later batch from a new sector\n\nLab 4.2 · 35 min\n\nScore a later batch that includes a newly opened sector, find what moved, correct it and note it for the model card\n\n[D4_2_later_batch.ipynb](https://sdaiaacademy.github.io/fnd-aic-101/labs/D4_2_later_batch.ipynb)\n\n- [ ] Score the later batch with the chosen screen (5 min)\n- [ ] Flag rates and recall by sector (8 min)\n- [ ] Compare feature distributions: training rows against the batch (10 min)\n- [ ] Find the cause and correct it (7 min)\n- [ ] Note what the model card must say (5 min)\n- [ ] ✱ Stretch: Compare the base rate of the new sector with the training period","notes":"AI-off for the first attempt. Let people find the cause from the shift table and the plot before the notebook names it. Common error: refitting the model on the batch in place of correcting the column. Starts from the supplied assessments and batch.","minutes":null,"lo":[]},{"id":"s3","n":16,"title":"Subgroup error gaps and the model card","kind":"section","session":3,"hash":"3e5e52f4","md":"#### [day4#s3] Subgroup error gaps and the model card\n\n*Session 3*\n\n- Measure recall and false positive rate by sex, with their counts\n- Show how a proxy feature carries a protected attribute\n- Draft a one-page model card with intended use, data, metrics by subgroup and limits","notes":"Session 3: the screen's errors are not the same for everyone.","minutes":null,"lo":["LO6","LO5"]},{"id":"debrief-4-2","n":17,"title":"Central was flagged 100% of the time because its walk was timed over six metres","kind":"content","session":3,"hash":"665333b4","md":"#### [day4#debrief-4-2] Central was flagged 100% of the time because its walk was timed over six metres\n\n*Lab 4.2 debrief*\n\n| Later batch, threshold 0.13 | Flagged | Recall |\n| --- | --- | --- |\n| Central, as recorded | 1.000 | 1.000 |\n| Central, walk converted to four metres | 0.517 | 0.773 |\n| Other sectors | 0.38–0.46 | 0.68–0.74 |\n\nCentral's mean walk 9.56 s against 6.00 in training (ratio 1.59). Central's own AUC 0.724 before and after.","notes":"Who decides the correction? The physiotherapy team lead confirms the protocol; the change is recorded and reviewed by someone other than the analyst. The AUC line is the lesson: a ranking score did not see the problem. If someone asks why 0.13 and not Lab 2.4's 0.17: Day 4 uses the standard screen's own scores, and its cheapest threshold on validation under the same six-to-one costs is 0.13; Lab 2.4 worked on a fixed, supplied set of scores.","minutes":null,"lo":["LO6"]},{"id":"subgroup-rates","n":18,"title":"One threshold can give different recall to different groups","kind":"content","session":3,"hash":"3369f614","md":"#### [day4#subgroup-rates] One threshold can give different recall to different groups\n\n*Errors by group*\n\n| Wound care, threshold 0.2 | Visits | Long | Recall |\n| --- | --- | --- | --- |\n| Age 65–74 | 244 | 25 | 0.720 |\n| Age 75–84 | 222 | 17 | 0.824 |\n| Age 85+ | 69 | 4 | 1.000 |\n\n- Report **recall and false positive rate** per group: they fail people differently\n- Report **the counts**: a recall of 1.000 on 4 visits says little","notes":"Ask the room what the 85+ row means: four long visits, all caught. One more miss would make it 0.75. That is why the counts sit beside every rate. The lab measures the fall screen by sex.","minutes":null,"lo":["LO6"]},{"id":"proxy","n":19,"title":"Leaving an attribute out does not remove it","kind":"content","session":3,"hash":"c3903f83","md":"#### [day4#proxy] Leaving an attribute out does not remove it\n\n*Proxies*\n\n- A **proxy** is an input that carries a sensitive attribute: a first name, a home address, a job title\n- Test it: predict the attribute from the input; compare with guessing the larger group\n- An input can also be **recorded differently** for one group, so the model is weaker for that group even with no proxy\n\n> **What goes wrong.** \"The model does not use sex, so it cannot treat men and women differently.\" Measure, then say.","notes":"Give a parallel: a wound screen without age as an input can still separate age groups through a column such as years since registration. Neither effect shows in the list of inputs; both show in the error rates. Do not name the lab's columns before Lab 4.3.","minutes":null,"lo":["LO6"]},{"id":"ethics-principles","n":20,"title":"The SDAIA AI Ethics Principles: fairness through the model's life","kind":"content","session":3,"hash":"85a22d57","md":"#### [day4#ethics-principles] The SDAIA AI Ethics Principles: fairness through the model's life\n\n*National reference*\n\n- **Preparing input data:** sensitive attributes are not model inputs unless there is a justification\n- **Building and validating:** the chosen model's fairness metrics fall within a defined threshold\n- **Deploying and monitoring:** the predefined fairness metrics are monitored in production\n\n> **Course rule.** Also test for proxies of a sensitive attribute. The English edition names this step and the Arabic edition does not, so the course states it as its own rule.","notes":"Principle 1, Fairness (النزاهة والإنصاف), in SDAIA's AI Ethics Principles, both editions read for this course (cover dated 2025). The three points are worded to what both editions say. The English edition adds that proxies are analysed and kept out; the Arabic edition speaks of identifying a substitute. Both editions are the current published text. The three points on the slide are what both say; the proxy test is the course's own rule, which the English edition also names.","minutes":null,"lo":["LO6"]},{"id":"model-card","n":21,"title":"One page that says what the model is for, and for whom it is weak","kind":"content","session":3,"hash":"85c98c4f","md":"#### [day4#model-card] One page that says what the model is for, and for whom it is weak\n\n*The model card*\n\n- Intended use and out of scope\n- Data, split and metrics, against a baseline\n- Metrics by group, with counts\n- Known limits and **who should not rely on it**\n- Monitoring: what, how often, by whom\n\n- **Prepared, reviewed, accepted.** The analyst prepares it; a different person reviews it; the owner of the decision accepts the model for use.","notes":"Adapted from Mitchell and colleagues' Model Cards for Model Reporting (2019). The template is labs/model_card_template.md and the capstone uses it. The separation of roles is required in every reference answer: the person who builds a model does not approve it.","minutes":null,"lo":["LO6"]},{"id":"check-s3","n":22,"title":"What does the model card say?","kind":"quiz","session":3,"hash":"1c4494fd","md":"#### [day4#check-s3] What does the model card say?\n\n*Checkpoint*\n\n**Question:** A wound-care screen has recall 0.82 for clients aged 75 to 84 (17 long visits) and 0.72 for 65 to 74 (25 long visits). What belongs in its model card?\n\n- A. The overall recall only, since the groups are small\n- B. Both rates with their counts, and a note that the gap is uncertain\n- C. A statement that the screen is biased against younger clients\n- D. A plan to add age as an input to fix the gap","notes":"Answer: both rates with counts and a note on uncertainty. Reporting is not the same as concluding; the reviewer and the owner decide what to do.","minutes":null,"lo":["LO6"]},{"id":"lab-4-3","n":23,"title":"Subgroup error rates and a model card","kind":"lab","session":3,"hash":"86729b37","md":"#### [day4#lab-4-3] Subgroup error rates and a model card\n\nLab 4.3 · 40 min\n\nMeasure subgroup error rates and draft a model card: recall and false positive rate by sex at the chosen threshold, the proxy that carries sex, and who should not rely on the screen\n\n[D4_3_subgroups_model_card.ipynb](https://sdaiaacademy.github.io/fnd-aic-101/labs/D4_3_subgroups_model_card.ipynb)\n\n- [ ] Error rates by sex at the chosen threshold (10 min)\n- [ ] The counts behind each rate (6 min)\n- [ ] The proxy: predict sex from nurse preference (8 min)\n- [ ] Draft the model card from the template (12 min)\n- [ ] Write who should not rely on the screen (4 min)\n- [ ] ✱ Stretch: Add nurse preference to the screen and compare the gap","notes":"AI-off for the first attempt; graded lab. The model card is graded: rates with counts, the proxy evidence, and who should not rely on the screen. Watch for people who add sex as an input to \"fix\" the gap. Starts from the supplied assessments.","minutes":null,"lo":[]},{"id":"s4","n":24,"title":"Where language models fit, and the capstone","kind":"section","session":4,"hash":"ebde3c27","md":"#### [day4#s4] Where language models fit, and the capstone\n\n*Session 4*\n\n- Place a language model on the map of supervised learning\n- Read the capstone brief and its rubric\n- Start the capstone from a starter notebook that runs end to end","notes":"Session 4: where language models sit on the map, then the capstone.","minutes":null,"lo":["LO4","LO6"]},{"id":"debrief-4-3","n":25,"title":"The screen caught 80% of female fallers and 59% of male fallers","kind":"content","session":4,"hash":"3bd449bf","md":"#### [day4#debrief-4-3] The screen caught 80% of female fallers and 59% of male fallers\n\n*Lab 4.3 debrief*\n\n| Test, at 0.13 | Assessments | Fallers | Recall | False pos. rate |\n| --- | --- | --- | --- | --- |\n| Women | 836 | 146 | 0.801 | 0.430 |\n| Men | 600 | 99 | 0.586 | 0.333 |\n\nSynthetic data with a planted pattern: men's past falls are recorded less often. Mean recorded prior falls of those who fell: women 0.93, men 0.26. Nurse preference predicted sex with accuracy 0.913 (the larger group alone: 0.582).","notes":"The data cannot show why men's past falls are recorded less often. In this synthetic case the generator planted it; it is not a finding about real men or women, and in real data the cause could be how questions are asked, who answers them or how notes are kept. That is a question for the clinical team and a line in the card. Ask for a \"who should not rely on it\" sentence from two people.","minutes":null,"lo":["LO6"]},{"id":"language-models","n":26,"title":"A language model learns like a supervised model, on text, at a vast scale","kind":"content","session":4,"hash":"c05aab76","md":"#### [day4#language-models] A language model learns like a supervised model, on text, at a vast scale\n\n*Where language models fit*\n\n- Features: the text so far. Label: the next piece of text, taken from the text itself\n- Fitted by the same idea as Day 1: gradient steps that make a loss small\n- The family is a very large neural network; the data are huge amounts of text\n\n- **The same limits.** Leakage (test questions seen in training), shift (new topics), and gaps between groups apply here too.\n\n> **Next.** FND-AIC-102 How Language Models Work takes this further.","notes":"Keep this to five minutes. The point is continuity: nothing about a language model escapes held-out testing, baselines or leakage. DS-204 is the next step for tabular models: boosted trees, tuning and calibration.","minutes":null,"lo":["LO4"]},{"id":"capstone-brief","n":27,"title":"A modelling report on a new screen: unplanned admission in 90 days","kind":"content","session":4,"hash":"46e4c403","md":"#### [day4#capstone-brief] A modelling report on a new screen: unplanned admission in 90 days\n\n*The capstone*\n\n- Split by date, a baseline and two models in pipelines\n- A leak check, and a threshold from the stated costs and base rate\n- A one-page model card with an owner and a different reviewer\n- A public repository, its history kept; a ten-minute defence\n\n- **AI and data.** AI-full for the capstone's code; you explain every line. Into any generative AI tool, only public or synthetic data.","notes":"The brief is labs/capstone/README.md. Only Public data goes into generative AI tools, never anything classified Restricted or higher, as SDAIA's guidelines for government require; here the data are synthetic. The defence re-runs the notebook and explains a result the instructor picks.","minutes":null,"lo":["LO6"]},{"id":"capstone-rubric","n":28,"title":"Five criteria, 100 points","kind":"content","session":4,"hash":"15a2e06b","md":"#### [day4#capstone-rubric] Five criteria, 100 points\n\n*How the capstone is scored*\n\n| Criterion | Points |\n| --- | --- |\n| Held-out workflow, end to end with a fixed seed | 25 |\n| Leakage-safe data handling | 15 |\n| Threshold decision from costs and base rate | 20 |\n| Model card with subgroups, limits, owner and reviewer | 20 |\n| Defence: re-runs and explains a selected result | 20 |","notes":"Each criterion scores a different thing, so nothing is counted twice: the threshold is scored once, the model card once. The capstone is 40% of the course mark.","minutes":null,"lo":["LO6"]},{"id":"check-s4","n":29,"title":"What is a language model's label?","kind":"quiz","session":4,"hash":"2cf35ff3","md":"#### [day4#check-s4] What is a language model's label?\n\n*Checkpoint*\n\n**Question:** Seen as supervised learning, what plays the part of the label when a language model is trained?\n\n- A. The next piece of text after the text so far\n- B. A score a person gives each answer\n- C. The whole text the model has read so far\n- D. A topic tag attached to each document","notes":"Answer: the next piece of text. People who know about feedback from human raters are not wrong that it exists; it comes after the main training.","minutes":null,"lo":["LO4"]},{"id":"lab-4-4","n":30,"title":"The capstone starter","kind":"lab","session":4,"hash":"855cfd86","md":"#### [day4#lab-4-4] The capstone starter\n\nLab 4.4 · 35 min\n\nRun the capstone starter on the admission screen end to end with its fixed seed, check its data for leaks and write the plan of the report\n\n[D4_4_capstone_start.ipynb](https://sdaiaacademy.github.io/fnd-aic-101/labs/D4_4_capstone_start.ipynb)\n\n- [ ] Read the capstone brief and the data dictionary (5 min)\n- [ ] Run the starter end to end with the fixed seed (8 min)\n- [ ] Check the data with the leak checklist of Lab 3.4 (7 min)\n- [ ] Plan the report: baseline, two models, threshold, model card (10 min)\n- [ ] Create the repository and commit the starter (5 min)\n- [ ] ✱ Stretch: Work out the cost ratio of the admission screen and the threshold it implies","notes":"AI-off for the leak check and the plan. Everyone must leave with the starter running and a first commit in their own public repository. Common problems: no GitHub account yet, and a notebook copied without hurbuth.py. Starts from the supplied admission data.","minutes":null,"lo":[]},{"id":"wrap-up","n":31,"title":"Three things to keep","kind":"content","session":4,"hash":"a46f32fc","md":"#### [day4#wrap-up] Three things to keep\n\n*Day 4 · wrap-up*\n\n- **Simple when tied.** Compare families on one pipeline; prefer the simpler one inside the noise.\n- **Watch it in use.** Flag rates and input means by group and month catch shifts early.\n- **Say who it fails.** Rates by group with counts, proxies tested, and a card that says who should not rely on it.","notes":"Ask each person to say the one line of their capstone plan they are least sure about, and answer two or three.","minutes":null,"lo":[]},{"id":"next","n":32,"title":"Capstone day: the report and its defence","kind":"content","session":4,"hash":"27a92cdd","md":"#### [day4#next] Capstone day: the report and its defence\n\n*Next*\n\nBefore capstone day, about 105 minutes: build the report in your repository, commit as you go. On the day: the supervised check without devices, then the defences.","notes":"The supervised check covers a hand fit, reading curves and spotting leaks; no devices, 120 minutes in two parts of 60. It counts 30% and needs at least 50% to pass the course.","minutes":null,"lo":[]}],"activities":[{"id":"review-day3-q1","slide":"review-day3","type":"single","prompt":"A wound-care screen will score next year's visits. The analyst has three years of dated visits, many clients with several. Which split gives an honest test score?","options":[{"key":"A","text":"Train on the first two years, test on the third"},{"key":"B","text":"A random 70/30 split of all visits"},{"key":"C","text":"Train on the last two years, test on the first"},{"key":"D","text":"A random split of clients, all years mixed"}],"correct":[0],"explanation":"The screen will meet visits from after its training period, so the test rows must come from after it too.","misconceptions":["","Puts later visits in training and earlier ones in test, and splits clients across both","Uses the future to predict the past, the reverse of use","Grouping by client helps, but a random draw of clients still mixes the years"],"lo":["LO3"]},{"id":"check-s1-q1","slide":"check-s1","type":"single","prompt":"On a wound-care screen, a small network scores a validation AUC of 0.873 with seed 1 and 0.866 with seed 2; a logistic regression scores 0.869. Which choice is best supported?","options":[{"key":"A","text":"The network, quoting its seed 1 score of 0.873"},{"key":"B","text":"The network, because its mean is 0.0005 higher"},{"key":"C","text":"The logistic regression, because they are tied"},{"key":"D","text":"Whichever scores higher on the test set"}],"correct":[2],"explanation":"The gap between the models is smaller than the network's own change across seeds; when tied, the simpler model is easier to explain and check.","misconceptions":["Reports the luckier seed as if it were the model","Averages away the evidence that the two are tied, then still picks a winner","","Opening the test set to break a tie turns it into a second validation set"],"lo":["LO4"]},{"id":"check-s2-q1","slide":"check-s2","type":"single","prompt":"A wound-care screen goes live in a new clinic on Sunday. Outcomes take 30 days to arrive. Which check can warn of a problem in the first week?","options":[{"key":"A","text":"The clinic's recall at the threshold"},{"key":"B","text":"The clinic's AUC on its first week of visits"},{"key":"C","text":"Retraining the model on the clinic's visits"},{"key":"D","text":"The clinic's share flagged and input means"}],"correct":[3],"explanation":"Flag rates and input means need no outcomes, so they can be compared with the training period from the first day.","misconceptions":["Needs outcomes, which do not exist for 30 days","Needs outcomes too, and a ranking score hides a change of unit","Retraining on a week of visits with no outcomes is not possible",""],"lo":["LO6"]},{"id":"check-s3-q1","slide":"check-s3","type":"single","prompt":"A wound-care screen has recall 0.82 for clients aged 75 to 84 (17 long visits) and 0.72 for 65 to 74 (25 long visits). What belongs in its model card?","options":[{"key":"A","text":"The overall recall only, since the groups are small"},{"key":"B","text":"Both rates with their counts, and a note that the gap is uncertain"},{"key":"C","text":"A statement that the screen is biased against younger clients"},{"key":"D","text":"A plan to add age as an input to fix the gap"}],"correct":[1],"explanation":"The card reports what was measured and how much it can bear; the counts show that these rates move a lot by chance.","misconceptions":["Hides a measured gap behind the overall number","","A gap measured on 42 long visits is too uncertain to call proof of bias","Adding age changes the model without showing that the gap closes"],"lo":["LO6"]},{"id":"check-s4-q1","slide":"check-s4","type":"single","prompt":"Seen as supervised learning, what plays the part of the label when a language model is trained?","options":[{"key":"A","text":"The next piece of text after the text so far"},{"key":"B","text":"A score a person gives each answer"},{"key":"C","text":"The whole text the model has read so far"},{"key":"D","text":"A topic tag attached to each document"}],"correct":[0],"explanation":"Each position in a text gives an example: the text so far as input, the piece that follows as label.","misconceptions":["","Describes feedback some models get later, not the main training","Confuses the input with the label: the text so far is the input","There is no topic label in the main training; the text itself supplies the label"],"lo":["LO4"]}],"ai":{"context":{"course":"../context/course.md","courseJs":"../context/course.js","day":"day4.md","llms":"../llms.txt"},"tasks":[],"tools":[]},"bridge":{"allowedOrigins":[]},"features":{},"strings":{}}</script>
+<script src="../_engine/academy.js"></script>
+</body>
+</html>

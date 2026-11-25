@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-ax="deck" data-track="foundations">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 1 · Learning from examples · How Machine Learning Works</title>
+<meta name="generator" content="SDAIA Academy engine 1.0.0">
+<link rel="icon" href="../_engine/icon.svg">
+<link rel="alternate" type="text/markdown" href="day1.md">
+<link rel="describedby" href="../llms.txt">
+<link rel="stylesheet" href="../_engine/academy.css">
+</head>
+<body>
+<div class="deck" data-course="How Machine Learning Works" data-track="foundations" data-day="Day 1">
+<section class="slide title" id="title" data-auto="title" data-label="Welcome" data-n="1">
+  <div class="kicker">SDAIA Academy · How Machine Learning Works</div>
+  <h1>Learning from examples</h1>
+  <p class="lead mt">Day 1: Features and labels, a loss and its gradient, nearest neighbours and a line by hand, and the first honest split</p>
+  <div class="meta"><span class="track">Data &amp; AI Foundations Track</span><span>4 teaching days + capstone day</span><span>4 sessions · 4 labs</span><span>FND-AIC-101</span></div>
+  <aside class="notes"><p>Welcome the room and introduce yourself. Ask one calibrating question: "Who has fitted a model in code before, even once?" Most hands down is normal; the course assumes Python from FND-PRG-101 and nothing about machine learning. Today's rhythm: four sessions, each about 30 minutes of ideas and a lab of 35 or 40 minutes. Breaks are yours: press B.</p></aside>
+</section>
+
+<section class="slide" id="agenda" data-auto="agenda" data-label="Agenda" data-n="2">
+  <div class="kicker">Today</div>
+  <h2>Learning from examples</h2>
+  <div class="agenda"><div class="item"><div><b>Session 1 · Features, labels and prediction rules</b><small>A table of examples, the column to predict, and a rule as a function you can score</small></div></div><div class="item"><div><b>Session 2 · Loss and gradient descent</b><small>A loss scores a rule over all rows; its slope says which way to move the parameters</small></div></div><div class="item"><div><b>Session 3 · Nearest neighbours and linear models by hand</b><small>Two ways to turn examples into a rule: vote among the closest rows, or fit a line</small></div></div><div class="item"><div><b>Session 4 · Training, validation and test sets</b><small>Score a model on rows it never saw, choose on validation, open the test set once</small></div></div></div>
+  <aside class="notes"><p>Read the four session titles aloud. Today ends with the first honest comparison of models; everything before it is done by hand first, then in code.</p></aside>
+</section>
+
+<section class="slide" id="case-hurbuth" data-lo="LO1" data-n="3">
+  <div class="kicker">The case for four days</div>
+  <h2>Hurbuth Home Care wants to know who is likely to fall</h2>
+  <div class="cols cols-2">
+    <ul class="bullets">
+      <li>A fictional private provider of <b>home nursing and physiotherapy</b> for older people, in an unnamed city with five sectors</li>
+      <li>A nurse assesses each client at home; the physiotherapy team can run a <b>home programme</b> for some of them</li>
+      <li>The question: from the assessment, <b>will this client fall in the next six months?</b></li>
+      <li>Every record is <b>synthetic</b>; clients are codes, staff are roles</li>
+    </ul>
+    <div class="card c-teal"><h4>Who decides what</h4><p class="small mb0">The <b>clinical director</b> owns the screen and approves its threshold. The <b>physiotherapy team lead</b> owns capacity. The <b>quality and data protection officer</b> reviews the model card. You are the <b>data analyst</b> who builds and tests it.</p></div>
+  </div>
+  <aside class="notes"><p>The case is invented and its numbers are not clinical evidence about falls: say so now and again whenever someone quotes a result as if it were. The roles matter later: the analyst proposes, the director decides, a different person reviews. That separation appears in every reference answer of the course.</p></aside>
+</section>
+
+<section class="slide" id="setup-check" data-label="Setup" data-n="4">
+  <div class="kicker">Lab environment</div>
+  <h2>Open a notebook, run the setup check</h2>
+  <div class="cols cols-2">
+    <ol class="bullets">
+      <li><b>In a free hosted notebook service</b>: open a lab from the course page; its first cell copies the course and installs the libraries it needs.</li>
+      <li><b>On a laptop</b>: clone the course, then run the commands on the right.</li>
+      <li>Run <code>00_setup_check.ipynb</code>. It prints the library versions and the number of assessments.</li>
+      <li>No model is downloaded and no key is needed: every lab runs on a laptop processor in seconds.</li>
+    </ol>
+    <pre class="code s" data-file="terminal (local option)"><code class="language-bash">git <span class="hljs-built_in">clone</span> https://github.com/SDAIAAcademy/fnd-aic-101
+<span class="hljs-built_in">cd</span> fnd-aic-101/labs
+uv <span class="hljs-built_in">sync</span>
+uv run jupyter lab</code></pre>
+  </div>
+  <aside class="notes"><p>Everyone runs the setup check now, before Session 1. It should print 4,776 assessments. Common failures: a corporate proxy that blocks the package index (use the hosted notebook service), and on Windows a deep folder that breaks long paths (set UV_PROJECT_ENVIRONMENT to a short folder before uv sync). Hosted notebooks time out when idle; rerunning from the top is safe, every lab starts from supplied files.</p></aside>
+</section>
+
+<section class="slide" id="ai-policy" data-label="AI policy" data-n="5">
+  <div class="kicker">How you may use AI assistants here</div>
+  <h2>Your hands first, an assistant after</h2>
+  <div class="cols cols-3">
+    <div class="card c-coral"><h4>AI-off</h4><p class="small mb0">Every hand fit, the first attempt at each lab, and the supervised check at the end of the course.</p></div>
+    <div class="card c-amber"><h4>AI-tutor</h4><p class="small mb0">After your first attempt: an assistant may explain an error message or a library call. It does not write the exercise.</p></div>
+    <div class="card c-teal"><h4>AI-full</h4><p class="small mb0">The capstone code. You explain every line of it in the defence, and the trainer may ask you to re-run any result.</p></div>
+  </div>
+  <div class="callout note mt"><b>Data.</b> The course data is synthetic and published, so it may go into an assistant. At work, data classified Restricted or higher does not go into generative AI tools.</div>
+  <aside class="notes"><p>This is the catalog's policy for the course. The data rule is from SDAIA's Generative Artificial Intelligence for Government Guidelines, section 3.5 (Privacy and Security): employees of government entities do not enter data classified Restricted or higher (Restricted, Confidential, Top Secret), and generative AI tools are limited to data classified Public («عامة»). Our data is invented and published, which is why the AI-tutor step is allowed at all. Sources: SDAIA, Generative Artificial Intelligence for Government Guidelines, the edition on SDAIA's site (cover dated 2025), English and Arabic, section 3.5.</p></aside>
+</section>
+
+<!-- Session 1 -->
+
+<section class="slide section" id="s1" data-auto="section" data-session="1" data-n="6">
+  <div class="kicker">Session 1</div>
+  <h1>Features, labels and prediction rules</h1>
+  <ul class="bullets outcomes"><li>Name the identifier, the features and the label of a table of assessments</li><li>Write a prediction rule as a function of the features</li><li>Count a rule's two kinds of error on rows it was not written from</li></ul>
+  <div class="sess-no">01</div>
+  <aside class="notes"><p>Session 1 is the vocabulary of the whole course: a row, a feature, a label, a rule. Keep it concrete.</p></aside>
+</section>
+
+<section class="slide" id="examples-table" data-lo="LO1" data-n="7" data-session="1">
+  <div class="kicker">Learning from examples</div>
+  <h2>Supervised learning starts from a table of solved examples</h2>
+  <p class="lead">A parallel case: the wound-care nurses of the same company want to know which dressing visits will run over 40 minutes.</p>
+  <table class="t small">
+    <tr><th class="num">Wound area (cm²)</th><th class="num">Dressing layers</th><th class="num">Diabetic</th><th class="num">Ran over 40 min</th></tr>
+    <tr><td class="num">28.5</td><td class="num">1</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td class="num">7.6</td><td class="num">4</td><td class="num">0</td><td class="num">0</td></tr>
+    <tr><td class="num">7.4</td><td class="num">1</td><td class="num">1</td><td class="num">0</td></tr>
+    <tr><td class="num">22.1</td><td class="num">4</td><td class="num">0</td><td class="num">1</td></tr>
+    <tr><td class="num">25.1</td><td class="num">3</td><td class="num">0</td><td class="num">1</td></tr>
+    <tr><td class="num">30.6</td><td class="num">4</td><td class="num">1</td><td class="num">1</td></tr>
+  </table>
+  <div class="caption">Six synthetic wound-care visits (labs/_tools/teaching_examples.py).</div>
+  <aside class="notes"><p>Each row is an example whose answer we already know: the last column. Ask: what would you need to know before the visit to guess the last column? That is the whole idea of supervised learning. The fall-risk data of the labs has the same shape; we keep its numbers for the labs themselves.</p></aside>
+</section>
+
+<section class="slide" id="features-labels" data-lo="LO1" data-n="8" data-session="1">
+  <div class="kicker">Three kinds of column</div>
+  <h2>Features go in, the label comes out, the identifier stays out</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Features</h4><p class="small mb0">What is known when the prediction is made: wound area, layers, diabetic. Written <code>X</code>.</p></div>
+    <div class="card c-coral"><h4>Label</h4><p class="small mb0">What you want to predict, known for past rows only: ran over 40 minutes. Written <code>y</code>.</p></div>
+    <div class="card c-purple"><h4>Identifier</h4><p class="small mb0">Which visit or client a row is about. Needed to join and audit, useless as a predictor.</p></div>
+  </div>
+  <div class="callout tip mt"><b>Ask of every column.</b> Is it known at the moment the prediction is made? If not, it is not a feature, however well it predicts.</div>
+  <aside class="notes"><p>The callout is the seed of Day 3's leakage session; plant it now. Example: "minutes the visit actually took" predicts "ran over 40" perfectly and is useless, because it is known only after the visit.</p></aside>
+</section>
+
+<section class="slide" id="rule-is-function" data-lo="LO1" data-n="9" data-session="1">
+  <div class="kicker">A prediction rule</div>
+  <h2>A rule is a function from features to a prediction</h2>
+  <div class="cols cols-2">
+    <pre class="code" data-file="a rule you could write by hand"><code class="language-python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">rule</span>(<span class="hljs-params">visit</span>) -&gt; <span class="hljs-built_in">bool</span>:
+    <span class="hljs-keyword">return</span> visit[<span class="hljs-string">&quot;area_cm2&quot;</span>] &gt;= <span class="hljs-number">15</span></code></pre>
+    <ul class="bullets">
+      <li>On the six visits it flags <b>4</b> and catches all <b>3</b> that ran over</li>
+      <li>One flag was needless: the 28.5 cm² wound with one layer</li>
+      <li>A model is the same thing, written by a fitting procedure from many rows instead of by you from six</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>Write the rule on the board as "if area at least 15, flag". Then say: machine learning does not change what a rule is; it changes who writes it and from how many examples. Counts from teaching_examples.py, section D1 S1.</p></aside>
+</section>
+
+<section class="slide" id="two-errors" data-lo="LO1" data-n="10" data-session="1">
+  <div class="kicker">Scoring a rule</div>
+  <h2>A screen makes two different mistakes</h2>
+  <div class="cols cols-2">
+    <div class="card c-coral"><h4>A miss</h4><p class="small mb0">The visit ran over and the rule did not flag it. For a fall screen: a client who falls and got no programme.</p></div>
+    <div class="card c-amber"><h4>A needless flag</h4><p class="small mb0">The rule flagged a visit that was fine. For a fall screen: a programme for a client who would not have fallen.</p></div>
+  </div>
+  <div class="callout warn mt"><b>What goes wrong.</b> Counting only "right answers" mixes the two, and a rule that flags nobody can look excellent when the outcome is rare.</div>
+  <aside class="notes"><p>Ask the room which mistake is worse for the fall screen. Let two people disagree; on Day 2 you will put a cost on each and the disagreement becomes a number.</p></aside>
+</section>
+
+<section class="slide" id="fresh-rows" data-lo="LO1" data-n="11" data-session="1">
+  <div class="kicker">Where to score</div>
+  <h2>Score a rule on rows you did not write it from</h2>
+  <div class="flow">
+    <div class="step c-teal"><b>1 · Look</b>at a few rows and write a rule</div>
+    <div class="arrow frag" data-frag="b">→</div><div class="step c-cyan frag" data-frag="b"><b>2 · Apply</b>it to many rows you never looked at</div>
+    <div class="arrow frag" data-frag="c">→</div><div class="step c-coral frag" data-frag="c"><b>3 · Count</b>misses and needless flags there</div>
+  </div>
+  <div class="callout tip mt frag"><b>Takeaway.</b> A rule always looks best on the rows that inspired it.</div>
+  <aside class="notes"><p>Press once per step. This is the intuition behind the training, validation and test sets of Session 4. In the lab you write a rule from ten rows and score it on 1,000.</p></aside>
+</section>
+
+<section class="slide" id="tables-in-python" data-lo="LO1" data-n="12" data-session="1">
+  <div class="kicker">The tools</div>
+  <h2>A dataframe holds the table; a library holds the models</h2>
+  <div class="cols cols-2">
+    <pre class="code s" data-file="reading a table"><code class="language-python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
+visits = pd.read_csv(<span class="hljs-string">&quot;visits.csv&quot;</span>)
+X = visits[[<span class="hljs-string">&quot;area_cm2&quot;</span>, <span class="hljs-string">&quot;layers&quot;</span>]]
+y = visits[<span class="hljs-string">&quot;over_40&quot;</span>]
+visits.apply(rule, axis=<span class="hljs-number">1</span>)   <span class="hljs-comment"># one answer per row</span></code></pre>
+    <ul class="bullets">
+      <li>A <b>dataframe library</b> (pandas, Polars) reads and slices tables</li>
+      <li>A <b>machine learning library</b> (scikit-learn, tidymodels in R) fits and applies models</li>
+      <li>The labs give you helpers for loading; you write the parts that matter</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>FND-PRG-101 taught Python but not dataframes; the pre-work had a short dataframe primer. If someone is lost on pandas syntax, point them to the helper module hurbuth.py and keep them on the idea. Tool names are examples, not endorsements.</p></aside>
+</section>
+
+<section class="slide" id="check-s1" data-lo="LO1" data-n="13" data-session="1">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which column belongs in the fall-risk rule?</h2>
+  <div class="quiz" data-type="single" data-lo="LO1" data-id="check-s1-q1">
+    <p class="lead">An analyst at a home-care company lists four columns for a rule that runs at the end of the nurse's assessment visit. Which one may the rule use?</p>
+    <div class="opts">
+      <div class="opt" data-why="Treats an identifier as information: a client code says who the row is about, not how likely the client is to fall" data-k="A">The client's code</div>
+      <div class="opt" data-ok data-k="B">Seconds the client took to walk four metres in the visit</div>
+      <div class="opt" data-why="Uses the future: an emergency call after the visit is not known when the rule runs" data-k="C">Whether the client called for help in the following month</div>
+      <div class="opt" data-why="Confuses the label with a feature: the six-month outcome is what the rule predicts" data-k="D">Whether the client fell in the following six months</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The walk is measured during the visit, so it is known when the rule runs. The others are an identifier, a future event and the label itself.</div>
+  </div>
+  <aside class="notes"><p>Answer: the walk. If the room picks the emergency call, ask "on the day of the visit, could the nurse know it?" That question is the leak test of Day 3.</p></aside>
+</section>
+
+<section class="slide lab top" id="lab-1-1" data-auto="lab" data-lab="1.1" data-label="Lab 1.1" data-n="14" data-session="1">
+  <div class="cols cols-2 mid"><div><div class="lab-tag">Lab 1.1 · 35 min</div><h2>A screening rule by hand</h2><p class="lead small">Write a fall-risk rule on paper for ten clients, turn it into a function and count its misses and needless flags on 1,000 assessments</p><a class="nb" href="../labs/D1_1_hand_rule.ipynb">D1_1_hand_rule.ipynb</a></div><ul class="checklist"><li>Read the ten rows: name the identifier, the features and the label <span class="min">5 min</span></li><li>Write a rule on paper that flags a client and apply it to the ten rows <span class="min">8 min</span></li><li>Turn the rule into a Python function <span class="min">7 min</span></li><li>Count its errors on 1,000 training assessments: missed fallers and needless flags <span class="min">10 min</span></li><li>Compare with a colleague's rule and with flagging nobody <span class="min">5 min</span></li><li class="stretch">✱ Stretch: Give your rule one number you can tune and find its best value on the training rows</li></ul></div>
+  <aside class="notes"><p>AI-off. Make sure people write the paper rule before typing. Watch for: rules that use fell_6m (the label), and count functions that return four numbers not adding up to 1,000. Fast finishers take the stretch and should be asked "which rows did you tune on?". Nothing earlier is needed: the lab loads supplied files.</p></aside>
+</section>
+
+<!-- Session 2 -->
+
+<section class="slide section" id="s2" data-auto="section" data-session="2" data-n="15">
+  <div class="kicker">Session 2</div>
+  <h1>Loss and gradient descent</h1>
+  <ul class="bullets outcomes"><li>Compute a mean squared error by hand for a candidate line</li><li>Take a gradient step by hand and say why the loss falls</li><li>Run gradient descent in code and read its loss curve</li></ul>
+  <div class="sess-no">02</div>
+  <aside class="notes"><p>Open with the debrief of Lab 1.1, then move from rules you write to rules a procedure fits.</p></aside>
+</section>
+
+<section class="slide" id="debrief-1-1" data-lo="LO1" data-n="16" data-session="2">
+  <div class="kicker">Lab 1.1 debrief</div>
+  <h2>Flagging nobody was right most often and found no faller</h2>
+  <table class="t small">
+    <tr><th>Rule, on 1,000 training assessments</th><th class="num">Caught</th><th class="num">Missed</th><th class="num">Needless</th><th class="num">Right</th></tr>
+    <tr><td>A fall in the past year, or a walk of 8 s or more</td><td class="num">73</td><td class="num">77</td><td class="num">153</td><td class="num">770</td></tr>
+    <tr><td>A walk of 7 s or more</td><td class="num">62</td><td class="num">88</td><td class="num">188</td><td class="num">724</td></tr>
+    <tr class="hl"><td>Flag nobody</td><td class="num">0</td><td class="num">150</td><td class="num">0</td><td class="num">850</td></tr>
+  </table>
+  <div class="caption">Lab 1.1 reference run: 150 of the 1,000 clients fell within six months.</div>
+  <aside class="notes"><p>Ask two or three people for their own rule's counts. Then point at the last row: the most "right answers" and no use at all. The reference rule caught about half the fallers while flagging 226 clients. Keep these two kinds of error in mind; the rest of today is about how a procedure writes the rule for us.</p></aside>
+</section>
+
+<section class="slide" id="loss-idea" data-lo="LO1" data-n="17" data-session="2">
+  <div class="kicker">From writing rules to fitting them</div>
+  <h2>A loss turns "how wrong is this rule" into one number</h2>
+  <ul class="bullets">
+    <li>Pick a family of rules with a few numbers in it: a line <code>minutes = w × area + b</code></li>
+    <li>For one setting of <code>w</code> and <code>b</code>, compute the error on every example</li>
+    <li>Average the squared errors: the <b>mean squared error</b></li>
+    <li><b>Fitting</b> means finding the numbers with the lowest loss</li>
+  </ul>
+  <div class="callout note mt"><b>Same idea, every model.</b> A line, a logistic regression, a neural network and a language model are all fitted by making a loss small.</div>
+  <aside class="notes"><p>The family is chosen by a person; the numbers are chosen by the procedure. Squaring keeps positive and negative errors from cancelling and makes large errors count more.</p></aside>
+</section>
+
+<section class="slide" id="loss-worked" data-lo="LO1" data-n="18" data-session="2">
+  <div class="kicker">A worked loss</div>
+  <h2>Five wound-care visits, two candidate lines</h2>
+  <table class="t small">
+    <tr><th class="num">Area (cm²)</th><th class="num">Minutes</th><th class="num">Error of w 1.0, b 15</th><th class="num">Error of w 1.2, b 15</th></tr>
+    <tr><td class="num">4</td><td class="num">20</td><td class="num">-1.0</td><td class="num">-0.2</td></tr>
+    <tr><td class="num">8</td><td class="num">26</td><td class="num">-3.0</td><td class="num">-1.4</td></tr>
+    <tr><td class="num">12</td><td class="num">27</td><td class="num">0.0</td><td class="num">2.4</td></tr>
+    <tr><td class="num">16</td><td class="num">33</td><td class="num">-2.0</td><td class="num">1.2</td></tr>
+    <tr><td class="num">20</td><td class="num">39</td><td class="num">-4.0</td><td class="num">0.0</td></tr>
+    <tr class="hl"><td>Mean squared error</td><td></td><td class="num">6.00</td><td class="num">1.84</td></tr>
+  </table>
+  <div class="caption">Error is prediction minus actual. Synthetic visits (teaching_examples.py, D1 S2).</div>
+  <aside class="notes"><p>Do the first column aloud: 1 + 9 + 0 + 4 + 16 = 30, divided by 5 is 6. The second line has a steeper slope and a loss of 1.84: better. The question for the next slide: how would a computer know to try a steeper slope?</p></aside>
+</section>
+
+<section class="slide" id="loss-bowl" data-lo="LO1" data-n="19" data-session="2">
+  <div class="kicker">The shape of the loss</div>
+  <h2>For a line, the loss is a bowl over w and b</h2>
+  <div class="figure">
+    <svg viewBox="0 0 640 260" role="img" aria-label="A U-shaped curve of loss against the slope w, with a point on the left wall, its tangent sloping down, and an arrow stepping right towards the bottom">
+      <title>Loss against the slope: a bowl with one bottom</title>
+      <path d="M60 30 Q320 330 580 30" fill="none" stroke="#0f766e" stroke-width="4"/>
+      <circle cx="150" cy="118" r="9" fill="#e4572e"/>
+      <line x1="95" y1="62" x2="215" y2="182" stroke="#e4572e" stroke-width="2" stroke-dasharray="6 5"/>
+      <path d="M165 130 L250 168" stroke="#334155" stroke-width="3" marker-end="url(#ah)"/>
+      <defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#334155"/></marker></defs>
+      <text x="320" y="245" text-anchor="middle" font-size="18" fill="#334155">slope w</text>
+      <text x="26" y="40" font-size="18" fill="#334155">loss</text>
+      <text x="320" y="196" text-anchor="middle" font-size="16" fill="#0f766e">lowest loss</text>
+    </svg>
+    <div class="caption">The tangent at the red point slopes down to the right, so the step goes right.</div>
+  </div>
+  <aside class="notes"><p>Draw this on the board too. The slope of the loss at the current point says which way is downhill. That slope is the derivative from the pre-work: for the squared error it is 2 times the mean of error times x for w, and 2 times the mean error for b.</p></aside>
+</section>
+
+<section class="slide" id="gradient-step" data-lo="LO1" data-n="20" data-session="2">
+  <div class="kicker">Gradient descent</div>
+  <h2>Step against the slope, by a small rate</h2>
+  <div class="cols cols-2">
+    <pre class="code s" data-file="one step"><code class="language-python">e = w * x + b - y               <span class="hljs-comment"># errors</span>
+slope_w = <span class="hljs-number">2</span> * mean(e * x)
+slope_b = <span class="hljs-number">2</span> * mean(e)
+w = w - rate * slope_w
+b = b - rate * slope_b</code></pre>
+    <div class="stack">
+      <div class="card c-teal"><h4>From w 1.0, b 15 on the five visits</h4><p class="small mb0">slope_w = -56.0, slope_b = -4.0. With rate 0.002 the step gives w 1.112, b 15.008 and a loss of 1.93, down from 6.00.</p></div>
+      <div class="card c-purple"><h4>The exact bottom</h4><p class="small mb0">Least squares gives w 1.125, b 15.5 and a loss of 1.50. More steps keep closing the gap.</p></div>
+    </div>
+  </div>
+  <aside class="notes"><p>Walk through the signs: the slope in w is negative, so subtracting it increases w. Numbers from teaching_examples.py, D1 S2. In the lab, participants do two such steps by hand on the fall data's ten rows, then two thousand in code.</p></aside>
+</section>
+
+<section class="slide" id="learning-rate" data-lo="LO1" data-n="21" data-session="2">
+  <div class="kicker">The one setting</div>
+  <h2>The learning rate decides whether the steps arrive</h2>
+  <div class="cols cols-3">
+    <div class="card c-amber"><h4>Too small</h4><p class="small mb0">Every step is safe and the walk takes forever.</p></div>
+    <div class="card c-teal"><h4>About right</h4><p class="small mb0">The loss falls fast, then flattens as the slopes flatten near the bottom.</p></div>
+    <div class="card c-coral"><h4>Too large</h4><p class="small mb0">Each step jumps over the bottom to a higher wall; the loss grows without end.</p></div>
+  </div>
+  <div class="callout warn mt"><b>What goes wrong.</b> A loss curve that rises or turns into "nan" almost always means the rate is too large or a feature has huge values.</div>
+  <aside class="notes"><p>The stretch of Lab 1.2 makes the loss explode on purpose. The link to scaling (Day 3): a feature with large values makes its slope large, so it sets how large a rate can be.</p></aside>
+</section>
+
+<section class="slide" id="loss-curve-reading" data-lo="LO1" data-n="22" data-session="2">
+  <div class="kicker">Reading a loss curve</div>
+  <h2>Plot the loss after every step and read three things</h2>
+  <ul class="bullets">
+    <li><b>Falling</b>: the steps are working</li>
+    <li><b>Flat</b>: you are near the bottom, or the rate is far too small</li>
+    <li><b>Rising or jagged</b>: the rate is too large</li>
+    <li>Use a log scale on the loss axis: the early drop is huge, the late gains small</li>
+  </ul>
+  <aside class="notes"><p>This is the first of the curves participants learn to read; Day 2 adds complexity and learning curves. In the lab the loss starts near 1,757 for the line that predicts zero minutes; ask them to predict before they run it how far it will fall.</p></aside>
+</section>
+
+<section class="slide" id="check-s2" data-lo="LO1" data-n="23" data-session="2">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which way does the step move the slope?</h2>
+  <div class="quiz" data-type="single" data-lo="LO1" data-id="check-s2-q1">
+    <p class="lead">A line predicts dressing minutes from wound area. At the current line the slope of the loss in w is -40 and the rate is 0.01. What does one gradient step do to w?</p>
+    <div class="opts">
+      <div class="opt" data-why="Moves with the slope: the step goes against it, so a negative slope raises w" data-k="A">It lowers w by 0.4</div>
+      <div class="opt" data-why="Mixes up the rate and the step: the change is the rate times the slope, not the slope itself" data-k="B">It raises w by 40</div>
+      <div class="opt" data-ok data-k="C">It raises w by 0.4</div>
+      <div class="opt" data-why="Thinks a negative slope means the bottom: the bottom is where the slope is zero" data-k="D">It leaves w where it is</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The step is w minus rate times slope: w - 0.01 × (-40) = w + 0.4. A negative slope means the loss falls as w grows.</div>
+  </div>
+  <aside class="notes"><p>Answer: raises w by 0.4. If people pick "lowers", redraw the bowl: on the left wall the slope is negative and downhill is to the right.</p></aside>
+</section>
+
+<section class="slide lab top" id="lab-1-2" data-auto="lab" data-lab="1.2" data-label="Lab 1.2" data-n="24" data-session="2">
+  <div class="cols cols-2 mid"><div><div class="lab-tag">Lab 1.2 · 35 min</div><h2>Two gradient steps on ten rows</h2><p class="lead small">Fit a line for visit minutes from the number of medicines: a loss by hand, two gradient steps by hand, then a few thousand in code</p><a class="nb" href="../labs/D1_2_gradient_steps.ipynb">D1_2_gradient_steps.ipynb</a></div><ul class="checklist"><li>Guess a line for visit minutes and compute its mean squared error by hand <span class="min">8 min</span></li><li>Write mse(w, b) and check your hand number <span class="min">5 min</span></li><li>Take two gradient steps by hand from w = 0 and b = 0 <span class="min">10 min</span></li><li>Run 2,000 steps in code and plot the loss <span class="min">7 min</span></li><li>Compare with the exact least-squares line <span class="min">5 min</span></li><li class="stretch">✱ Stretch: Raise the learning rate until the loss explodes, and explain why</li></ul></div>
+  <aside class="notes"><p>AI-off for the hand steps; a calculator is fine. The most common slip is the sign of the error (prediction minus actual) or forgetting the factor 2. Ask everyone to write the slopes at the start before they run the cell that checks them. Starts from the supplied ten rows; Lab 1.1 is not needed.</p></aside>
+</section>
+
+<!-- Session 3 -->
+
+<section class="slide section" id="s3" data-auto="section" data-session="3" data-label="Session 3 · Neighbours and lines by hand" data-n="25">
+  <div class="kicker">Session 3</div>
+  <h1>Nearest neighbours and linear models by hand</h1>
+  <ul class="bullets outcomes"><li>Classify a new client by a vote of its nearest neighbours, by hand</li><li>Explain why the scale of a feature changes the neighbours</li><li>Fit a least-squares line from means by hand and reproduce it in code</li></ul>
+  <div class="sess-no">03</div>
+  <aside class="notes"><p>Debrief Lab 1.2 first, then two model families done by hand. Lab 1.3 is graded: say so before it starts.</p></aside>
+</section>
+
+<section class="slide" id="debrief-1-2" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand" data-n="26" data-session="3">
+  <div class="kicker">Lab 1.2 debrief</div>
+  <h2>Two steps took the loss from 1,757 to 123; two thousand reached 49</h2>
+  <table class="t small">
+    <tr><th>Line for visit minutes</th><th class="num">w (min per medicine)</th><th class="num">b (min)</th><th class="num">Loss</th></tr>
+    <tr><td>Start</td><td class="num">0</td><td class="num">0</td><td class="num">1,757.1</td></tr>
+    <tr><td>After step 1</td><td class="num">5.008</td><td class="num">0.798</td><td class="num">195.6</td></tr>
+    <tr><td>After step 2</td><td class="num">6.072</td><td class="num">1.029</td><td class="num">123.4</td></tr>
+    <tr class="hl"><td>After 2,000 steps</td><td class="num">3.752</td><td class="num">19.263</td><td class="num">48.98</td></tr>
+    <tr><td>Exact least squares</td><td class="num">3.752</td><td class="num">19.267</td><td class="num">48.98</td></tr>
+  </table>
+  <div class="caption">Lab 1.2 reference run on the ten rows, rate 0.01. Slopes at the start: -500.8 and -79.8.</div>
+  <aside class="notes"><p>Notice that w overshot to 6 before settling at 3.75: the first steps chase the steepest direction. Ask someone to read the final line in words: about 3.75 extra minutes per medicine on top of 19 minutes. The loss left over, about 49, is what medicines do not explain.</p></aside>
+</section>
+
+<section class="slide" id="two-families" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand" data-n="27" data-session="3">
+  <div class="kicker">Two ways to use examples</div>
+  <h2>Keep the examples, or keep a summary of them</h2>
+  <div class="cols cols-2">
+    <div class="card c-cyan"><h4>Nearest neighbours</h4><p class="small mb0">Keep every row. For a new case, find the most similar rows and let them vote. No fitting; all the work happens when you predict.</p></div>
+    <div class="card c-purple"><h4>A linear model</h4><p class="small mb0">Fit a few numbers once, then throw the rows away. Prediction is a sum of features times weights.</p></div>
+  </div>
+  <aside class="notes"><p>Two extremes of one design question: how much of the data does the model carry? Day 4 adds trees and small neural networks between them.</p></aside>
+</section>
+
+<section class="slide" id="distance" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand" data-n="28" data-session="3">
+  <div class="kicker">Nearest neighbours</div>
+  <h2>Similar means close: a distance over the features</h2>
+  <div class="cols cols-2">
+    <table class="t small">
+      <tr><th class="num">Area (cm²)</th><th class="num">Layers</th><th class="num">Over 40</th><th class="num">Distance to (10, 1)</th></tr>
+      <tr class="hl"><td class="num">5</td><td class="num">1</td><td class="num">0</td><td class="num">5.00</td></tr>
+      <tr class="hl"><td class="num">6</td><td class="num">3</td><td class="num">0</td><td class="num">4.47</td></tr>
+      <tr><td class="num">18</td><td class="num">2</td><td class="num">1</td><td class="num">8.06</td></tr>
+      <tr><td class="num">20</td><td class="num">4</td><td class="num">1</td><td class="num">10.44</td></tr>
+      <tr class="hl"><td class="num">9</td><td class="num">4</td><td class="num">1</td><td class="num">3.16</td></tr>
+      <tr><td class="num">22</td><td class="num">1</td><td class="num">0</td><td class="num">12.00</td></tr>
+    </table>
+    <ul class="bullets">
+      <li>Distance = √(area difference² + layers difference²)</li>
+      <li>The three nearest (highlighted) vote 0, 0, 1</li>
+      <li>Prediction for a 10 cm² wound with one layer: <b>will not run over</b></li>
+    </ul>
+  </div>
+  <div class="caption">Six synthetic visits (teaching_examples.py, D1 S3).</div>
+  <aside class="notes"><p>Compute one distance aloud: (9, 4) to (10, 1) is the square root of 1 + 9, about 3.16. The number of neighbours, k, is a choice: k = 1 trusts a single row, a large k drifts towards the majority.</p></aside>
+</section>
+
+<section class="slide" id="units-trap" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand" data-n="29" data-session="3">
+  <div class="kicker">The trap in distances</div>
+  <h2>Change a unit and the neighbours change</h2>
+  <ul class="bullets">
+    <li>Record the same wounds in <b>square metres</b>: 10 cm² becomes 0.001 m²</li>
+    <li>Area differences shrink to almost nothing; layers decide every distance</li>
+    <li>The three nearest become the rows with one or two layers: rows 1, 6 and 3 in place of 5, 2 and 1</li>
+    <li>Nothing about the wounds changed, only a unit</li>
+  </ul>
+  <div class="callout warn mt"><b>What goes wrong.</b> A distance adds raw differences, so the column with the biggest numbers wins. Scale the columns first (Day 3).</div>
+  <aside class="notes"><p>The vote happens to stay at "will not run over" here, but the neighbours are different rows, which is enough to distrust the method without scaling. In the lab, recording the walk in tenths of a second changes the vote for both new clients. Rows are numbered from 1 as in the table.</p></aside>
+</section>
+
+<section class="slide" id="least-squares" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand" data-n="30" data-session="3">
+  <div class="kicker">A line by hand</div>
+  <h2>For one feature, the best line comes from means</h2>
+  <div class="cols cols-2">
+    <div class="stack">
+      <p><b>w</b> = Σ (x − mean x)(y − mean y) ÷ Σ (x − mean x)²</p>
+      <p><b>b</b> = mean y − w × mean x</p>
+      <p class="small muted">The bottom of the bowl, found in one move instead of many steps.</p>
+    </div>
+    <div class="card c-purple"><h4>The five wound visits</h4><p class="small mb0">mean area 12, mean minutes 29. The formula gives w 1.125 and b 15.5: the same line gradient descent was walking towards.</p></div>
+  </div>
+  <aside class="notes"><p>Show the columns you would write on paper: x minus its mean, y minus its mean, their product, the square of the first. The formula exists only for a straight line with a squared error, which is why gradient descent is the general tool. Numbers from teaching_examples.py.</p></aside>
+</section>
+
+<section class="slide" id="fit-predict" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand" data-n="31" data-session="3">
+  <div class="kicker">The same two models in code</div>
+  <h2>Every scikit-learn model has the same two moves</h2>
+  <pre class="code" data-file="fit, then predict"><code class="language-python"><span class="hljs-keyword">from</span> sklearn.neighbors <span class="hljs-keyword">import</span> KNeighborsClassifier
+<span class="hljs-keyword">from</span> sklearn.linear_model <span class="hljs-keyword">import</span> LinearRegression
+
+knn = KNeighborsClassifier(n_neighbors=<span class="hljs-number">3</span>).fit(X, y)    <span class="hljs-comment"># stores the rows</span>
+knn.predict(new_rows)                                  <span class="hljs-comment"># votes</span>
+
+line = LinearRegression().fit(X[[<span class="hljs-string">&quot;area_cm2&quot;</span>]], minutes)
+line.coef_, line.intercept_                            <span class="hljs-comment"># w and b</span></code></pre>
+  <aside class="notes"><p>fit learns from examples; predict applies the rule. X is always a table, even with one column, which is why it has double brackets. In the lab the check is exact: your paper numbers must match the library's.</p></aside>
+</section>
+
+<section class="slide" id="check-s3" data-lo="LO1" data-label="Session 3 · Neighbours and lines by hand" data-n="32" data-session="3">
+  <div class="kicker">Checkpoint</div>
+  <h2>Why did the neighbours change?</h2>
+  <div class="quiz" data-type="single" data-lo="LO1" data-id="check-s3-q1">
+    <p class="lead">A colleague switched the "walk" column of a neighbour model from seconds to milliseconds, and the three nearest clients of a new client changed. What happened?</p>
+    <div class="opts">
+      <div class="opt" data-ok data-k="A">The walk now has far larger numbers, so it dominates every distance</div>
+      <div class="opt" data-why="Thinks the data changed: the clients and their walks are the same, only the unit differs" data-k="B">The clients' walks were measured again</div>
+      <div class="opt" data-why="Thinks a neighbour model has weights: it keeps rows and fits nothing" data-k="C">The model's weights were refitted</div>
+      <div class="opt" data-why="Confuses k with the distance: k fixes how many neighbours vote, not which ones are close" data-k="D">The colleague changed k</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> A distance adds raw differences. Multiplying one column by 1,000 makes its differences swamp the others.</div>
+  </div>
+  <aside class="notes"><p>Answer A. Follow up: "what would you do about it?" The answer, scaling, is Day 3 Session 2.</p></aside>
+</section>
+
+<section class="slide lab top" id="lab-1-3" data-auto="lab" data-lab="1.3" data-label="Session 3 · Neighbours and lines by hand" data-n="33" data-session="3">
+  <div class="cols cols-2 mid"><div><div class="lab-tag">Lab 1.3 · 40 min</div><h2>Two models by hand, then in code</h2><p class="lead small">Fit two models by hand, then reproduce them in code: a three-nearest-neighbour vote and a least-squares line on the ten-row table</p><a class="nb" href="../labs/D1_3_two_models_by_hand.ipynb">D1_3_two_models_by_hand.ipynb</a></div><ul class="checklist"><li>By hand: distances from two new clients to the ten rows and a three-neighbour vote <span class="min">10 min</span></li><li>Rescale walk seconds and see whether the vote changes <span class="min">6 min</span></li><li>By hand: the least-squares line for visit minutes from medicines, from means <span class="min">10 min</span></li><li>Reproduce both models with scikit-learn and compare with your paper <span class="min">8 min</span></li><li>Write three sentences on how each model turned examples into a rule <span class="min">6 min</span></li><li class="stretch">✱ Stretch: Repeat the vote with k = 1 and k = 5 and say which you trust</li></ul></div>
+  <aside class="notes"><p>Graded lab, AI-off. Collect the paper sheets at the end: distances and votes for both new clients, the means and the hand slope and intercept, and the three sentences. Grading: the code must reproduce the paper (the notebook checks it), and the sentences must say what each model keeps. Typical slip: sorting distances descending. Starts from the supplied ten rows.</p></aside>
+</section>
+
+<!-- Session 4 -->
+
+<section class="slide section" id="s4" data-auto="section" data-session="4" data-n="34">
+  <div class="kicker">Session 4</div>
+  <h1>Training, validation and test sets</h1>
+  <ul class="bullets outcomes"><li>Explain what each of the three sets is for</li><li>Compare models against a baseline that predicts no fall</li><li>Report a held-out result that no choice has touched</li></ul>
+  <div class="sess-no">04</div>
+  <aside class="notes"><p>Debrief Lab 1.3 briefly, then the most important idea of the day: an honest held-out score.</p></aside>
+</section>
+
+<section class="slide" id="debrief-1-3" data-lo="LO1" data-n="35" data-session="4">
+  <div class="kicker">Lab 1.3 debrief</div>
+  <h2>Tenths of a second flipped both votes; the line matched to the last digit</h2>
+  <div class="cols cols-2">
+    <table class="t small">
+      <tr><th>Three-neighbour vote</th><th class="num">Client P</th><th class="num">Client Q</th></tr>
+      <tr><td>Walk in seconds</td><td class="num">fall</td><td class="num">no fall</td></tr>
+      <tr class="hl"><td>Walk in tenths</td><td class="num">no fall</td><td class="num">fall</td></tr>
+    </table>
+    <div class="card c-purple"><h4>Visit minutes from medicines</h4><p class="small mb0">By hand and by LinearRegression: w 3.752, b 19.267. The same line Lab 1.2 reached by steps.</p></div>
+  </div>
+  <div class="caption">Lab 1.3 reference run. P: one recorded fall, 6.8 s; Q: none, 6.0 s.</div>
+  <aside class="notes"><p>Ask: which vote would you believe? Neither, until the columns are on a common scale. The line matching exactly is the point of the lab: a library does what you did on paper, faster.</p></aside>
+</section>
+
+<section class="slide" id="why-held-out" data-lo="LO2" data-n="36" data-session="4">
+  <div class="kicker">Generalisation</div>
+  <h2>What matters is the score on clients the model has not seen</h2>
+  <ul class="bullets">
+    <li>A model is built from past rows and used on future clients</li>
+    <li>Its score on its own training rows is always flattering</li>
+    <li>Hold some rows back, never fit on them, and score there</li>
+    <li>The gap between the two scores is the first thing to look at (Day 2)</li>
+  </ul>
+  <aside class="notes"><p>Bring back Lab 1.1: the rule looked better on the ten rows it came from than on 1,000 others. The held-out set formalises that experience.</p></aside>
+</section>
+
+<section class="slide" id="three-sets" data-lo="LO2 LO4" data-n="37" data-session="4">
+  <div class="kicker">Three sets, three jobs</div>
+  <h2>Train on one, choose on another, report on a third</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Training</h4><p class="small mb0">Every model is fitted here. Seen as often as you like.</p></div>
+    <div class="card c-amber"><h4>Validation</h4><p class="small mb0">Compare models and settings here. Each choice makes its score a little flattering.</p></div>
+    <div class="card c-coral"><h4>Test</h4><p class="small mb0">Opened once, after every choice. Its score is the one you report.</p></div>
+  </div>
+  <div class="callout warn mt"><b>What goes wrong.</b> Look at the test score, change something, look again: the test set has become a second validation set.</div>
+  <aside class="notes"><p>Ask why two held-out sets are needed. If validation is used to pick the best of five models, the winner's validation score is the best of five draws, so it is optimistic. The test set took no part in any choice.</p></aside>
+</section>
+
+<section class="slide" id="split-by-date" data-lo="LO2 LO4" data-n="38" data-session="4">
+  <div class="kicker">How to split</div>
+  <h2>Split by date when the model will meet the future</h2>
+  <div class="flow">
+    <div class="step c-teal"><b>Training</b>the oldest months</div>
+    <div class="arrow">→</div>
+    <div class="step c-amber"><b>Validation</b>the next months</div>
+    <div class="arrow">→</div>
+    <div class="step c-coral"><b>Test</b>the most recent months</div>
+  </div>
+  <p class="mt">The wound-care visits: 24 months, split at month 14 and month 19 into 1,390, 535 and 475 visits.</p>
+  <aside class="notes"><p>A random split mixes months, so the model is tested on months it has partly learnt from. For a screen that will be used next year, the honest question is how a model built on the past does on what follows. Day 3 shows what a random split hides. The fall data uses the same idea: training to mid-2024, validation to the end of 2024, test the first half of 2025.</p></aside>
+</section>
+
+<section class="slide" id="baseline-first" data-lo="LO4" data-n="39" data-session="4">
+  <div class="kicker">The first comparison</div>
+  <h2>Always score the model that does nothing</h2>
+  <div class="cols cols-2">
+    <div class="stat center"><div class="big">0.914</div><div class="lbl">validation accuracy of "no visit runs over 50 minutes"</div></div>
+    <div class="stat center"><div class="big">0.940</div><div class="lbl">validation accuracy of a logistic regression</div></div>
+  </div>
+  <div class="caption">Wound-care visits, label "over 50 minutes" (8% of visits); teaching_examples.py, D1 S4.</div>
+  <aside class="notes"><p>The baseline that predicts the majority class scores 0.914 because 92% of visits do not run over 50 minutes. The model adds 2.6 points of accuracy. Is that a lot? Accuracy cannot say; the next slide gives a score that can.</p></aside>
+</section>
+
+<section class="slide" id="ranking-score" data-lo="LO4" data-n="40" data-session="4">
+  <div class="kicker">A score for ranking</div>
+  <h2>AUC: how often a positive case outscores a negative one</h2>
+  <ul class="bullets">
+    <li>A model gives each row a <b>score</b> between 0 and 1</li>
+    <li>Pick one visit that ran over and one that did not, at random</li>
+    <li>AUC is the chance the first gets the higher score</li>
+    <li>0.5 is a coin; the do-nothing baseline scores exactly 0.5</li>
+    <li>The wound-care logistic regression: <b>0.968</b></li>
+  </ul>
+  <aside class="notes"><p>AUC stands for area under the ROC curve; you do not need the curve today, only the meaning. It ignores the cut-off, which is why it can show that a model separates cases even when its accuracy at 0.5 is close to the baseline's. Choosing the cut-off is Day 2. Number from teaching_examples.py.</p></aside>
+</section>
+
+<section class="slide" id="three-candidates" data-lo="LO4" data-n="41" data-session="4">
+  <div class="kicker">The lab's comparison</div>
+  <h2>A baseline, a line and a tree, on the same split</h2>
+  <pre class="code s" data-file="the shape of Lab 1.4"><code class="language-python">models = {
+    <span class="hljs-string">&quot;baseline&quot;</span>: DummyClassifier(strategy=<span class="hljs-string">&quot;most_frequent&quot;</span>),
+    <span class="hljs-string">&quot;logistic regression&quot;</span>: make_pipeline(StandardScaler(), LogisticRegression()),
+    <span class="hljs-string">&quot;decision tree&quot;</span>: DecisionTreeClassifier(max_depth=<span class="hljs-number">4</span>, random_state=SEED),
+}
+<span class="hljs-comment"># fit each on training rows, score each on validation, choose, then test once</span></code></pre>
+  <aside class="notes"><p>A logistic regression is a line passed through an S-shaped curve, so it gives a score between 0 and 1; it is fitted by gradient steps on a loss, exactly the Session 2 idea. A decision tree asks a few yes-or-no questions of the features; depth 4 means four questions at most. Both come back on Day 4.</p></aside>
+</section>
+
+<section class="slide" id="check-s4" data-lo="LO2" data-n="42" data-session="4">
+  <div class="kicker">Checkpoint</div>
+  <h2>Which score goes in the report?</h2>
+  <div class="quiz" data-type="single" data-lo="LO2" data-id="check-s4-q1">
+    <p class="lead">An analyst trains five models for a wound-care screen, keeps the one with the best validation AUC (0.91), then scores the test set once (0.88). Which number describes how the screen will do next year?</p>
+    <div class="opts">
+      <div class="opt" data-why="Trusts the winner's own score: chosen as the best of five, it is flattering" data-k="A">0.91, the validation AUC</div>
+      <div class="opt" data-why="Averages a chosen score with a clean one, which keeps part of the flattery" data-k="B">The mean of the two, about 0.90</div>
+      <div class="opt" data-why="Trusts the training score, which every model tops on its own rows" data-k="C">The training AUC, which is higher still</div>
+      <div class="opt" data-ok data-k="D">0.88, the test AUC</div>
+    </div>
+    <div class="callout tip why"><b>Why.</b> The test set took no part in fitting or choosing, so its score is the honest estimate.</div>
+  </div>
+  <aside class="notes"><p>Answer: 0.88. A drop from validation to test is normal and expected; a test score far above validation is a warning sign of a leak.</p></aside>
+</section>
+
+<section class="slide lab top" id="lab-1-4" data-auto="lab" data-lab="1.4" data-label="Lab 1.4" data-n="43" data-session="4">
+  <div class="cols cols-2 mid"><div><div class="lab-tag">Lab 1.4 · 40 min</div><h2>Baseline, line and tree on a fixed split</h2><p class="lead small">Compare a baseline, a logistic regression and a tree on the fixed split by date, then score the test set once</p><a class="nb" href="../labs/D1_4_three_way_split.ipynb">D1_4_three_way_split.ipynb</a></div><ul class="checklist"><li>Load the split and check sizes and base rates <span class="min">5 min</span></li><li>Score a baseline that predicts no fall <span class="min">5 min</span></li><li>Fit a logistic regression and a tree <span class="min">8 min</span></li><li>Compare on validation: accuracy and ranking <span class="min">10 min</span></li><li>Choose on validation, score test once <span class="min">7 min</span></li><li>Write the results table <span class="min">5 min</span></li><li class="stretch">✱ Stretch: Split at random instead of by date and compare</li></ul></div>
+  <aside class="notes"><p>AI-off for the first attempt. Watch for people who score the test set for every model: stop them and ask what the test set is for. Common error: using predict in place of predict_proba for the AUC. The lab starts from the supplied assessments; nothing from earlier labs is needed.</p></aside>
+</section>
+
+<section class="slide" id="wrap-up" data-n="44" data-session="4">
+  <div class="kicker">Day 1 · wrap-up</div>
+  <h2>Three things to keep</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>A model is a rule</h4><p class="small mb0">Features in, a prediction out. Fitting picks the rule's numbers by making a loss small.</p></div>
+    <div class="card c-coral"><h4>Two kinds of error</h4><p class="small mb0">A miss and a needless flag cost different things; counting right answers hides both.</p></div>
+    <div class="card c-purple"><h4>Held out, once</h4><p class="small mb0">Train, choose on validation, report the test score you opened once, against a baseline.</p></div>
+  </div>
+  <aside class="notes"><p>Ask each table to say which of the three surprised them most. The debrief of Lab 1.4 opens Day 2.</p></aside>
+</section>
+
+<section class="slide dark" id="next" data-label="Next" data-n="45" data-session="4">
+  <div class="kicker">Next</div>
+  <h2>Day 2: Generalisation and measuring</h2>
+  <p class="lead">About 20 minutes before Day 2: finish any lab you did not finish, then answer the Day 1 practice questions on the course page without an assistant.</p>
+  <aside class="notes"><p>Unfinished labs can be finished at home: each starts from supplied files. The practice page holds the Day 1 checkpoints and more questions per outcome.</p></aside>
+</section>
+</div>
+<script type="application/json" id="academy-data">{"v":1,"engine":"1.0.0","build":{"at":"2026-11-25T02:20:54Z","version":"2027.1.0","commit":"193791f"},"course":{"id":"fnd-aic-101","code":"FND-AIC-101","title":"How Machine Learning Works","track":"foundations","lang":"en","dir":"ltr","url":"https://sdaiaacademy.github.io/fnd-aic-101/","repo":"SDAIAAcademy/fnd-aic-101","home":"../index.html"},"deck":{"id":"day1","kind":"day","day":1,"label":"Day 1","title":"Learning from examples","prev":null,"next":"day2.html","md":"day1.md","alt":{}},"sessions":[{"n":1,"label":"Session 1","title":"Features, labels and prediction rules","slide":"s1","outcomes":["Name the identifier, the features and the label of a table of assessments","Write a prediction rule as a function of the features","Count a rule's two kinds of error on rows it was not written from"],"minutes":65,"lab":{"id":"1.1","title":"A screening rule by hand","minutes":35,"href":"../labs/D1_1_hand_rule.ipynb"}},{"n":2,"label":"Session 2","title":"Loss and gradient descent","slide":"s2","outcomes":["Compute a mean squared error by hand for a candidate line","Take a gradient step by hand and say why the loss falls","Run gradient descent in code and read its loss curve"],"minutes":65,"lab":{"id":"1.2","title":"Two gradient steps on ten rows","minutes":35,"href":"../labs/D1_2_gradient_steps.ipynb"}},{"n":3,"label":"Session 3","title":"Nearest neighbours and linear models by hand","slide":"s3","outcomes":["Classify a new client by a vote of its nearest neighbours, by hand","Explain why the scale of a feature changes the neighbours","Fit a least-squares line from means by hand and reproduce it in code"],"minutes":70,"lab":{"id":"1.3","title":"Two models by hand, then in code","minutes":40,"href":"../labs/D1_3_two_models_by_hand.ipynb"}},{"n":4,"label":"Session 4","title":"Training, validation and test sets","slide":"s4","outcomes":["Explain what each of the three sets is for","Compare models against a baseline that predicts no fall","Report a held-out result that no choice has touched"],"minutes":70,"lab":{"id":"1.4","title":"Baseline, line and tree on a fixed split","minutes":40,"href":"../labs/D1_4_three_way_split.ipynb"}}],"slides":[{"id":"title","n":1,"title":"Learning from examples","kind":"title","session":0,"hash":"53ba443c","md":"#### [day1#title] Learning from examples\n\n*SDAIA Academy · How Machine Learning Works*\n\nDay 1: Features and labels, a loss and its gradient, nearest neighbours and a line by hand, and the first honest split\n\nData & AI Foundations Track · 4 teaching days + capstone day · 4 sessions · 4 labs · FND-AIC-101","notes":"Welcome the room and introduce yourself. Ask one calibrating question: \"Who has fitted a model in code before, even once?\" Most hands down is normal; the course assumes Python from FND-PRG-101 and nothing about machine learning. Today's rhythm: four sessions, each about 30 minutes of ideas and a lab of 35 or 40 minutes. Breaks are yours: press B.","minutes":null,"lo":[]},{"id":"agenda","n":2,"title":"Learning from examples","kind":"content","session":0,"hash":"384be957","md":"#### [day1#agenda] Learning from examples\n\n*Today*\n\n- **Session 1 · Features, labels and prediction rules**: A table of examples, the column to predict, and a rule as a function you can score\n- **Session 2 · Loss and gradient descent**: A loss scores a rule over all rows; its slope says which way to move the parameters\n- **Session 3 · Nearest neighbours and linear models by hand**: Two ways to turn examples into a rule: vote among the closest rows, or fit a line\n- **Session 4 · Training, validation and test sets**: Score a model on rows it never saw, choose on validation, open the test set once","notes":"Read the four session titles aloud. Today ends with the first honest comparison of models; everything before it is done by hand first, then in code.","minutes":null,"lo":[]},{"id":"case-hurbuth","n":3,"title":"Hurbuth Home Care wants to know who is likely to fall","kind":"content","session":0,"hash":"fc992f66","md":"#### [day1#case-hurbuth] Hurbuth Home Care wants to know who is likely to fall\n\n*The case for four days*\n\n- A fictional private provider of **home nursing and physiotherapy** for older people, in an unnamed city with five sectors\n- A nurse assesses each client at home; the physiotherapy team can run a **home programme** for some of them\n- The question: from the assessment, **will this client fall in the next six months?**\n- Every record is **synthetic**; clients are codes, staff are roles\n\n- **Who decides what.** The **clinical director** owns the screen and approves its threshold. The **physiotherapy team lead** owns capacity. The **quality and data protection officer** reviews the model card. You are the **data analyst** who builds and tests it.","notes":"The case is invented and its numbers are not clinical evidence about falls: say so now and again whenever someone quotes a result as if it were. The roles matter later: the analyst proposes, the director decides, a different person reviews. That separation appears in every reference answer of the course.","minutes":null,"lo":["LO1"]},{"id":"setup-check","n":4,"title":"Open a notebook, run the setup check","kind":"content","session":0,"hash":"c0b73681","md":"#### [day1#setup-check] Open a notebook, run the setup check\n\n*Lab environment*\n\n1. **In a free hosted notebook service**: open a lab from the course page; its first cell copies the course and installs the libraries it needs.\n2. **On a laptop**: clone the course, then run the commands on the right.\n3. Run `00_setup_check.ipynb`. It prints the library versions and the number of assessments.\n4. No model is downloaded and no key is needed: every lab runs on a laptop processor in seconds.\n\n```bash\n# file: terminal (local option)\ngit clone https://github.com/SDAIAAcademy/fnd-aic-101\ncd fnd-aic-101/labs\nuv sync\nuv run jupyter lab\n```","notes":"Everyone runs the setup check now, before Session 1. It should print 4,776 assessments. Common failures: a corporate proxy that blocks the package index (use the hosted notebook service), and on Windows a deep folder that breaks long paths (set UV_PROJECT_ENVIRONMENT to a short folder before uv sync). Hosted notebooks time out when idle; rerunning from the top is safe, every lab starts from supplied files.","minutes":null,"lo":[]},{"id":"ai-policy","n":5,"title":"Your hands first, an assistant after","kind":"content","session":0,"hash":"6d1a7be6","md":"#### [day1#ai-policy] Your hands first, an assistant after\n\n*How you may use AI assistants here*\n\n- **AI-off.** Every hand fit, the first attempt at each lab, and the supervised check at the end of the course.\n- **AI-tutor.** After your first attempt: an assistant may explain an error message or a library call. It does not write the exercise.\n- **AI-full.** The capstone code. You explain every line of it in the defence, and the trainer may ask you to re-run any result.\n\n> **Data.** The course data is synthetic and published, so it may go into an assistant. At work, data classified Restricted or higher does not go into generative AI tools.","notes":"This is the catalog's policy for the course. The data rule is from SDAIA's Generative Artificial Intelligence for Government Guidelines, section 3.5 (Privacy and Security): employees of government entities do not enter data classified Restricted or higher (Restricted, Confidential, Top Secret), and generative AI tools are limited to data classified Public («عامة»). Our data is invented and published, which is why the AI-tutor step is allowed at all. Sources: SDAIA, Generative Artificial Intelligence for Government Guidelines, the edition on SDAIA's site (cover dated 2025), English and Arabic, section 3.5.","minutes":null,"lo":[]},{"id":"s1","n":6,"title":"Features, labels and prediction rules","kind":"section","session":1,"hash":"0593cf5c","md":"#### [day1#s1] Features, labels and prediction rules\n\n*Session 1*\n\n- Name the identifier, the features and the label of a table of assessments\n- Write a prediction rule as a function of the features\n- Count a rule's two kinds of error on rows it was not written from","notes":"Session 1 is the vocabulary of the whole course: a row, a feature, a label, a rule. Keep it concrete.","minutes":null,"lo":["LO1"]},{"id":"examples-table","n":7,"title":"Supervised learning starts from a table of solved examples","kind":"content","session":1,"hash":"28eecf04","md":"#### [day1#examples-table] Supervised learning starts from a table of solved examples\n\n*Learning from examples*\n\nA parallel case: the wound-care nurses of the same company want to know which dressing visits will run over 40 minutes.\n\n| Wound area (cm²) | Dressing layers | Diabetic | Ran over 40 min |\n| --- | --- | --- | --- |\n| 28.5 | 1 | 0 | 0 |\n| 7.6 | 4 | 0 | 0 |\n| 7.4 | 1 | 1 | 0 |\n| 22.1 | 4 | 0 | 1 |\n| 25.1 | 3 | 0 | 1 |\n| 30.6 | 4 | 1 | 1 |\n\nSix synthetic wound-care visits (labs/_tools/teaching_examples.py).","notes":"Each row is an example whose answer we already know: the last column. Ask: what would you need to know before the visit to guess the last column? That is the whole idea of supervised learning. The fall-risk data of the labs has the same shape; we keep its numbers for the labs themselves.","minutes":null,"lo":["LO1"]},{"id":"features-labels","n":8,"title":"Features go in, the label comes out, the identifier stays out","kind":"content","session":1,"hash":"e2b7b829","md":"#### [day1#features-labels] Features go in, the label comes out, the identifier stays out\n\n*Three kinds of column*\n\n- **Features.** What is known when the prediction is made: wound area, layers, diabetic. Written `X`.\n- **Label.** What you want to predict, known for past rows only: ran over 40 minutes. Written `y`.\n- **Identifier.** Which visit or client a row is about. Needed to join and audit, useless as a predictor.\n\n> **Ask of every column.** Is it known at the moment the prediction is made? If not, it is not a feature, however well it predicts.","notes":"The callout is the seed of Day 3's leakage session; plant it now. Example: \"minutes the visit actually took\" predicts \"ran over 40\" perfectly and is useless, because it is known only after the visit.","minutes":null,"lo":["LO1"]},{"id":"rule-is-function","n":9,"title":"A rule is a function from features to a prediction","kind":"content","session":1,"hash":"05955768","md":"#### [day1#rule-is-function] A rule is a function from features to a prediction\n\n*A prediction rule*\n\n```python\n# file: a rule you could write by hand\ndef rule(visit) -> bool:\n    return visit[\"area_cm2\"] >= 15\n```\n\n- On the six visits it flags **4** and catches all **3** that ran over\n- One flag was needless: the 28.5 cm² wound with one layer\n- A model is the same thing, written by a fitting procedure from many rows instead of by you from six","notes":"Write the rule on the board as \"if area at least 15, flag\". Then say: machine learning does not change what a rule is; it changes who writes it and from how many examples. Counts from teaching_examples.py, section D1 S1.","minutes":null,"lo":["LO1"]},{"id":"two-errors","n":10,"title":"A screen makes two different mistakes","kind":"content","session":1,"hash":"dc6c6450","md":"#### [day1#two-errors] A screen makes two different mistakes\n\n*Scoring a rule*\n\n- **A miss.** The visit ran over and the rule did not flag it. For a fall screen: a client who falls and got no programme.\n- **A needless flag.** The rule flagged a visit that was fine. For a fall screen: a programme for a client who would not have fallen.\n\n> **What goes wrong.** Counting only \"right answers\" mixes the two, and a rule that flags nobody can look excellent when the outcome is rare.","notes":"Ask the room which mistake is worse for the fall screen. Let two people disagree; on Day 2 you will put a cost on each and the disagreement becomes a number.","minutes":null,"lo":["LO1"]},{"id":"fresh-rows","n":11,"title":"Score a rule on rows you did not write it from","kind":"content","session":1,"hash":"79ea7a6f","md":"#### [day1#fresh-rows] Score a rule on rows you did not write it from\n\n*Where to score*\n\n1. **1 · Look** at a few rows and write a rule\n2. **2 · Apply** it to many rows you never looked at\n3. **3 · Count** misses and needless flags there\n\n> **Takeaway.** A rule always looks best on the rows that inspired it.","notes":"Press once per step. This is the intuition behind the training, validation and test sets of Session 4. In the lab you write a rule from ten rows and score it on 1,000.","minutes":null,"lo":["LO1"]},{"id":"tables-in-python","n":12,"title":"A dataframe holds the table; a library holds the models","kind":"content","session":1,"hash":"91ebc542","md":"#### [day1#tables-in-python] A dataframe holds the table; a library holds the models\n\n*The tools*\n\n```python\n# file: reading a table\nimport pandas as pd\nvisits = pd.read_csv(\"visits.csv\")\nX = visits[[\"area_cm2\", \"layers\"]]\ny = visits[\"over_40\"]\nvisits.apply(rule, axis=1)   # one answer per row\n```\n\n- A **dataframe library** (pandas, Polars) reads and slices tables\n- A **machine learning library** (scikit-learn, tidymodels in R) fits and applies models\n- The labs give you helpers for loading; you write the parts that matter","notes":"FND-PRG-101 taught Python but not dataframes; the pre-work had a short dataframe primer. If someone is lost on pandas syntax, point them to the helper module hurbuth.py and keep them on the idea. Tool names are examples, not endorsements.","minutes":null,"lo":["LO1"]},{"id":"check-s1","n":13,"title":"Which column belongs in the fall-risk rule?","kind":"quiz","session":1,"hash":"522667d6","md":"#### [day1#check-s1] Which column belongs in the fall-risk rule?\n\n*Checkpoint*\n\n**Question:** An analyst at a home-care company lists four columns for a rule that runs at the end of the nurse's assessment visit. Which one may the rule use?\n\n- A. The client's code\n- B. Seconds the client took to walk four metres in the visit\n- C. Whether the client called for help in the following month\n- D. Whether the client fell in the following six months","notes":"Answer: the walk. If the room picks the emergency call, ask \"on the day of the visit, could the nurse know it?\" That question is the leak test of Day 3.","minutes":null,"lo":["LO1"]},{"id":"lab-1-1","n":14,"title":"A screening rule by hand","kind":"lab","session":1,"hash":"d7dac2e1","md":"#### [day1#lab-1-1] A screening rule by hand\n\nLab 1.1 · 35 min\n\nWrite a fall-risk rule on paper for ten clients, turn it into a function and count its misses and needless flags on 1,000 assessments\n\n[D1_1_hand_rule.ipynb](https://sdaiaacademy.github.io/fnd-aic-101/labs/D1_1_hand_rule.ipynb)\n\n- [ ] Read the ten rows: name the identifier, the features and the label (5 min)\n- [ ] Write a rule on paper that flags a client and apply it to the ten rows (8 min)\n- [ ] Turn the rule into a Python function (7 min)\n- [ ] Count its errors on 1,000 training assessments: missed fallers and needless flags (10 min)\n- [ ] Compare with a colleague's rule and with flagging nobody (5 min)\n- [ ] ✱ Stretch: Give your rule one number you can tune and find its best value on the training rows","notes":"AI-off. Make sure people write the paper rule before typing. Watch for: rules that use fell_6m (the label), and count functions that return four numbers not adding up to 1,000. Fast finishers take the stretch and should be asked \"which rows did you tune on?\". Nothing earlier is needed: the lab loads supplied files.","minutes":null,"lo":[]},{"id":"s2","n":15,"title":"Loss and gradient descent","kind":"section","session":2,"hash":"6fd22d7a","md":"#### [day1#s2] Loss and gradient descent\n\n*Session 2*\n\n- Compute a mean squared error by hand for a candidate line\n- Take a gradient step by hand and say why the loss falls\n- Run gradient descent in code and read its loss curve","notes":"Open with the debrief of Lab 1.1, then move from rules you write to rules a procedure fits.","minutes":null,"lo":["LO1"]},{"id":"debrief-1-1","n":16,"title":"Flagging nobody was right most often and found no faller","kind":"content","session":2,"hash":"5bae71a9","md":"#### [day1#debrief-1-1] Flagging nobody was right most often and found no faller\n\n*Lab 1.1 debrief*\n\n| Rule, on 1,000 training assessments | Caught | Missed | Needless | Right |\n| --- | --- | --- | --- | --- |\n| A fall in the past year, or a walk of 8 s or more | 73 | 77 | 153 | 770 |\n| A walk of 7 s or more | 62 | 88 | 188 | 724 |\n| Flag nobody | 0 | 150 | 0 | 850 |\n\nLab 1.1 reference run: 150 of the 1,000 clients fell within six months.","notes":"Ask two or three people for their own rule's counts. Then point at the last row: the most \"right answers\" and no use at all. The reference rule caught about half the fallers while flagging 226 clients. Keep these two kinds of error in mind; the rest of today is about how a procedure writes the rule for us.","minutes":null,"lo":["LO1"]},{"id":"loss-idea","n":17,"title":"A loss turns \"how wrong is this rule\" into one number","kind":"content","session":2,"hash":"71a2106b","md":"#### [day1#loss-idea] A loss turns \"how wrong is this rule\" into one number\n\n*From writing rules to fitting them*\n\n- Pick a family of rules with a few numbers in it: a line `minutes = w × area + b`\n- For one setting of `w` and `b`, compute the error on every example\n- Average the squared errors: the **mean squared error**\n- **Fitting** means finding the numbers with the lowest loss\n\n> **Same idea, every model.** A line, a logistic regression, a neural network and a language model are all fitted by making a loss small.","notes":"The family is chosen by a person; the numbers are chosen by the procedure. Squaring keeps positive and negative errors from cancelling and makes large errors count more.","minutes":null,"lo":["LO1"]},{"id":"loss-worked","n":18,"title":"Five wound-care visits, two candidate lines","kind":"content","session":2,"hash":"e45a4c16","md":"#### [day1#loss-worked] Five wound-care visits, two candidate lines\n\n*A worked loss*\n\n| Area (cm²) | Minutes | Error of w 1.0, b 15 | Error of w 1.2, b 15 |\n| --- | --- | --- | --- |\n| 4 | 20 | -1.0 | -0.2 |\n| 8 | 26 | -3.0 | -1.4 |\n| 12 | 27 | 0.0 | 2.4 |\n| 16 | 33 | -2.0 | 1.2 |\n| 20 | 39 | -4.0 | 0.0 |\n| Mean squared error |  | 6.00 | 1.84 |\n\nError is prediction minus actual. Synthetic visits (teaching_examples.py, D1 S2).","notes":"Do the first column aloud: 1 + 9 + 0 + 4 + 16 = 30, divided by 5 is 6. The second line has a steeper slope and a loss of 1.84: better. The question for the next slide: how would a computer know to try a steeper slope?","minutes":null,"lo":["LO1"]},{"id":"loss-bowl","n":19,"title":"For a line, the loss is a bowl over w and b","kind":"content","session":2,"hash":"4b7c513b","md":"#### [day1#loss-bowl] For a line, the loss is a bowl over w and b\n\n*The shape of the loss*\n\nFigure: The tangent at the red point slopes down to the right, so the step goes right.","notes":"Draw this on the board too. The slope of the loss at the current point says which way is downhill. That slope is the derivative from the pre-work: for the squared error it is 2 times the mean of error times x for w, and 2 times the mean error for b.","minutes":null,"lo":["LO1"]},{"id":"gradient-step","n":20,"title":"Step against the slope, by a small rate","kind":"content","session":2,"hash":"830e0e47","md":"#### [day1#gradient-step] Step against the slope, by a small rate\n\n*Gradient descent*\n\n```python\n# file: one step\ne = w * x + b - y               # errors\nslope_w = 2 * mean(e * x)\nslope_b = 2 * mean(e)\nw = w - rate * slope_w\nb = b - rate * slope_b\n```\n\n- **From w 1.0, b 15 on the five visits.** slope_w = -56.0, slope_b = -4.0. With rate 0.002 the step gives w 1.112, b 15.008 and a loss of 1.93, down from 6.00.\n- **The exact bottom.** Least squares gives w 1.125, b 15.5 and a loss of 1.50. More steps keep closing the gap.","notes":"Walk through the signs: the slope in w is negative, so subtracting it increases w. Numbers from teaching_examples.py, D1 S2. In the lab, participants do two such steps by hand on the fall data's ten rows, then two thousand in code.","minutes":null,"lo":["LO1"]},{"id":"learning-rate","n":21,"title":"The learning rate decides whether the steps arrive","kind":"content","session":2,"hash":"3a1b4f44","md":"#### [day1#learning-rate] The learning rate decides whether the steps arrive\n\n*The one setting*\n\n- **Too small.** Every step is safe and the walk takes forever.\n- **About right.** The loss falls fast, then flattens as the slopes flatten near the bottom.\n- **Too large.** Each step jumps over the bottom to a higher wall; the loss grows without end.\n\n> **What goes wrong.** A loss curve that rises or turns into \"nan\" almost always means the rate is too large or a feature has huge values.","notes":"The stretch of Lab 1.2 makes the loss explode on purpose. The link to scaling (Day 3): a feature with large values makes its slope large, so it sets how large a rate can be.","minutes":null,"lo":["LO1"]},{"id":"loss-curve-reading","n":22,"title":"Plot the loss after every step and read three things","kind":"content","session":2,"hash":"9c0de497","md":"#### [day1#loss-curve-reading] Plot the loss after every step and read three things\n\n*Reading a loss curve*\n\n- **Falling**: the steps are working\n- **Flat**: you are near the bottom, or the rate is far too small\n- **Rising or jagged**: the rate is too large\n- Use a log scale on the loss axis: the early drop is huge, the late gains small","notes":"This is the first of the curves participants learn to read; Day 2 adds complexity and learning curves. In the lab the loss starts near 1,757 for the line that predicts zero minutes; ask them to predict before they run it how far it will fall.","minutes":null,"lo":["LO1"]},{"id":"check-s2","n":23,"title":"Which way does the step move the slope?","kind":"quiz","session":2,"hash":"79898204","md":"#### [day1#check-s2] Which way does the step move the slope?\n\n*Checkpoint*\n\n**Question:** A line predicts dressing minutes from wound area. At the current line the slope of the loss in w is -40 and the rate is 0.01. What does one gradient step do to w?\n\n- A. It lowers w by 0.4\n- B. It raises w by 40\n- C. It raises w by 0.4\n- D. It leaves w where it is","notes":"Answer: raises w by 0.4. If people pick \"lowers\", redraw the bowl: on the left wall the slope is negative and downhill is to the right.","minutes":null,"lo":["LO1"]},{"id":"lab-1-2","n":24,"title":"Two gradient steps on ten rows","kind":"lab","session":2,"hash":"f2ea6d28","md":"#### [day1#lab-1-2] Two gradient steps on ten rows\n\nLab 1.2 · 35 min\n\nFit a line for visit minutes from the number of medicines: a loss by hand, two gradient steps by hand, then a few thousand in code\n\n[D1_2_gradient_steps.ipynb](https://sdaiaacademy.github.io/fnd-aic-101/labs/D1_2_gradient_steps.ipynb)\n\n- [ ] Guess a line for visit minutes and compute its mean squared error by hand (8 min)\n- [ ] Write mse(w, b) and check your hand number (5 min)\n- [ ] Take two gradient steps by hand from w = 0 and b = 0 (10 min)\n- [ ] Run 2,000 steps in code and plot the loss (7 min)\n- [ ] Compare with the exact least-squares line (5 min)\n- [ ] ✱ Stretch: Raise the learning rate until the loss explodes, and explain why","notes":"AI-off for the hand steps; a calculator is fine. The most common slip is the sign of the error (prediction minus actual) or forgetting the factor 2. Ask everyone to write the slopes at the start before they run the cell that checks them. Starts from the supplied ten rows; Lab 1.1 is not needed.","minutes":null,"lo":[]},{"id":"s3","n":25,"title":"Nearest neighbours and linear models by hand","kind":"section","session":3,"hash":"dc020935","md":"#### [day1#s3] Nearest neighbours and linear models by hand\n\n*Session 3*\n\n- Classify a new client by a vote of its nearest neighbours, by hand\n- Explain why the scale of a feature changes the neighbours\n- Fit a least-squares line from means by hand and reproduce it in code","notes":"Debrief Lab 1.2 first, then two model families done by hand. Lab 1.3 is graded: say so before it starts.","minutes":null,"lo":["LO1"]},{"id":"debrief-1-2","n":26,"title":"Two steps took the loss from 1,757 to 123; two thousand reached 49","kind":"content","session":3,"hash":"316ff148","md":"#### [day1#debrief-1-2] Two steps took the loss from 1,757 to 123; two thousand reached 49\n\n*Lab 1.2 debrief*\n\n| Line for visit minutes | w (min per medicine) | b (min) | Loss |\n| --- | --- | --- | --- |\n| Start | 0 | 0 | 1,757.1 |\n| After step 1 | 5.008 | 0.798 | 195.6 |\n| After step 2 | 6.072 | 1.029 | 123.4 |\n| After 2,000 steps | 3.752 | 19.263 | 48.98 |\n| Exact least squares | 3.752 | 19.267 | 48.98 |\n\nLab 1.2 reference run on the ten rows, rate 0.01. Slopes at the start: -500.8 and -79.8.","notes":"Notice that w overshot to 6 before settling at 3.75: the first steps chase the steepest direction. Ask someone to read the final line in words: about 3.75 extra minutes per medicine on top of 19 minutes. The loss left over, about 49, is what medicines do not explain.","minutes":null,"lo":["LO1"]},{"id":"two-families","n":27,"title":"Keep the examples, or keep a summary of them","kind":"content","session":3,"hash":"04316786","md":"#### [day1#two-families] Keep the examples, or keep a summary of them\n\n*Two ways to use examples*\n\n- **Nearest neighbours.** Keep every row. For a new case, find the most similar rows and let them vote. No fitting; all the work happens when you predict.\n- **A linear model.** Fit a few numbers once, then throw the rows away. Prediction is a sum of features times weights.","notes":"Two extremes of one design question: how much of the data does the model carry? Day 4 adds trees and small neural networks between them.","minutes":null,"lo":["LO1"]},{"id":"distance","n":28,"title":"Similar means close: a distance over the features","kind":"content","session":3,"hash":"a7df8c5a","md":"#### [day1#distance] Similar means close: a distance over the features\n\n*Nearest neighbours*\n\n| Area (cm²) | Layers | Over 40 | Distance to (10, 1) |\n| --- | --- | --- | --- |\n| 5 | 1 | 0 | 5.00 |\n| 6 | 3 | 0 | 4.47 |\n| 18 | 2 | 1 | 8.06 |\n| 20 | 4 | 1 | 10.44 |\n| 9 | 4 | 1 | 3.16 |\n| 22 | 1 | 0 | 12.00 |\n\n- Distance = √(area difference² + layers difference²)\n- The three nearest (highlighted) vote 0, 0, 1\n- Prediction for a 10 cm² wound with one layer: **will not run over**\n\nSix synthetic visits (teaching_examples.py, D1 S3).","notes":"Compute one distance aloud: (9, 4) to (10, 1) is the square root of 1 + 9, about 3.16. The number of neighbours, k, is a choice: k = 1 trusts a single row, a large k drifts towards the majority.","minutes":null,"lo":["LO1"]},{"id":"units-trap","n":29,"title":"Change a unit and the neighbours change","kind":"content","session":3,"hash":"8ba76cd9","md":"#### [day1#units-trap] Change a unit and the neighbours change\n\n*The trap in distances*\n\n- Record the same wounds in **square metres**: 10 cm² becomes 0.001 m²\n- Area differences shrink to almost nothing; layers decide every distance\n- The three nearest become the rows with one or two layers: rows 1, 6 and 3 in place of 5, 2 and 1\n- Nothing about the wounds changed, only a unit\n\n> **What goes wrong.** A distance adds raw differences, so the column with the biggest numbers wins. Scale the columns first (Day 3).","notes":"The vote happens to stay at \"will not run over\" here, but the neighbours are different rows, which is enough to distrust the method without scaling. In the lab, recording the walk in tenths of a second changes the vote for both new clients. Rows are numbered from 1 as in the table.","minutes":null,"lo":["LO1"]},{"id":"least-squares","n":30,"title":"For one feature, the best line comes from means","kind":"content","session":3,"hash":"2826687d","md":"#### [day1#least-squares] For one feature, the best line comes from means\n\n*A line by hand*\n\n**w** = Σ (x − mean x)(y − mean y) ÷ Σ (x − mean x)²\n\n**b** = mean y − w × mean x\n\nThe bottom of the bowl, found in one move instead of many steps.\n\n- **The five wound visits.** mean area 12, mean minutes 29. The formula gives w 1.125 and b 15.5: the same line gradient descent was walking towards.","notes":"Show the columns you would write on paper: x minus its mean, y minus its mean, their product, the square of the first. The formula exists only for a straight line with a squared error, which is why gradient descent is the general tool. Numbers from teaching_examples.py.","minutes":null,"lo":["LO1"]},{"id":"fit-predict","n":31,"title":"Every scikit-learn model has the same two moves","kind":"content","session":3,"hash":"27a91242","md":"#### [day1#fit-predict] Every scikit-learn model has the same two moves\n\n*The same two models in code*\n\n```python\n# file: fit, then predict\nfrom sklearn.neighbors import KNeighborsClassifier\nfrom sklearn.linear_model import LinearRegression\n\nknn = KNeighborsClassifier(n_neighbors=3).fit(X, y)    # stores the rows\nknn.predict(new_rows)                                  # votes\n\nline = LinearRegression().fit(X[[\"area_cm2\"]], minutes)\nline.coef_, line.intercept_                            # w and b\n```","notes":"fit learns from examples; predict applies the rule. X is always a table, even with one column, which is why it has double brackets. In the lab the check is exact: your paper numbers must match the library's.","minutes":null,"lo":["LO1"]},{"id":"check-s3","n":32,"title":"Why did the neighbours change?","kind":"quiz","session":3,"hash":"e8de4107","md":"#### [day1#check-s3] Why did the neighbours change?\n\n*Checkpoint*\n\n**Question:** A colleague switched the \"walk\" column of a neighbour model from seconds to milliseconds, and the three nearest clients of a new client changed. What happened?\n\n- A. The walk now has far larger numbers, so it dominates every distance\n- B. The clients' walks were measured again\n- C. The model's weights were refitted\n- D. The colleague changed k","notes":"Answer A. Follow up: \"what would you do about it?\" The answer, scaling, is Day 3 Session 2.","minutes":null,"lo":["LO1"]},{"id":"lab-1-3","n":33,"title":"Two models by hand, then in code","kind":"lab","session":3,"hash":"500db85b","md":"#### [day1#lab-1-3] Two models by hand, then in code\n\nLab 1.3 · 40 min\n\nFit two models by hand, then reproduce them in code: a three-nearest-neighbour vote and a least-squares line on the ten-row table\n\n[D1_3_two_models_by_hand.ipynb](https://sdaiaacademy.github.io/fnd-aic-101/labs/D1_3_two_models_by_hand.ipynb)\n\n- [ ] By hand: distances from two new clients to the ten rows and a three-neighbour vote (10 min)\n- [ ] Rescale walk seconds and see whether the vote changes (6 min)\n- [ ] By hand: the least-squares line for visit minutes from medicines, from means (10 min)\n- [ ] Reproduce both models with scikit-learn and compare with your paper (8 min)\n- [ ] Write three sentences on how each model turned examples into a rule (6 min)\n- [ ] ✱ Stretch: Repeat the vote with k = 1 and k = 5 and say which you trust","notes":"Graded lab, AI-off. Collect the paper sheets at the end: distances and votes for both new clients, the means and the hand slope and intercept, and the three sentences. Grading: the code must reproduce the paper (the notebook checks it), and the sentences must say what each model keeps. Typical slip: sorting distances descending. Starts from the supplied ten rows.","minutes":null,"lo":[]},{"id":"s4","n":34,"title":"Training, validation and test sets","kind":"section","session":4,"hash":"50fef8aa","md":"#### [day1#s4] Training, validation and test sets\n\n*Session 4*\n\n- Explain what each of the three sets is for\n- Compare models against a baseline that predicts no fall\n- Report a held-out result that no choice has touched","notes":"Debrief Lab 1.3 briefly, then the most important idea of the day: an honest held-out score.","minutes":null,"lo":["LO2","LO4"]},{"id":"debrief-1-3","n":35,"title":"Tenths of a second flipped both votes; the line matched to the last digit","kind":"content","session":4,"hash":"822d292d","md":"#### [day1#debrief-1-3] Tenths of a second flipped both votes; the line matched to the last digit\n\n*Lab 1.3 debrief*\n\n| Three-neighbour vote | Client P | Client Q |\n| --- | --- | --- |\n| Walk in seconds | fall | no fall |\n| Walk in tenths | no fall | fall |\n\n- **Visit minutes from medicines.** By hand and by LinearRegression: w 3.752, b 19.267. The same line Lab 1.2 reached by steps.\n\nLab 1.3 reference run. P: one recorded fall, 6.8 s; Q: none, 6.0 s.","notes":"Ask: which vote would you believe? Neither, until the columns are on a common scale. The line matching exactly is the point of the lab: a library does what you did on paper, faster.","minutes":null,"lo":["LO1"]},{"id":"why-held-out","n":36,"title":"What matters is the score on clients the model has not seen","kind":"content","session":4,"hash":"b695991c","md":"#### [day1#why-held-out] What matters is the score on clients the model has not seen\n\n*Generalisation*\n\n- A model is built from past rows and used on future clients\n- Its score on its own training rows is always flattering\n- Hold some rows back, never fit on them, and score there\n- The gap between the two scores is the first thing to look at (Day 2)","notes":"Bring back Lab 1.1: the rule looked better on the ten rows it came from than on 1,000 others. The held-out set formalises that experience.","minutes":null,"lo":["LO2"]},{"id":"three-sets","n":37,"title":"Train on one, choose on another, report on a third","kind":"content","session":4,"hash":"0ae5a94b","md":"#### [day1#three-sets] Train on one, choose on another, report on a third\n\n*Three sets, three jobs*\n\n- **Training.** Every model is fitted here. Seen as often as you like.\n- **Validation.** Compare models and settings here. Each choice makes its score a little flattering.\n- **Test.** Opened once, after every choice. Its score is the one you report.\n\n> **What goes wrong.** Look at the test score, change something, look again: the test set has become a second validation set.","notes":"Ask why two held-out sets are needed. If validation is used to pick the best of five models, the winner's validation score is the best of five draws, so it is optimistic. The test set took no part in any choice.","minutes":null,"lo":["LO2","LO4"]},{"id":"split-by-date","n":38,"title":"Split by date when the model will meet the future","kind":"content","session":4,"hash":"f322a88a","md":"#### [day1#split-by-date] Split by date when the model will meet the future\n\n*How to split*\n\n**Training** the oldest months → **Validation** the next months → **Test** the most recent months\n\nThe wound-care visits: 24 months, split at month 14 and month 19 into 1,390, 535 and 475 visits.","notes":"A random split mixes months, so the model is tested on months it has partly learnt from. For a screen that will be used next year, the honest question is how a model built on the past does on what follows. Day 3 shows what a random split hides. The fall data uses the same idea: training to mid-2024, validation to the end of 2024, test the first half of 2025.","minutes":null,"lo":["LO2","LO4"]},{"id":"baseline-first","n":39,"title":"Always score the model that does nothing","kind":"content","session":4,"hash":"8bd82ee3","md":"#### [day1#baseline-first] Always score the model that does nothing\n\n*The first comparison*\n\n- **0.914** validation accuracy of \"no visit runs over 50 minutes\"\n- **0.940** validation accuracy of a logistic regression\n\nWound-care visits, label \"over 50 minutes\" (8% of visits); teaching_examples.py, D1 S4.","notes":"The baseline that predicts the majority class scores 0.914 because 92% of visits do not run over 50 minutes. The model adds 2.6 points of accuracy. Is that a lot? Accuracy cannot say; the next slide gives a score that can.","minutes":null,"lo":["LO4"]},{"id":"ranking-score","n":40,"title":"AUC: how often a positive case outscores a negative one","kind":"content","session":4,"hash":"29c35ef6","md":"#### [day1#ranking-score] AUC: how often a positive case outscores a negative one\n\n*A score for ranking*\n\n- A model gives each row a **score** between 0 and 1\n- Pick one visit that ran over and one that did not, at random\n- AUC is the chance the first gets the higher score\n- 0.5 is a coin; the do-nothing baseline scores exactly 0.5\n- The wound-care logistic regression: **0.968**","notes":"AUC stands for area under the ROC curve; you do not need the curve today, only the meaning. It ignores the cut-off, which is why it can show that a model separates cases even when its accuracy at 0.5 is close to the baseline's. Choosing the cut-off is Day 2. Number from teaching_examples.py.","minutes":null,"lo":["LO4"]},{"id":"three-candidates","n":41,"title":"A baseline, a line and a tree, on the same split","kind":"content","session":4,"hash":"d6f7ac61","md":"#### [day1#three-candidates] A baseline, a line and a tree, on the same split\n\n*The lab's comparison*\n\n```python\n# file: the shape of Lab 1.4\nmodels = {\n    \"baseline\": DummyClassifier(strategy=\"most_frequent\"),\n    \"logistic regression\": make_pipeline(StandardScaler(), LogisticRegression()),\n    \"decision tree\": DecisionTreeClassifier(max_depth=4, random_state=SEED),\n}\n# fit each on training rows, score each on validation, choose, then test once\n```","notes":"A logistic regression is a line passed through an S-shaped curve, so it gives a score between 0 and 1; it is fitted by gradient steps on a loss, exactly the Session 2 idea. A decision tree asks a few yes-or-no questions of the features; depth 4 means four questions at most. Both come back on Day 4.","minutes":null,"lo":["LO4"]},{"id":"check-s4","n":42,"title":"Which score goes in the report?","kind":"quiz","session":4,"hash":"e074da0f","md":"#### [day1#check-s4] Which score goes in the report?\n\n*Checkpoint*\n\n**Question:** An analyst trains five models for a wound-care screen, keeps the one with the best validation AUC (0.91), then scores the test set once (0.88). Which number describes how the screen will do next year?\n\n- A. 0.91, the validation AUC\n- B. The mean of the two, about 0.90\n- C. The training AUC, which is higher still\n- D. 0.88, the test AUC","notes":"Answer: 0.88. A drop from validation to test is normal and expected; a test score far above validation is a warning sign of a leak.","minutes":null,"lo":["LO2"]},{"id":"lab-1-4","n":43,"title":"Baseline, line and tree on a fixed split","kind":"lab","session":4,"hash":"66a78652","md":"#### [day1#lab-1-4] Baseline, line and tree on a fixed split\n\nLab 1.4 · 40 min\n\nCompare a baseline, a logistic regression and a tree on the fixed split by date, then score the test set once\n\n[D1_4_three_way_split.ipynb](https://sdaiaacademy.github.io/fnd-aic-101/labs/D1_4_three_way_split.ipynb)\n\n- [ ] Load the split and check sizes and base rates (5 min)\n- [ ] Score a baseline that predicts no fall (5 min)\n- [ ] Fit a logistic regression and a tree (8 min)\n- [ ] Compare on validation: accuracy and ranking (10 min)\n- [ ] Choose on validation, score test once (7 min)\n- [ ] Write the results table (5 min)\n- [ ] ✱ Stretch: Split at random instead of by date and compare","notes":"AI-off for the first attempt. Watch for people who score the test set for every model: stop them and ask what the test set is for. Common error: using predict in place of predict_proba for the AUC. The lab starts from the supplied assessments; nothing from earlier labs is needed.","minutes":null,"lo":[]},{"id":"wrap-up","n":44,"title":"Three things to keep","kind":"content","session":4,"hash":"06372f72","md":"#### [day1#wrap-up] Three things to keep\n\n*Day 1 · wrap-up*\n\n- **A model is a rule.** Features in, a prediction out. Fitting picks the rule's numbers by making a loss small.\n- **Two kinds of error.** A miss and a needless flag cost different things; counting right answers hides both.\n- **Held out, once.** Train, choose on validation, report the test score you opened once, against a baseline.","notes":"Ask each table to say which of the three surprised them most. The debrief of Lab 1.4 opens Day 2.","minutes":null,"lo":[]},{"id":"next","n":45,"title":"Day 2: Generalisation and measuring","kind":"content","session":4,"hash":"71d27c04","md":"#### [day1#next] Day 2: Generalisation and measuring\n\n*Next*\n\nAbout 20 minutes before Day 2: finish any lab you did not finish, then answer the Day 1 practice questions on the course page without an assistant.","notes":"Unfinished labs can be finished at home: each starts from supplied files. The practice page holds the Day 1 checkpoints and more questions per outcome.","minutes":null,"lo":[]}],"activities":[{"id":"check-s1-q1","slide":"check-s1","type":"single","prompt":"An analyst at a home-care company lists four columns for a rule that runs at the end of the nurse's assessment visit. Which one may the rule use?","options":[{"key":"A","text":"The client's code"},{"key":"B","text":"Seconds the client took to walk four metres in the visit"},{"key":"C","text":"Whether the client called for help in the following month"},{"key":"D","text":"Whether the client fell in the following six months"}],"correct":[1],"explanation":"The walk is measured during the visit, so it is known when the rule runs. The others are an identifier, a future event and the label itself.","misconceptions":["Treats an identifier as information: a client code says who the row is about, not how likely the client is to fall","","Uses the future: an emergency call after the visit is not known when the rule runs","Confuses the label with a feature: the six-month outcome is what the rule predicts"],"lo":["LO1"]},{"id":"check-s2-q1","slide":"check-s2","type":"single","prompt":"A line predicts dressing minutes from wound area. At the current line the slope of the loss in w is -40 and the rate is 0.01. What does one gradient step do to w?","options":[{"key":"A","text":"It lowers w by 0.4"},{"key":"B","text":"It raises w by 40"},{"key":"C","text":"It raises w by 0.4"},{"key":"D","text":"It leaves w where it is"}],"correct":[2],"explanation":"The step is w minus rate times slope: w - 0.01 × (-40) = w + 0.4. A negative slope means the loss falls as w grows.","misconceptions":["Moves with the slope: the step goes against it, so a negative slope raises w","Mixes up the rate and the step: the change is the rate times the slope, not the slope itself","","Thinks a negative slope means the bottom: the bottom is where the slope is zero"],"lo":["LO1"]},{"id":"check-s3-q1","slide":"check-s3","type":"single","prompt":"A colleague switched the \"walk\" column of a neighbour model from seconds to milliseconds, and the three nearest clients of a new client changed. What happened?","options":[{"key":"A","text":"The walk now has far larger numbers, so it dominates every distance"},{"key":"B","text":"The clients' walks were measured again"},{"key":"C","text":"The model's weights were refitted"},{"key":"D","text":"The colleague changed k"}],"correct":[0],"explanation":"A distance adds raw differences. Multiplying one column by 1,000 makes its differences swamp the others.","misconceptions":["","Thinks the data changed: the clients and their walks are the same, only the unit differs","Thinks a neighbour model has weights: it keeps rows and fits nothing","Confuses k with the distance: k fixes how many neighbours vote, not which ones are close"],"lo":["LO1"]},{"id":"check-s4-q1","slide":"check-s4","type":"single","prompt":"An analyst trains five models for a wound-care screen, keeps the one with the best validation AUC (0.91), then scores the test set once (0.88). Which number describes how the screen will do next year?","options":[{"key":"A","text":"0.91, the validation AUC"},{"key":"B","text":"The mean of the two, about 0.90"},{"key":"C","text":"The training AUC, which is higher still"},{"key":"D","text":"0.88, the test AUC"}],"correct":[3],"explanation":"The test set took no part in fitting or choosing, so its score is the honest estimate.","misconceptions":["Trusts the winner's own score: chosen as the best of five, it is flattering","Averages a chosen score with a clean one, which keeps part of the flattery","Trusts the training score, which every model tops on its own rows",""],"lo":["LO2"]}],"ai":{"context":{"course":"../context/course.md","courseJs":"../context/course.js","day":"day1.md","llms":"../llms.txt"},"tasks":[],"tools":[]},"bridge":{"allowedOrigins":[]},"features":{},"strings":{}}</script>
+<script src="../_engine/academy.js"></script>
+</body>
+</html>

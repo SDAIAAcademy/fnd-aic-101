@@ -1,0 +1,20 @@
+{
+ "categorical": [
+  "sector"
+ ],
+ "numeric": [
+  "age",
+  "lives_alone",
+  "n_medications",
+  "prior_falls_12m",
+  "walk_seconds",
+  "vision_problem",
+  "uses_walking_aid",
+  "stairs_at_home",
+  "diabetes",
+  "bmi"
+ ],
+ "incomplete": [
+  "bmi"
+ ]
+}

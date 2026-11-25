@@ -1,0 +1,1014 @@
+{
+  "v": 1,
+  "engine": "1.0.0",
+  "build": {
+    "at": "2026-11-25T02:20:54Z",
+    "version": "2027.1.0",
+    "commit": "193791f"
+  },
+  "lang": "en",
+  "dir": "ltr",
+  "langs": [
+    "en"
+  ],
+  "alt": {},
+  "course": {
+    "id": "fnd-aic-101",
+    "code": "FND-AIC-101",
+    "version": "2027.1.0",
+    "title": "How Machine Learning Works",
+    "tagline": "Work out by hand and then in code how a model learns from labelled examples, test it honestly on held-out data, set its threshold from error costs, catch leaks and write down its limits",
+    "description": "Participants work out how supervised learning turns labelled examples into predictions, by hand first and then in code. They fit a nearest-neighbour rule and a linear model on paper, make a model overfit on purpose, choose a decision threshold from error costs and base rates, and hunt leaks seeded in a pipeline. Labs run on a laptop with small public or synthetic tabular data, and the capstone is an honest modelling report with a model card, defended in person.",
+    "track": "foundations",
+    "track_name": "Data & AI Foundations Track",
+    "level": 100,
+    "badge": null,
+    "audience": "Beginners. Graduates, career changers and computing professionals preparing for Developer or Specialist courses, who can run a Python notebook but have not yet studied AI methods.",
+    "prerequisites": [
+      "FND-PRG-101 Python Programming for Data and AI",
+      "Writes short Python functions and loops; a passed placement exercise is accepted instead of FND-PRG-101",
+      "Uses school algebra; the derivative of a squared error is taught in the pre-work"
+    ],
+    "url": "https://sdaiaacademy.github.io/fnd-aic-101/",
+    "repo": "SDAIAAcademy/fnd-aic-101",
+    "home": "../index.html",
+    "format": "intensive",
+    "format_note": "Intensive: 4 teaching days and a capstone day, with guided pre-work and a tracked follow-up task",
+    "shape": "4 teaching days + capstone day",
+    "hours": {
+      "instruction": 8,
+      "lab": 10,
+      "guided_self_study": 5,
+      "assessment": 2,
+      "capstone": 5,
+      "total": 30
+    },
+    "unit": "day",
+    "outcomes": [
+      {
+        "id": "LO1",
+        "text": "Explain how a supervised learner fits a prediction rule by minimising a loss, given a ten-row table and a one-feature linear model",
+        "level": "Awareness",
+        "evidence": "a hand-worked loss and two gradient steps, with a three-sentence explanation"
+      },
+      {
+        "id": "LO2",
+        "text": "Distinguish training, validation and test data, and identify overfitting and underfitting from plotted curves, given six complexity and learning curves",
+        "level": "Awareness",
+        "evidence": "a diagnosis and remedy per curve, at least five of six correct"
+      },
+      {
+        "id": "LO3",
+        "text": "Identify target, duplicate, preprocessing and temporal leakage in modelling pipelines, given eight short pipeline descriptions",
+        "level": "Awareness",
+        "evidence": "each leak named with its fix, at least six of eight correct"
+      },
+      {
+        "id": "LO4",
+        "text": "Implement a train, validate and test workflow comparing a baseline, a linear model and a decision tree, given a tabular dataset and a starter notebook",
+        "level": "Applied",
+        "evidence": "a notebook that runs end to end with a fixed seed and reports held-out metrics"
+      },
+      {
+        "id": "LO5",
+        "text": "Compute confusion-matrix metrics and choose a threshold from error costs and the base rate, given test-set scores and a cost per error type",
+        "level": "Applied",
+        "evidence": "a metrics table and a justified threshold"
+      },
+      {
+        "id": "LO6",
+        "text": "Draft a one-page model card with intended use, data, metrics by subgroup and known limits, given the participant's capstone model",
+        "level": "Applied",
+        "evidence": "a model card reviewed in the defence"
+      }
+    ],
+    "case_study": {
+      "name": "Hurbuth Home Care Company",
+      "summary": "Hurbuth (حُربُث) is a fictional private provider of home nursing and physiotherapy for older people in an unnamed city with five sectors; it wants a six-month fall-risk screen that turns the nurse's home assessment into a flag for a physiotherapy home programme. Every file is synthetic and written with a fixed seed by labs/prepare_data.py: 4,776 assessments of 2,500 clients (codes only), a later batch from a newly opened sector, an export with three seeded leaks, and two further screens of the same company for the capstone and the follow-up task."
+    },
+    "days": [
+      {
+        "id": "day1",
+        "kind": "day",
+        "n": 1,
+        "number": 1,
+        "label": "Day 1",
+        "title": "Learning from examples",
+        "subtitle": "Features and labels, a loss and its gradient, nearest neighbours and a line by hand, and the first honest split",
+        "shape": "4 sessions · 4 labs",
+        "deck": "../slides/day1.html",
+        "md": "../slides/day1.md",
+        "url": "https://sdaiaacademy.github.io/fnd-aic-101/slides/day1.html",
+        "sessions": [
+          {
+            "n": 1,
+            "label": "Session 1",
+            "title": "Features, labels and prediction rules",
+            "summary": "A table of examples, the column to predict, and a rule as a function you can score",
+            "outcomes": [
+              "Name the identifier, the features and the label of a table of assessments",
+              "Write a prediction rule as a function of the features",
+              "Count a rule's two kinds of error on rows it was not written from"
+            ],
+            "lo": [
+              "LO1"
+            ],
+            "minutes": 65,
+            "lab": {
+              "id": "1.1",
+              "title": "A screening rule by hand",
+              "summary": "Write a fall-risk rule on paper for ten clients, turn it into a function and count its misses and needless flags on 1,000 assessments",
+              "minutes": 35,
+              "href": "../labs/D1_1_hand_rule.ipynb",
+              "steps": [
+                {
+                  "text": "Read the ten rows: name the identifier, the features and the label",
+                  "minutes": 5
+                },
+                {
+                  "text": "Write a rule on paper that flags a client and apply it to the ten rows",
+                  "minutes": 8
+                },
+                {
+                  "text": "Turn the rule into a Python function",
+                  "minutes": 7
+                },
+                {
+                  "text": "Count its errors on 1,000 training assessments: missed fallers and needless flags",
+                  "minutes": 10
+                },
+                {
+                  "text": "Compare with a colleague's rule and with flagging nobody",
+                  "minutes": 5
+                }
+              ],
+              "stretch": "Give your rule one number you can tune and find its best value on the training rows"
+            }
+          },
+          {
+            "n": 2,
+            "label": "Session 2",
+            "title": "Loss and gradient descent",
+            "summary": "A loss scores a rule over all rows; its slope says which way to move the parameters",
+            "outcomes": [
+              "Compute a mean squared error by hand for a candidate line",
+              "Take a gradient step by hand and say why the loss falls",
+              "Run gradient descent in code and read its loss curve"
+            ],
+            "lo": [
+              "LO1"
+            ],
+            "minutes": 65,
+            "lab": {
+              "id": "1.2",
+              "title": "Two gradient steps on ten rows",
+              "summary": "Fit a line for visit minutes from the number of medicines: a loss by hand, two gradient steps by hand, then a few thousand in code",
+              "minutes": 35,
+              "href": "../labs/D1_2_gradient_steps.ipynb",
+              "steps": [
+                {
+                  "text": "Guess a line for visit minutes and compute its mean squared error by hand",
+                  "minutes": 8
+                },
+                {
+                  "text": "Write mse(w, b) and check your hand number",
+                  "minutes": 5
+                },
+                {
+                  "text": "Take two gradient steps by hand from w = 0 and b = 0",
+                  "minutes": 10
+                },
+                {
+                  "text": "Run 2,000 steps in code and plot the loss",
+                  "minutes": 7
+                },
+                {
+                  "text": "Compare with the exact least-squares line",
+                  "minutes": 5
+                }
+              ],
+              "stretch": "Raise the learning rate until the loss explodes, and explain why"
+            }
+          },
+          {
+            "n": 3,
+            "label": "Session 3",
+            "title": "Nearest neighbours and linear models by hand",
+            "summary": "Two ways to turn examples into a rule: vote among the closest rows, or fit a line",
+            "outcomes": [
+              "Classify a new client by a vote of its nearest neighbours, by hand",
+              "Explain why the scale of a feature changes the neighbours",
+              "Fit a least-squares line from means by hand and reproduce it in code"
+            ],
+            "lo": [
+              "LO1"
+            ],
+            "minutes": 70,
+            "lab": {
+              "id": "1.3",
+              "title": "Two models by hand, then in code",
+              "summary": "Fit two models by hand, then reproduce them in code: a three-nearest-neighbour vote and a least-squares line on the ten-row table",
+              "minutes": 40,
+              "href": "../labs/D1_3_two_models_by_hand.ipynb",
+              "steps": [
+                {
+                  "text": "By hand: distances from two new clients to the ten rows and a three-neighbour vote",
+                  "minutes": 10
+                },
+                {
+                  "text": "Rescale walk seconds and see whether the vote changes",
+                  "minutes": 6
+                },
+                {
+                  "text": "By hand: the least-squares line for visit minutes from medicines, from means",
+                  "minutes": 10
+                },
+                {
+                  "text": "Reproduce both models with scikit-learn and compare with your paper",
+                  "minutes": 8
+                },
+                {
+                  "text": "Write three sentences on how each model turned examples into a rule",
+                  "minutes": 6
+                }
+              ],
+              "stretch": "Repeat the vote with k = 1 and k = 5 and say which you trust"
+            }
+          },
+          {
+            "n": 4,
+            "label": "Session 4",
+            "title": "Training, validation and test sets",
+            "summary": "Score a model on rows it never saw, choose on validation, open the test set once",
+            "outcomes": [
+              "Explain what each of the three sets is for",
+              "Compare models against a baseline that predicts no fall",
+              "Report a held-out result that no choice has touched"
+            ],
+            "lo": [
+              "LO2",
+              "LO4"
+            ],
+            "minutes": 70,
+            "lab": {
+              "id": "1.4",
+              "title": "Baseline, line and tree on a fixed split",
+              "summary": "Compare a baseline, a logistic regression and a tree on the fixed split by date, then score the test set once",
+              "minutes": 40,
+              "href": "../labs/D1_4_three_way_split.ipynb",
+              "steps": [
+                {
+                  "text": "Load the split and check sizes and base rates",
+                  "minutes": 5
+                },
+                {
+                  "text": "Score a baseline that predicts no fall",
+                  "minutes": 5
+                },
+                {
+                  "text": "Fit a logistic regression and a tree",
+                  "minutes": 8
+                },
+                {
+                  "text": "Compare on validation: accuracy and ranking",
+                  "minutes": 10
+                },
+                {
+                  "text": "Choose on validation, score test once",
+                  "minutes": 7
+                },
+                {
+                  "text": "Write the results table",
+                  "minutes": 5
+                }
+              ],
+              "stretch": "Split at random instead of by date and compare"
+            }
+          }
+        ]
+      },
+      {
+        "id": "day2",
+        "kind": "day",
+        "n": 2,
+        "number": 2,
+        "label": "Day 2",
+        "title": "Generalisation and measuring",
+        "subtitle": "Overfitting on purpose, cross-validation and learning curves, the confusion matrix, and a threshold chosen from costs",
+        "shape": "4 sessions · 4 labs",
+        "deck": "../slides/day2.html",
+        "md": "../slides/day2.md",
+        "url": "https://sdaiaacademy.github.io/fnd-aic-101/slides/day2.html",
+        "sessions": [
+          {
+            "n": 1,
+            "label": "Session 1",
+            "title": "Model complexity, overfitting and regularisation",
+            "summary": "More capacity fits the training rows better and new rows worse past a point; regularisation pulls it back",
+            "outcomes": [
+              "Produce training and validation curves over model complexity",
+              "Tell underfitting from overfitting on a plotted curve",
+              "Use a regularisation setting to reduce overfitting"
+            ],
+            "lo": [
+              "LO2"
+            ],
+            "minutes": 70,
+            "lab": {
+              "id": "2.1",
+              "title": "Overfit on purpose",
+              "summary": "Overfit on purpose by raising tree depth and plot the curves, then pull a logistic regression back with regularisation",
+              "minutes": 40,
+              "href": "../labs/D2_1_overfit_depth.ipynb",
+              "steps": [
+                {
+                  "text": "A one-question tree and an unlimited tree: training and validation scores",
+                  "minutes": 6
+                },
+                {
+                  "text": "Scores for depths 1 to 20",
+                  "minutes": 8
+                },
+                {
+                  "text": "Plot the two curves and mark underfitting, the best depth and overfitting",
+                  "minutes": 8
+                },
+                {
+                  "text": "Regularise a logistic regression from strong to weak",
+                  "minutes": 8
+                },
+                {
+                  "text": "Choose the depth on validation and score the test set once",
+                  "minutes": 5
+                },
+                {
+                  "text": "Write the diagnosis in three sentences",
+                  "minutes": 5
+                }
+              ],
+              "stretch": "Limit the leaf size in place of the depth and compare the best validation score"
+            }
+          },
+          {
+            "n": 2,
+            "label": "Session 2",
+            "title": "Cross-validation and learning curves",
+            "summary": "Several folds show how much a score moves; a learning curve shows whether more data would help",
+            "outcomes": [
+              "Run cross-validation with folds grouped by client",
+              "Read the spread of fold scores",
+              "Diagnose underfitting, overfitting and a good fit from complexity and learning curves"
+            ],
+            "lo": [
+              "LO2"
+            ],
+            "minutes": 65,
+            "lab": {
+              "id": "2.2",
+              "title": "Grouped folds and six curves",
+              "summary": "Cross-validate a tree with folds grouped by client, draw a learning curve, then diagnose six curves and name a remedy for each",
+              "minutes": 35,
+              "href": "../labs/D2_2_cross_validation.ipynb",
+              "steps": [
+                {
+                  "text": "Five folds grouped by client on the training period: score a depth-4 tree",
+                  "minutes": 8
+                },
+                {
+                  "text": "Read the spread across folds against one validation number",
+                  "minutes": 5
+                },
+                {
+                  "text": "Draw a learning curve from 100 rows to all training rows",
+                  "minutes": 8
+                },
+                {
+                  "text": "Diagnose six curves and name a remedy for each",
+                  "minutes": 14
+                }
+              ],
+              "stretch": "Compare grouped folds with plain folds on the same rows"
+            }
+          },
+          {
+            "n": 3,
+            "label": "Session 3",
+            "title": "Confusion matrix, precision and recall",
+            "summary": "Four counts behind every classification score, and why accuracy hides a lazy model",
+            "outcomes": [
+              "Fill the four cells of a confusion matrix by hand",
+              "Compute precision, recall and specificity from the cells",
+              "Explain why accuracy misleads at a low base rate"
+            ],
+            "lo": [
+              "LO5"
+            ],
+            "minutes": 65,
+            "lab": {
+              "id": "2.3",
+              "title": "Four cells by hand, then in code",
+              "summary": "Fill the confusion matrix of a fixed screen by hand on twenty rows, then compute precision, recall and specificity on the validation scores",
+              "minutes": 35,
+              "href": "../labs/D2_3_confusion_matrix.ipynb",
+              "steps": [
+                {
+                  "text": "Fill the four cells by hand at threshold 0.2 on twenty rows",
+                  "minutes": 8
+                },
+                {
+                  "text": "Write confusion(y, score, t)",
+                  "minutes": 7
+                },
+                {
+                  "text": "Precision, recall and specificity on the validation scores",
+                  "minutes": 8
+                },
+                {
+                  "text": "Accuracy against the base rate",
+                  "minutes": 5
+                },
+                {
+                  "text": "Check your numbers with scikit-learn",
+                  "minutes": 7
+                }
+              ],
+              "stretch": "Repeat at threshold 0.15 and say which cells moved"
+            }
+          },
+          {
+            "n": 4,
+            "label": "Session 4",
+            "title": "Thresholds, error costs and base rates",
+            "summary": "The threshold is a decision: it follows from what each error costs and how common the outcome is",
+            "outcomes": [
+              "Compute the expected cost of a threshold from the confusion matrix and two costs",
+              "Choose a threshold on validation scores and report it on test scores",
+              "Explain how a change in the base rate moves the cost of a threshold"
+            ],
+            "lo": [
+              "LO5"
+            ],
+            "minutes": 70,
+            "lab": {
+              "id": "2.4",
+              "title": "A threshold from costs",
+              "summary": "Set a threshold for a synthetic screening dataset from the cost of a missed fall and of a needless programme, then report its metrics once on the test scores",
+              "minutes": 40,
+              "href": "../labs/D2_4_threshold.ipynb",
+              "steps": [
+                {
+                  "text": "Expected cost of a threshold",
+                  "minutes": 8
+                },
+                {
+                  "text": "Sweep validation thresholds for the cheapest",
+                  "minutes": 8
+                },
+                {
+                  "text": "Compare with the cost-ratio rule",
+                  "minutes": 6
+                },
+                {
+                  "text": "Apply it once to the test scores",
+                  "minutes": 8
+                },
+                {
+                  "text": "Raise the base rate: what moves",
+                  "minutes": 5
+                },
+                {
+                  "text": "Justify it, and name who approves",
+                  "minutes": 5
+                }
+              ],
+              "stretch": "Add a capacity limit of one client in four"
+            }
+          }
+        ]
+      },
+      {
+        "id": "day3",
+        "kind": "day",
+        "n": 3,
+        "number": 3,
+        "label": "Day 3",
+        "title": "Data and leakage",
+        "subtitle": "Regression against naive baselines, encoding, scaling and missing values, pipelines fitted on training rows, and four kinds of leak",
+        "shape": "4 sessions · 4 labs",
+        "deck": "../slides/day3.html",
+        "md": "../slides/day3.md",
+        "url": "https://sdaiaacademy.github.io/fnd-aic-101/slides/day3.html",
+        "sessions": [
+          {
+            "n": 1,
+            "label": "Session 1",
+            "title": "Regression errors against a naive baseline",
+            "summary": "A regression error means little until it beats predicting the average",
+            "outcomes": [
+              "Compute mean absolute error and root mean squared error",
+              "Compare a model with the mean and median baselines",
+              "Find where a model errs most from its residuals"
+            ],
+            "lo": [
+              "LO4"
+            ],
+            "minutes": 65,
+            "lab": {
+              "id": "3.1",
+              "title": "Visit minutes against two baselines",
+              "summary": "Predict the length of a nurse visit and compare a linear model with the mean and median baselines on validation rows",
+              "minutes": 35,
+              "href": "../labs/D3_1_regression_baselines.ipynb",
+              "steps": [
+                {
+                  "text": "Two naive baselines: the training mean and median",
+                  "minutes": 5
+                },
+                {
+                  "text": "Mean absolute error and root mean squared error by hand on five rows",
+                  "minutes": 7
+                },
+                {
+                  "text": "A linear model on five features",
+                  "minutes": 8
+                },
+                {
+                  "text": "Errors on validation against the baselines",
+                  "minutes": 8
+                },
+                {
+                  "text": "Where the model errs most: residuals by group",
+                  "minutes": 7
+                }
+              ],
+              "stretch": "Try a decision tree regressor and compare its validation error"
+            }
+          },
+          {
+            "n": 2,
+            "label": "Session 2",
+            "title": "Encoding, scaling and missing values",
+            "summary": "Models read numbers: categories need columns, distances need scales, and a gap needs a value and a flag",
+            "outcomes": [
+              "Encode a categorical column as indicator columns",
+              "Impute a missing value from training rows and keep a missing flag",
+              "Explain when scaling changes a model's answer"
+            ],
+            "lo": [
+              "LO4",
+              "LO3"
+            ],
+            "minutes": 65,
+            "lab": {
+              "id": "3.2",
+              "title": "A column transformer for the screen",
+              "summary": "Encode the sector, impute body mass index with a missing flag and scale the numbers in one column transformer, and see scaling change a neighbour model",
+              "minutes": 35,
+              "href": "../labs/D3_2_column_transformer.ipynb",
+              "steps": [
+                {
+                  "text": "Find the categorical, numeric and incomplete columns",
+                  "minutes": 5
+                },
+                {
+                  "text": "One-hot encode the sector",
+                  "minutes": 6
+                },
+                {
+                  "text": "Impute body mass index from training rows and add a missing flag",
+                  "minutes": 8
+                },
+                {
+                  "text": "Scale the numbers and compare a neighbour model with and without",
+                  "minutes": 10
+                },
+                {
+                  "text": "Put it all in one column transformer inside a pipeline",
+                  "minutes": 6
+                }
+              ],
+              "stretch": "Compare the missing rate of body mass index for clients who live alone and with others"
+            }
+          },
+          {
+            "n": 3,
+            "label": "Session 3",
+            "title": "Pipelines fitted on training data only",
+            "summary": "Every step that learns from data learns from training rows only, inside each fold",
+            "outcomes": [
+              "Explain why a step fitted on all rows leaks",
+              "Measure the effect of selecting features before the split",
+              "Build a pipeline that refits every step inside each fold"
+            ],
+            "lo": [
+              "LO3"
+            ],
+            "minutes": 70,
+            "lab": {
+              "id": "3.3",
+              "title": "Selection before the split",
+              "summary": "Select features on all rows of a pilot whose columns carry no signal, see the score it invents, and remove it with a pipeline",
+              "minutes": 40,
+              "href": "../labs/D3_3_pipeline_leak.ipynb",
+              "steps": [
+                {
+                  "text": "Meet the pilot: 240 clients and 400 activity columns",
+                  "minutes": 4
+                },
+                {
+                  "text": "Select the 20 best columns on all rows, then cross-validate",
+                  "minutes": 8
+                },
+                {
+                  "text": "Do the same with the selection inside a pipeline",
+                  "minutes": 8
+                },
+                {
+                  "text": "Shuffle the labels and repeat both",
+                  "minutes": 8
+                },
+                {
+                  "text": "Scaler and imputer fitted on everything: measure the difference",
+                  "minutes": 7
+                },
+                {
+                  "text": "Write the rule you will follow",
+                  "minutes": 5
+                }
+              ],
+              "stretch": "Repeat with 5 and with 100 selected columns"
+            }
+          },
+          {
+            "n": 4,
+            "label": "Session 4",
+            "title": "Target, duplicate and temporal leakage",
+            "summary": "A score that is too good usually means the answer is in the inputs, the test rows are in training, or the future is in the past",
+            "outcomes": [
+              "Recognise a field recorded after the outcome",
+              "Find copies of rows on both sides of a split",
+              "Spot information from after the prediction date"
+            ],
+            "lo": [
+              "LO3"
+            ],
+            "minutes": 70,
+            "lab": {
+              "id": "3.4",
+              "title": "Three seeded leaks",
+              "summary": "Find three seeded leaks in a working pipeline, fix each one and rescore, and write a leak log",
+              "minutes": 40,
+              "href": "../labs/D3_4_seeded_leaks.ipynb",
+              "steps": [
+                {
+                  "text": "Run the working pipeline and note its score",
+                  "minutes": 5
+                },
+                {
+                  "text": "Look for a field recorded after the outcome",
+                  "minutes": 8
+                },
+                {
+                  "text": "Look for copies across the split",
+                  "minutes": 8
+                },
+                {
+                  "text": "Look for information from the future",
+                  "minutes": 8
+                },
+                {
+                  "text": "Fix all three and rescore",
+                  "minutes": 7
+                },
+                {
+                  "text": "Write the leak log: each leak, its evidence, its fix",
+                  "minutes": 4
+                }
+              ],
+              "stretch": "Fix the leaks one at a time and rank them by how much each moved the score"
+            }
+          }
+        ]
+      },
+      {
+        "id": "day4",
+        "kind": "day",
+        "n": 4,
+        "number": 4,
+        "label": "Day 4",
+        "title": "Model families and limits",
+        "subtitle": "Trees, linear models and a small neural network, a later batch from a new sector, error gaps by sex, a model card, and the capstone",
+        "shape": "4 sessions · 4 labs",
+        "deck": "../slides/day4.html",
+        "md": "../slides/day4.md",
+        "url": "https://sdaiaacademy.github.io/fnd-aic-101/slides/day4.html",
+        "sessions": [
+          {
+            "n": 1,
+            "label": "Session 1",
+            "title": "Trees, linear models and small neural networks",
+            "summary": "Three families, one pipeline, one fixed seed: compare them honestly against a baseline",
+            "outcomes": [
+              "Describe how a tree, a linear model and a small neural network each draw a boundary",
+              "Compare the three families and a baseline in one reproducible notebook",
+              "Explain what a fixed seed does and does not guarantee"
+            ],
+            "lo": [
+              "LO4"
+            ],
+            "minutes": 70,
+            "lab": {
+              "id": "4.1",
+              "title": "Three families and a baseline",
+              "summary": "Train a baseline, a logistic regression, a decision tree and a small neural network through one pipeline with a fixed seed, and report held-out results",
+              "minutes": 40,
+              "href": "../labs/D4_1_three_families.ipynb",
+              "steps": [
+                {
+                  "text": "One preprocessing pipeline for every model",
+                  "minutes": 6
+                },
+                {
+                  "text": "Fit a baseline, a logistic regression, a tree and a small neural network",
+                  "minutes": 10
+                },
+                {
+                  "text": "The validation table with a fixed seed",
+                  "minutes": 8
+                },
+                {
+                  "text": "Run again, then with another seed: what changes",
+                  "minutes": 6
+                },
+                {
+                  "text": "Choose, score the test set once and save the table",
+                  "minutes": 10
+                }
+              ],
+              "stretch": "Change the size of the neural network's hidden layer and watch the validation score"
+            }
+          },
+          {
+            "n": 2,
+            "label": "Session 2",
+            "title": "Distribution shift",
+            "summary": "A model meets data that differ from its training rows: new places, new people, a changed measurement",
+            "outcomes": [
+              "Compare a later batch with the training rows feature by feature",
+              "Measure a screen's flag rate and recall by sector on a later batch",
+              "Name a shift and the check that would have caught it"
+            ],
+            "lo": [
+              "LO6"
+            ],
+            "minutes": 65,
+            "lab": {
+              "id": "4.2",
+              "title": "A later batch from a new sector",
+              "summary": "Score a later batch that includes a newly opened sector, find what moved, correct it and note it for the model card",
+              "minutes": 35,
+              "href": "../labs/D4_2_later_batch.ipynb",
+              "steps": [
+                {
+                  "text": "Score the later batch with the chosen screen",
+                  "minutes": 5
+                },
+                {
+                  "text": "Flag rates and recall by sector",
+                  "minutes": 8
+                },
+                {
+                  "text": "Compare feature distributions: training rows against the batch",
+                  "minutes": 10
+                },
+                {
+                  "text": "Find the cause and correct it",
+                  "minutes": 7
+                },
+                {
+                  "text": "Note what the model card must say",
+                  "minutes": 5
+                }
+              ],
+              "stretch": "Compare the base rate of the new sector with the training period"
+            }
+          },
+          {
+            "n": 3,
+            "label": "Session 3",
+            "title": "Subgroup error gaps and the model card",
+            "summary": "Error rates can differ by group at one threshold, a dropped attribute can return through a proxy, and a model card says so",
+            "outcomes": [
+              "Measure recall and false positive rate by sex, with their counts",
+              "Show how a proxy feature carries a protected attribute",
+              "Draft a one-page model card with intended use, data, metrics by subgroup and limits"
+            ],
+            "lo": [
+              "LO6",
+              "LO5"
+            ],
+            "minutes": 70,
+            "lab": {
+              "id": "4.3",
+              "title": "Subgroup error rates and a model card",
+              "summary": "Measure subgroup error rates and draft a model card: recall and false positive rate by sex at the chosen threshold, the proxy that carries sex, and who should not rely on the screen",
+              "minutes": 40,
+              "href": "../labs/D4_3_subgroups_model_card.ipynb",
+              "steps": [
+                {
+                  "text": "Error rates by sex at the chosen threshold",
+                  "minutes": 10
+                },
+                {
+                  "text": "The counts behind each rate",
+                  "minutes": 6
+                },
+                {
+                  "text": "The proxy: predict sex from nurse preference",
+                  "minutes": 8
+                },
+                {
+                  "text": "Draft the model card from the template",
+                  "minutes": 12
+                },
+                {
+                  "text": "Write who should not rely on the screen",
+                  "minutes": 4
+                }
+              ],
+              "stretch": "Add nurse preference to the screen and compare the gap"
+            }
+          },
+          {
+            "n": 4,
+            "label": "Session 4",
+            "title": "Where language models fit, and the capstone",
+            "summary": "A language model learns by the same loss minimisation at a far larger scale; the capstone applies the week to a new screen",
+            "outcomes": [
+              "Place a language model on the map of supervised learning",
+              "Read the capstone brief and its rubric",
+              "Start the capstone from a starter notebook that runs end to end"
+            ],
+            "lo": [
+              "LO4",
+              "LO6"
+            ],
+            "minutes": 65,
+            "lab": {
+              "id": "4.4",
+              "title": "The capstone starter",
+              "summary": "Run the capstone starter on the admission screen end to end with its fixed seed, check its data for leaks and write the plan of the report",
+              "minutes": 35,
+              "href": "../labs/D4_4_capstone_start.ipynb",
+              "steps": [
+                {
+                  "text": "Read the capstone brief and the data dictionary",
+                  "minutes": 5
+                },
+                {
+                  "text": "Run the starter end to end with the fixed seed",
+                  "minutes": 8
+                },
+                {
+                  "text": "Check the data with the leak checklist of Lab 3.4",
+                  "minutes": 7
+                },
+                {
+                  "text": "Plan the report: baseline, two models, threshold, model card",
+                  "minutes": 10
+                },
+                {
+                  "text": "Create the repository and commit the starter",
+                  "minutes": 5
+                }
+              ],
+              "stretch": "Work out the cost ratio of the admission screen and the threshold it implies"
+            }
+          }
+        ]
+      },
+      {
+        "id": "capstone",
+        "kind": "capstone",
+        "n": 5,
+        "number": null,
+        "label": "Capstone",
+        "title": "Capstone: a modelling report and its defence",
+        "subtitle": "Ten minutes each: six of talk, then four of questions in which the participant re-runs the notebook and explains a result the instructor selects",
+        "shape": "",
+        "deck": "../slides/capstone.html",
+        "md": "../slides/capstone.md",
+        "url": "https://sdaiaacademy.github.io/fnd-aic-101/slides/capstone.html",
+        "sessions": []
+      }
+    ],
+    "capstone": {
+      "summary": "A modelling report on a provided public or synthetic dataset, with a baseline, two models, a threshold decision and a model card, defended in ten minutes; the follow-up task repeats it on a second dataset",
+      "submission": "Individual. A public GitHub repository link holding the modelling report notebook on the admission screen (labs/capstone/), run end to end with its fixed seed and its history kept: a baseline, two models, a threshold decision from the stated costs and base rate, and a one-page model card. Then a ten-minute defence: six minutes of talk and four of questions, in which the participant re-runs the notebook and explains a result the instructor selects.",
+      "talk_minutes": 6,
+      "qa_minutes": 4,
+      "rubric": [
+        {
+          "criterion": "Held-out workflow: a baseline and two models compared on validation with a fixed seed, the test set opened once, the notebook running end to end",
+          "weight": 25
+        },
+        {
+          "criterion": "Leakage-safe data handling: the split by date, the field recorded after the outcome removed, every preprocessing step fitted on training rows inside a pipeline",
+          "weight": 15
+        },
+        {
+          "criterion": "Threshold decision: chosen from the stated error costs and the base rate, with the confusion matrix and metrics at that threshold",
+          "weight": 20
+        },
+        {
+          "criterion": "Model card: intended use, data, metrics by subgroup with counts, known limits and who should not rely on the model, with an owner and a different reviewer",
+          "weight": 20
+        },
+        {
+          "criterion": "Defence: re-runs the notebook and explains the result the instructor selects",
+          "weight": 20
+        }
+      ]
+    },
+    "labs": {
+      "kind": "notebooks",
+      "base": "labs/"
+    },
+    "tools": [
+      {
+        "slot": "Notebook environment",
+        "examples": [
+          "JupyterLab",
+          "a free hosted notebook service"
+        ]
+      },
+      {
+        "slot": "Machine learning library",
+        "examples": [
+          "scikit-learn",
+          "tidymodels in R"
+        ]
+      },
+      {
+        "slot": "Dataframes and plotting",
+        "examples": [
+          "pandas with Matplotlib",
+          "Polars with seaborn"
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "group": "National references",
+        "items": [
+          {
+            "title": "SDAIA: AI Ethics Principles (English)",
+            "url": "https://sdaia.gov.sa/en/SDAIA/about/Documents/ai-principles.pdf"
+          },
+          {
+            "title": "سدايا: مبادئ أخلاقيات الذكاء الاصطناعي (العربية)",
+            "url": "https://sdaia.gov.sa/ar/SDAIA/about/Documents/ai-principles.pdf"
+          },
+          {
+            "title": "SDAIA: Generative Artificial Intelligence Guidelines for Government (English)",
+            "url": "https://sdaia.gov.sa/en/SDAIA/about/Files/GenAIGuidelinesForGovernmentENCompressed.pdf"
+          },
+          {
+            "title": "سدايا: مبادئ الذكاء الاصطناعي التوليدي للجهات الحكومية (العربية)",
+            "url": "https://sdaia.gov.sa/ar/SDAIA/about/Files/GenAIGuidelinesForGovernmentARCompressed.pdf"
+          }
+        ]
+      },
+      {
+        "group": "Methods",
+        "items": [
+          {
+            "title": "scikit-learn: Common pitfalls and recommended practices",
+            "url": "https://scikit-learn.org/stable/common_pitfalls.html"
+          },
+          {
+            "title": "Kapoor and Narayanan: Leakage and the Reproducibility Crisis in ML-based Science",
+            "url": "https://arxiv.org/abs/2207.07048"
+          },
+          {
+            "title": "Mitchell et al.: Model Cards for Model Reporting",
+            "url": "https://arxiv.org/abs/1810.03993"
+          }
+        ]
+      },
+      {
+        "group": "Tools",
+        "items": [
+          {
+            "title": "scikit-learn on PyPI",
+            "url": "https://pypi.org/project/scikit-learn/"
+          },
+          {
+            "title": "Google Colaboratory: frequently asked questions",
+            "url": "https://research.google.com/colaboratory/faq.html"
+          }
+        ]
+      }
+    ]
+  }
+}

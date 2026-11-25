@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-ax="deck" data-track="foundations">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capstone · Capstone: a modelling report and its defence · How Machine Learning Works</title>
+<meta name="generator" content="SDAIA Academy engine 1.0.0">
+<link rel="icon" href="../_engine/icon.svg">
+<link rel="alternate" type="text/markdown" href="capstone.md">
+<link rel="describedby" href="../llms.txt">
+<link rel="stylesheet" href="../_engine/academy.css">
+</head>
+<body>
+<div class="deck" data-course="How Machine Learning Works" data-track="foundations" data-day="Capstone">
+<section class="slide title" id="title" data-auto="title" data-label="Welcome" data-n="1">
+  <div class="kicker">SDAIA Academy · How Machine Learning Works</div>
+  <h1>Capstone: a modelling report and its defence</h1>
+  <p class="lead mt">Capstone: Ten minutes each: six of talk, then four of questions in which the participant re-runs the notebook and explains a result the instructor selects</p>
+  <div class="meta"><span class="track">Data &amp; AI Foundations Track</span><span>4 teaching days + capstone day</span><span>6 min talk and demo · 4 min Q&amp;A</span><span>FND-AIC-101</span></div>
+  <aside class="notes"><p>Today is theirs: keep your own talking to the opening, the review and the follow-up brief. Before the room fills: check the screen sharing, a fresh hosted notebook that can clone the course repository, and the list of submitted repository links.</p></aside>
+</section>
+
+<section class="slide" id="agenda" data-label="Agenda" data-n="2">
+  <div class="kicker">Capstone day</div>
+  <h2>How the day runs</h2>
+  <div class="agenda">
+    <div class="item now"><div><b>Opening and the supervised check</b><small>the day's plan, then the check on paper, without devices</small></div></div>
+    <div class="item"><div><b>Final preparation</b><small>finish, commit, rehearse once</small></div></div>
+    <div class="item"><div><b>Defences</b><small>talk, then questions with a re-run</small></div></div>
+    <div class="item"><div><b>Review and the follow-up task</b><small>what the defences showed, and the second screen</small></div></div>
+  </div>
+  <aside class="notes"><p>Minutes: opening 15, supervised check 120 (two parts of 60), preparation 45, sixteen defences of 10 with 2 minutes of changeover each (192), review 28, follow-up brief 20. With fewer participants, the review starts earlier.</p></aside>
+</section>
+
+<section class="slide" id="supervised-check" data-label="Supervised check" data-lo="LO1" data-n="3">
+  <div class="kicker">The supervised check</div>
+  <h2>Two parts of 60 minutes, on paper, without devices</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>A hand fit</h4><p class="small mb0">A few rows, a loss, one or two gradient steps or a nearest-neighbour vote.</p></div>
+    <div class="card c-amber"><h4>Reading curves</h4><p class="small mb0">Training and validation curves: overfit, underfit or a good fit, and what to do next.</p></div>
+    <div class="card c-coral"><h4>Spotting leaks</h4><p class="small mb0">A data dictionary and a pipeline: which columns and steps leak, and why.</p></div>
+  </div>
+  <div class="callout warn mt"><b>To pass the course.</b> At least 50% on this check, and 60% overall. It counts 30%.</div>
+  <aside class="notes"><p>AI-off and devices away: phones in bags, laptops closed. A calculator without connectivity is allowed. Collect the papers at the end of each part. The papers come from the trainer pack, not from the practice bank.</p></aside>
+</section>
+
+<section class="slide" id="rubric" data-label="The rubric" data-n="4">
+  <div class="kicker">How the capstone is scored</div>
+  <h2>The rubric: five criteria, 100 points</h2>
+  <div class="bars">
+    <div class="row"><span>Held-out workflow, fixed seed, test opened once</span><div class="bar c-teal" style="--w:100%"></div><span class="val">25</span></div>
+    <div class="row"><span>Leakage-safe data handling</span><div class="bar c-cyan" style="--w:60%"></div><span class="val">15</span></div>
+    <div class="row"><span>Threshold from costs and base rate</span><div class="bar c-coral" style="--w:80%"></div><span class="val">20</span></div>
+    <div class="row"><span>Model card with groups, limits, owner and reviewer</span><div class="bar c-purple" style="--w:80%"></div><span class="val">20</span></div>
+    <div class="row"><span>Defence: re-run and explain a selected result</span><div class="bar c-amber" style="--w:80%"></div><span class="val">20</span></div>
+  </div>
+  <aside class="notes"><p>Full marks on the threshold: costs eight to one, the base rate of the training period, the threshold chosen on validation, the confusion matrix on test at that threshold. Each criterion scores one thing; nothing is counted twice.</p></aside>
+</section>
+
+<section class="slide" id="format" data-label="Format" data-n="5">
+  <div class="kicker">The defence</div>
+  <h2>Ten minutes: six of talk, four of questions</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>1 · The screen</h4><p class="small mb0">What it flags, for whom, and the costs that set its threshold.</p></div>
+    <div class="card c-cyan"><h4>2 · The evidence</h4><p class="small mb0">Baseline, two models, the leak you removed, the test score opened once.</p></div>
+    <div class="card c-coral"><h4>3 · The card</h4><p class="small mb0">Rates by sex with counts, limits, and who should not rely on it.</p></div>
+  </div>
+  <div class="callout note mt"><b>In the questions.</b> Restart the notebook, run all, and explain the result the instructor points to.</div>
+  <aside class="notes"><p>Pick the result to explain from the notebook, not from the slides: a number in the confusion matrix, a fold score, the leak check. The repository's history is inspected: a report that grew over several commits.</p></aside>
+</section>
+
+<section class="slide order" id="running-order" data-label="Running order" data-n="6">
+  <div class="kicker">Running order</div>
+  <h2>Who defends when</h2>
+  <table class="t small">
+    <tr><th>#</th><th>Participant</th><th>#</th><th>Participant</th></tr>
+    <tr><td>1</td><td><input placeholder="participant"></td><td>9</td><td><input placeholder="participant"></td></tr>
+    <tr><td>2</td><td><input placeholder="participant"></td><td>10</td><td><input placeholder="participant"></td></tr>
+    <tr><td>3</td><td><input placeholder="participant"></td><td>11</td><td><input placeholder="participant"></td></tr>
+    <tr><td>4</td><td><input placeholder="participant"></td><td>12</td><td><input placeholder="participant"></td></tr>
+    <tr><td>5</td><td><input placeholder="participant"></td><td>13</td><td><input placeholder="participant"></td></tr>
+    <tr><td>6</td><td><input placeholder="participant"></td><td>14</td><td><input placeholder="participant"></td></tr>
+    <tr><td>7</td><td><input placeholder="participant"></td><td>15</td><td><input placeholder="participant"></td></tr>
+    <tr><td>8</td><td><input placeholder="participant"></td><td>16</td><td><input placeholder="participant"></td></tr>
+  </table>
+  <aside class="notes"><p>Type the order in at the start; the fields can be edited live and are not saved, so keep the list in your scoring sheet too.</p></aside>
+</section>
+
+<section class="slide dark" id="final-prep" data-label="Final preparation" data-n="7">
+  <div class="kicker">Before the first defence</div>
+  <h1>Final preparation · 45 minutes</h1>
+  <div class="timer" data-minutes="45"></div>
+  <p class="lead">Restart and run all, commit, push, and rehearse six minutes once.</p>
+  <aside class="notes"><p>Press T to start the timer. Walk the room: check that every repository is public and that its notebook runs from a fresh start. AI-full is allowed for code; only public or synthetic data goes into an assistant.</p></aside>
+</section>
+
+<section class="slide dark presenting" id="now-presenting" data-label="Now defending" data-n="8">
+  <div class="kicker center">Now defending</div>
+  <div class="center"><input placeholder="Participant"></div>
+  <div class="timers mt">
+    <div><h3>Talk</h3><div class="timer" data-minutes="6"></div></div>
+    <div><h3>Questions and re-run</h3><div class="timer" data-minutes="4"></div></div>
+  </div>
+  <aside class="notes"><p>Type the name and press T to start the talk timer; start the second at the first question. Two minutes of changeover between defences. Score each criterion on the sheet before the next one starts.</p></aside>
+</section>
+
+<section class="slide" id="review" data-label="Trainer review" data-n="9">
+  <div class="kicker">Trainer review</div>
+  <h2>What the defences showed</h2>
+  <div class="cols cols-3">
+    <div class="card c-teal"><h4>Strongest patterns</h4><p class="small mb0">What several reports got right.</p></div>
+    <div class="card c-coral"><h4>Common gaps</h4><p class="small mb0">What most reports would fix next.</p></div>
+    <div class="card c-purple"><h4>One surprise</h4><p class="small mb0">Something nobody expected.</p></div>
+  </div>
+  <aside class="notes"><p>Fill these in from your scoring notes during the last changeover. Name participants for strengths; keep gaps anonymous. Typical gaps: a threshold chosen on test, a card with rates but no counts, the same person as owner and reviewer.</p></aside>
+</section>
+
+<section class="slide" id="follow-up" data-label="Follow-up task" data-n="10">
+  <div class="kicker">The follow-up task</div>
+  <h2>The same workflow on a second screen: pressure injury in 90 days</h2>
+  <ul class="bullets">
+    <li>About 60 minutes, on your own, within two weeks; tracked, not graded</li>
+    <li>The brief and data dictionary: <code>labs/followup/README.md</code></li>
+    <li>A second notebook in your capstone repository; send the trainer the commit link</li>
+    <li>One column is recorded after the outcome: find it before you trust a score</li>
+  </ul>
+  <aside class="notes"><p>The missed-to-needless cost is five to one in this screen. The follow-up shows whether the workflow transfers without the labs around it.</p></aside>
+</section>
+
+<section class="slide" id="what-next" data-label="After the course" data-n="11">
+  <div class="kicker">After the course</div>
+  <h2>Keep going</h2>
+  <ul class="bullets">
+    <li><b>Your repository stays yours:</b> keep it running from a fresh start</li>
+    <li><b>FND-AIC-102 How Language Models Work:</b> the same loss idea at the scale of text</li>
+    <li><b>DS-204 Machine Learning for Tabular Data:</b> boosted trees, tuning and calibration</li>
+  </ul>
+  <aside class="notes"><p>Results and certificates follow the course's rule: a certificate of completion with assessed work, for 60% overall and at least 50% on the supervised check.</p></aside>
+</section>
+
+<section class="slide dark" id="thanks" data-label="Thank you" data-n="12">
+  <div class="kicker">SDAIA Academy</div>
+  <h1>Thank you</h1>
+  <p class="lead">How Machine Learning Works</p>
+  <aside class="notes"><p>Thank the room. Remind them of the follow-up task and its two-week window.</p></aside>
+</section>
+</div>
+<script type="application/json" id="academy-data">{"v":1,"engine":"1.0.0","build":{"at":"2026-11-25T02:20:54Z","version":"2027.1.0","commit":"193791f"},"course":{"id":"fnd-aic-101","code":"FND-AIC-101","title":"How Machine Learning Works","track":"foundations","lang":"en","dir":"ltr","url":"https://sdaiaacademy.github.io/fnd-aic-101/","repo":"SDAIAAcademy/fnd-aic-101","home":"../index.html"},"deck":{"id":"capstone","kind":"capstone","day":5,"label":"Capstone","title":"Capstone: a modelling report and its defence","prev":"day4.html","next":null,"md":"capstone.md","alt":{}},"sessions":[],"slides":[{"id":"title","n":1,"title":"Capstone: a modelling report and its defence","kind":"title","session":0,"hash":"122a621a","md":"#### [capstone#title] Capstone: a modelling report and its defence\n\n*SDAIA Academy · How Machine Learning Works*\n\nCapstone: Ten minutes each: six of talk, then four of questions in which the participant re-runs the notebook and explains a result the instructor selects\n\nData & AI Foundations Track · 4 teaching days + capstone day · 6 min talk and demo · 4 min Q&A · FND-AIC-101","notes":"Today is theirs: keep your own talking to the opening, the review and the follow-up brief. Before the room fills: check the screen sharing, a fresh hosted notebook that can clone the course repository, and the list of submitted repository links.","minutes":null,"lo":[]},{"id":"agenda","n":2,"title":"How the day runs","kind":"content","session":0,"hash":"203c00cf","md":"#### [capstone#agenda] How the day runs\n\n*Capstone day*\n\n- **Opening and the supervised check**: the day's plan, then the check on paper, without devices\n- **Final preparation**: finish, commit, rehearse once\n- **Defences**: talk, then questions with a re-run\n- **Review and the follow-up task**: what the defences showed, and the second screen","notes":"Minutes: opening 15, supervised check 120 (two parts of 60), preparation 45, sixteen defences of 10 with 2 minutes of changeover each (192), review 28, follow-up brief 20. With fewer participants, the review starts earlier.","minutes":null,"lo":[]},{"id":"supervised-check","n":3,"title":"Two parts of 60 minutes, on paper, without devices","kind":"content","session":0,"hash":"183c5763","md":"#### [capstone#supervised-check] Two parts of 60 minutes, on paper, without devices\n\n*The supervised check*\n\n- **A hand fit.** A few rows, a loss, one or two gradient steps or a nearest-neighbour vote.\n- **Reading curves.** Training and validation curves: overfit, underfit or a good fit, and what to do next.\n- **Spotting leaks.** A data dictionary and a pipeline: which columns and steps leak, and why.\n\n> **To pass the course.** At least 50% on this check, and 60% overall. It counts 30%.","notes":"AI-off and devices away: phones in bags, laptops closed. A calculator without connectivity is allowed. Collect the papers at the end of each part. The papers come from the trainer pack, not from the practice bank.","minutes":null,"lo":["LO1"]},{"id":"rubric","n":4,"title":"The rubric: five criteria, 100 points","kind":"content","session":0,"hash":"7d1cacd3","md":"#### [capstone#rubric] The rubric: five criteria, 100 points\n\n*How the capstone is scored*\n\n| Item | Value |\n| --- | --- |\n| Held-out workflow, fixed seed, test opened once | 25 |\n| Leakage-safe data handling | 15 |\n| Threshold from costs and base rate | 20 |\n| Model card with groups, limits, owner and reviewer | 20 |\n| Defence: re-run and explain a selected result | 20 |","notes":"Full marks on the threshold: costs eight to one, the base rate of the training period, the threshold chosen on validation, the confusion matrix on test at that threshold. Each criterion scores one thing; nothing is counted twice.","minutes":null,"lo":[]},{"id":"format","n":5,"title":"Ten minutes: six of talk, four of questions","kind":"content","session":0,"hash":"7a92dfd8","md":"#### [capstone#format] Ten minutes: six of talk, four of questions\n\n*The defence*\n\n- **1 · The screen.** What it flags, for whom, and the costs that set its threshold.\n- **2 · The evidence.** Baseline, two models, the leak you removed, the test score opened once.\n- **3 · The card.** Rates by sex with counts, limits, and who should not rely on it.\n\n> **In the questions.** Restart the notebook, run all, and explain the result the instructor points to.","notes":"Pick the result to explain from the notebook, not from the slides: a number in the confusion matrix, a fold score, the leak check. The repository's history is inspected: a report that grew over several commits.","minutes":null,"lo":[]},{"id":"running-order","n":6,"title":"Who defends when","kind":"order","session":0,"hash":"d480ca1a","md":"#### [capstone#running-order] Who defends when\n\n*Running order*\n\n| # | Participant | # | Participant |\n| --- | --- | --- | --- |\n| 1 |  | 9 |  |\n| 2 |  | 10 |  |\n| 3 |  | 11 |  |\n| 4 |  | 12 |  |\n| 5 |  | 13 |  |\n| 6 |  | 14 |  |\n| 7 |  | 15 |  |\n| 8 |  | 16 |  |","notes":"Type the order in at the start; the fields can be edited live and are not saved, so keep the list in your scoring sheet too.","minutes":null,"lo":[]},{"id":"final-prep","n":7,"title":"Final preparation · 45 minutes","kind":"content","session":0,"hash":"c36c9430","md":"#### [capstone#final-prep] Final preparation · 45 minutes\n\n*Before the first defence*\n\nRestart and run all, commit, push, and rehearse six minutes once.","notes":"Press T to start the timer. Walk the room: check that every repository is public and that its notebook runs from a fresh start. AI-full is allowed for code; only public or synthetic data goes into an assistant.","minutes":null,"lo":[]},{"id":"now-presenting","n":8,"title":"Talk","kind":"presenting","session":0,"hash":"579e2378","md":"#### [capstone#now-presenting] Talk\n\n*Now defending*\n\n##### Questions and re-run","notes":"Type the name and press T to start the talk timer; start the second at the first question. Two minutes of changeover between defences. Score each criterion on the sheet before the next one starts.","minutes":null,"lo":[]},{"id":"review","n":9,"title":"What the defences showed","kind":"content","session":0,"hash":"3a536e2e","md":"#### [capstone#review] What the defences showed\n\n*Trainer review*\n\n- **Strongest patterns.** What several reports got right.\n- **Common gaps.** What most reports would fix next.\n- **One surprise.** Something nobody expected.","notes":"Fill these in from your scoring notes during the last changeover. Name participants for strengths; keep gaps anonymous. Typical gaps: a threshold chosen on test, a card with rates but no counts, the same person as owner and reviewer.","minutes":null,"lo":[]},{"id":"follow-up","n":10,"title":"The same workflow on a second screen: pressure injury in 90 days","kind":"content","session":0,"hash":"cdbe4517","md":"#### [capstone#follow-up] The same workflow on a second screen: pressure injury in 90 days\n\n*The follow-up task*\n\n- About 60 minutes, on your own, within two weeks; tracked, not graded\n- The brief and data dictionary: `labs/followup/README.md`\n- A second notebook in your capstone repository; send the trainer the commit link\n- One column is recorded after the outcome: find it before you trust a score","notes":"The missed-to-needless cost is five to one in this screen. The follow-up shows whether the workflow transfers without the labs around it.","minutes":null,"lo":[]},{"id":"what-next","n":11,"title":"Keep going","kind":"content","session":0,"hash":"8c36ad89","md":"#### [capstone#what-next] Keep going\n\n*After the course*\n\n- **Your repository stays yours:** keep it running from a fresh start\n- **FND-AIC-102 How Language Models Work:** the same loss idea at the scale of text\n- **DS-204 Machine Learning for Tabular Data:** boosted trees, tuning and calibration","notes":"Results and certificates follow the course's rule: a certificate of completion with assessed work, for 60% overall and at least 50% on the supervised check.","minutes":null,"lo":[]},{"id":"thanks","n":12,"title":"Thank you","kind":"content","session":0,"hash":"b39f115f","md":"#### [capstone#thanks] Thank you\n\n*SDAIA Academy*\n\nHow Machine Learning Works","notes":"Thank the room. Remind them of the follow-up task and its two-week window.","minutes":null,"lo":[]}],"activities":[],"ai":{"context":{"course":"../context/course.md","courseJs":"../context/course.js","day":"capstone.md","llms":"../llms.txt"},"tasks":[],"tools":[]},"bridge":{"allowedOrigins":[]},"features":{},"strings":{}}</script>
+<script src="../_engine/academy.js"></script>
+</body>
+</html>
